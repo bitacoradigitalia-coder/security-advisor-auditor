@@ -8,7 +8,7 @@
 - REQUIRED DEEP-REASONING CHECKS
 - ADVISORY MODE
 - ARCHITECTURE GUIDANCE
-- FIRSTA VISTA / MULTI-MODULE GUIDANCE
+- SECURITY CONTROL GUIDANCE
 - OUTPUT FORMAT
 - PRIORITIZED REMEDIATION PLAN
 - IMPLEMENTATION PROMPT
@@ -29,7 +29,7 @@ The skill must combine:
 - architecture review;
 - business-logic analysis;
 - code quality review;
-- multi-tenant security review;
+- resource isolation security review;
 - authentication and authorization review;
 - deployment hardening;
 - scalability assessment;
@@ -83,7 +83,7 @@ Before listing vulnerabilities, map:
 - APIs;
 - authentication;
 - authorization;
-- multi-tenancy;
+- resource isolation;
 - integrations;
 - deployment;
 - secrets;
@@ -159,7 +159,7 @@ Identify all untrusted inputs.
 
 Examples:
 
-- organizationId;
+- resourceOwnerId;
 - bookingId;
 - userId;
 - customerId;
@@ -181,7 +181,7 @@ Ask for each value:
 - Who controls it?
 - Where is it validated?
 - Is validation server-side?
-- Can it cross tenant boundaries?
+- Can it cross authorization boundaries?
 - Can it alter private state?
 - Is it used as proof of identity or authorization?
 
@@ -224,24 +224,24 @@ Look for:
 - admin-only operations available to staff;
 - horizontal privilege escalation;
 - vertical privilege escalation;
-- implicit trust in client-provided organization IDs;
+- implicit trust in client-provided resource owner IDs;
 - authorization checks performed only in UI.
 
 If applicable, recommend centralized helpers such as:
 
 - `requireRole()`
 - `requirePermission()`
-- `requireOrganization()`
+- `requireOwnership()`
 
 ---
 
-## Phase 5 — Multi-tenancy
+## Phase 5 — Resource isolation
 
-Treat tenant isolation as a critical boundary.
+Treat resource isolation as a critical boundary.
 
 Review:
 
-- organization ownership;
+- resource ownership;
 - user membership;
 - storage partitioning;
 - queries;
@@ -250,15 +250,15 @@ Review:
 - locks;
 - background jobs.
 
-Every tenant-owned resource should be tied explicitly to the tenant.
+Every protected resource should be tied explicitly to its authorized owner.
 
 Detect cases where:
 
-Organization A
+User A
 
 can access or affect
 
-Organization B.
+User B.
 
 Also identify shared infrastructure risks such as:
 
@@ -388,7 +388,7 @@ Inspect:
 Ask:
 
 - Is the lock global?
-- Does one tenant block another?
+- Does one user block another?
 - Does external I/O happen while holding the lock?
 - Can concurrent requests bypass availability checks?
 - Can retries duplicate side effects?
@@ -620,9 +620,9 @@ that may be callable by lower roles.
 
 ## Global lock risk
 
-Look for global mutexes or script locks in multi-tenant systems.
+Look for global mutexes or script locks in systems with shared resources.
 
-Determine whether one tenant can degrade service for others.
+Determine whether one user can degrade service for others.
 
 ---
 
@@ -689,7 +689,7 @@ Prefer:
 - repository interfaces;
 - adapters;
 - centralized authorization;
-- explicit tenant ownership;
+- explicit resource ownership;
 - small interfaces;
 - testable business logic.
 
@@ -697,40 +697,13 @@ Avoid recommending microservices unless scale or organizational complexity justi
 
 ---
 
-# PRIMERA VISTA / MULTI-MODULE GUIDANCE
+# SECURITY CONTROL GUIDANCE
 
-When working on Primera Vista projects, preserve compatibility with an eventual platform architecture.
-
-Shared core concepts:
-
-- organizations;
-- users;
-- roles;
-- permissions;
-- contacts;
-- audit logs;
-- notifications.
-
-Modules may include:
-
-- bookings;
-- CRM;
-- leads;
-- CMS;
-- web projects;
-- SEO;
-- automations;
-- files;
-- AI context.
-
-Rules:
-
-- every tenant-owned record belongs to an organization;
-- User is not Customer;
-- Customer/Contact is not Organization;
-- modules share core identities but should remain loosely coupled;
-- authorization happens in the backend;
-- sensitive actions generate audit events.
+- Verify resource ownership before reading or changing private data.
+- Distinguish authenticated identity from user-supplied profile data.
+- Enforce authorization in the backend.
+- Generate redacted audit events for sensitive operations.
+- Preserve existing security boundaries during remediation.
 
 ---
 
@@ -845,7 +818,7 @@ Rules:
 
 1. Preserve existing behavior unless security requires changing it.
 2. Do not trust frontend validation.
-3. Preserve tenant isolation.
+3. Preserve resource isolation.
 4. Do not introduce secrets into client-side code.
 5. Do not add unnecessary dependencies.
 6. Add regression tests for every security fix.
