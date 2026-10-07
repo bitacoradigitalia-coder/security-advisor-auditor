@@ -1,0 +1,15 @@
+interface:
+  display_name: Asesor y Auditor de Seguridad
+  short_description: Audita seguridad y arquitectura y entrega soluciones
+  default_prompt: Usa $security-advisor-auditor para revisar este proyecto, encontrar
+    fallos con evidencia y entregarme asesoría y un prompt de corrección sin modificar
+    el código.
+  icon_small: assets/icon.svg
+  icon_large: assets/icon.svg
+policy:
+  products:
+  - chatgpt
+  - codex
+  - api
+  - atlas
+  allow_implicit_invocation: true
