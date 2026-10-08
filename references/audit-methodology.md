@@ -4,6 +4,7 @@
 
 - Security Advisor & Auditor
 - OPERATING PRINCIPLES
+- PRODUCT TYPES AND SCOPE
 - AUDIT METHODOLOGY
 - REQUIRED DEEP-REASONING CHECKS
 - ADVISORY MODE
@@ -19,9 +20,11 @@
 
 ## Mission
 
-Act as a senior application security auditor, software architect, and technical advisor.
+Act as a senior application and system security auditor, software architect, and technical advisor.
 
-The goal is not only to identify vulnerabilities, but to understand the complete application, assess its architecture, identify business-logic weaknesses, prioritize improvements, and produce an actionable remediation plan and implementation prompt.
+The goal is not only to identify vulnerabilities, but to understand the complete product, assess its architecture, identify business-logic weaknesses, prioritize improvements, and produce an actionable remediation plan and implementation prompt.
+
+The audit applies to any software product — past, present, or future — including web applications, SaaS platforms, APIs, backend services, mobile and desktop clients, CLIs, automation scripts, libraries, and infrastructure as code.
 
 The skill must combine:
 
@@ -29,8 +32,9 @@ The skill must combine:
 - architecture review;
 - business-logic analysis;
 - code quality review;
-- resource isolation security review;
+- resource and tenant isolation review;
 - authentication and authorization review;
+- supply chain and CI/CD review;
 - deployment hardening;
 - scalability assessment;
 - technical advisory;
@@ -76,14 +80,15 @@ Token does not actually rotate.
 
 Before listing vulnerabilities, map:
 
+- product type (web app, SaaS, API, mobile, CLI, infrastructure…);
 - application architecture;
-- frontend;
-- backend;
+- clients (frontend, mobile, desktop, CLI, third parties);
+- backend services and workers;
 - storage;
 - APIs;
 - authentication;
 - authorization;
-- resource isolation;
+- resource and tenant isolation;
 - integrations;
 - deployment;
 - secrets;
@@ -118,6 +123,22 @@ Never exaggerate severity.
 
 ---
 
+# PRODUCT TYPES AND SCOPE
+
+The methodology is product-agnostic. Before auditing, detect the product type and adapt:
+
+- **Web application / SPA**: apply all frontend, header, and browser-trust phases.
+- **SaaS (multi-tenant)**: tenant isolation is a critical boundary. Build a tenant/user/action/resource matrix.
+- **Public or partner API**: apply API phases (machine clients, key management, quotas, versioning).
+- **Mobile / desktop client**: the device is not trusted; embedded secrets can be extracted, so the server must enforce authorization.
+- **CLI / script / automation**: focus on input validation, path handling, injection, secret handling, and least privilege.
+- **Library / SDK**: focus on API design that prevents misuse, safe defaults, and dependency hygiene.
+- **Infrastructure as code / containers / CI/CD**: apply the cloud and supply chain phases.
+
+Phases that do not apply to the product type must be recorded as not applicable, with justification — never silently skipped.
+
+---
+
 # AUDIT METHODOLOGY
 
 ## Phase 1 — Repository reconnaissance
@@ -125,12 +146,12 @@ Never exaggerate severity.
 Inspect:
 
 - repository structure;
-- entry points;
-- package files;
+- entry points (HTTP handlers, CLI commands, message consumers, cron jobs, exported functions);
+- package files and lockfiles;
 - environment files;
 - documentation;
 - CI/CD;
-- frontend;
+- frontend and other clients;
 - backend;
 - infrastructure;
 - adapters;
@@ -140,12 +161,14 @@ Inspect:
 
 Identify:
 
+- product type;
 - technologies;
 - frameworks;
 - storage;
 - external services;
 - public endpoints;
 - admin endpoints;
+- tenants and user roles (if any);
 - privileged operations;
 - scheduled jobs.
 
@@ -160,9 +183,9 @@ Identify all untrusted inputs.
 Examples:
 
 - resourceOwnerId;
-- bookingId;
 - userId;
 - customerId;
+- tenantId;
 - staffMemberId;
 - serviceId;
 - role;
@@ -174,18 +197,20 @@ Examples:
 - idempotencyKey;
 - URL;
 - callback;
-- file upload.
+- webhook payload;
+- file upload;
+- CLI arguments and environment variables.
 
 Ask for each value:
 
 - Who controls it?
 - Where is it validated?
 - Is validation server-side?
-- Can it cross authorization boundaries?
+- Can it cross authorization or tenant boundaries?
 - Can it alter private state?
 - Is it used as proof of identity or authorization?
 
-Never trust frontend validation.
+Never trust client-side validation, in any kind of client.
 
 ---
 
@@ -204,11 +229,12 @@ Review:
 - token storage;
 - logout;
 - session lifetime;
-- replay resistance.
+- replay resistance;
+- API key and machine-client authentication (where applicable).
 
 Prefer stable identity identifiers such as `sub` over email.
 
-Identify frontend-only authentication.
+Identify client-side-only authentication (frontend, mobile, or CLI).
 
 ---
 
@@ -216,7 +242,7 @@ Identify frontend-only authentication.
 
 Build a mental or explicit role/action matrix.
 
-Check every backend action.
+Check every privileged action.
 
 Look for:
 
@@ -225,57 +251,61 @@ Look for:
 - horizontal privilege escalation;
 - vertical privilege escalation;
 - implicit trust in client-provided resource owner IDs;
-- authorization checks performed only in UI.
+- authorization checks performed only in UI or mobile clients.
 
 If applicable, recommend centralized helpers such as:
 
 - `requireRole()`
 - `requirePermission()`
 - `requireOwnership()`
+- `requireTenant()`
 
 ---
 
-## Phase 5 — Resource isolation
+## Phase 5 — Resource and tenant isolation
 
 Treat resource isolation as a critical boundary.
 
 Review:
 
 - resource ownership;
+- tenant membership;
 - user membership;
 - storage partitioning;
-- queries;
-- object IDs;
-- caches;
+- queries (are they always scoped by tenant or owner?);
+- object IDs (predictable, enumerable?);
+- caches (are cache keys scoped per tenant/user?);
 - locks;
+- queues;
 - background jobs.
 
-Every protected resource should be tied explicitly to its authorized owner.
+Every protected resource should be tied explicitly to its authorized owner and, in multi-tenant systems, to its tenant.
 
 Detect cases where:
 
-User A
+User A (or Tenant A)
 
 can access or affect
 
-User B.
+User B (or Tenant B).
 
 Also identify shared infrastructure risks such as:
 
 - global locks;
 - global queues;
-- global caches;
-- unscoped background jobs.
+- unscoped caches;
+- unscoped background jobs;
+- cross-tenant data in shared stores or search indexes.
 
 ---
 
 ## Phase 6 — Business logic
 
-This phase is mandatory.
+This phase is mandatory for any product that implements workflows.
 
 Do not limit analysis to OWASP-style injection flaws.
 
-Understand application workflows.
+Understand the product workflows, whatever the domain (bookings, payments, subscriptions, orders, approvals, publishing, exports…).
 
 Look for:
 
@@ -285,25 +315,25 @@ Look for:
 - unauthorized profile modification;
 - ownership confusion;
 - duplicate operations;
-- double booking;
+- double booking / double charging / double subscription;
 - race conditions;
 - capacity bypass;
 - schedule bypass;
-- cancellation bypass;
-- rescheduling bypass;
+- cancellation or refund bypass;
 - replay of previously valid operations;
 - public endpoints modifying private data;
 - weak identity assumptions;
 - predictable identifiers;
-- side effects triggered without authorization.
+- side effects triggered without authorization;
+- privilege escalation through state or feature flags.
 
 Questions to ask:
 
-- Can a public operation mutate another user's profile?
+- Can a public operation mutate another user's (or tenant's) data?
 - Can a non-secret identifier become an implicit credential?
 - Can an old token still work after a supposedly rotating operation?
 - Can a low-privileged user trigger expensive system actions?
-- Can a retry accidentally leak a secret?
+- Can a retry accidentally leak a secret or duplicate a payment?
 - Can a legitimate operation be abused at scale?
 
 ---
@@ -313,19 +343,21 @@ Questions to ask:
 Review:
 
 - bearer tokens;
-- cancellation links;
+- cancellation / confirmation links;
 - password reset links;
 - management links;
 - OAuth tokens;
 - API keys;
+- service credentials;
 - secrets;
-- environment variables.
+- environment variables;
+- secrets embedded in mobile apps, CLIs, or container images.
 
 Check:
 
 - generation entropy;
 - storage;
-- hashing;
+- hashing (API keys stored hashed, like passwords);
 - expiration;
 - revocation;
 - rotation;
@@ -353,23 +385,24 @@ Review:
 - SQL injection;
 - NoSQL injection;
 - command injection;
+- argument injection in CLIs and scripts;
 - template injection;
 - XSS;
 - HTML injection;
-- spreadsheet/formula injection;
+- CSV/spreadsheet/formula injection;
+- log injection;
 - SSRF;
 - path traversal;
 - open redirect;
-- unsafe deserialization.
+- unsafe deserialization;
+- malicious file content (see Phase 13).
 
-For spreadsheet systems, inspect values beginning with:
+For systems that export user-controlled data to spreadsheets or CSV, inspect values beginning with:
 
 =
 +
 -
 @
-
-when user-controlled data can reach spreadsheet cells or exported files.
 
 ---
 
@@ -380,17 +413,17 @@ Inspect:
 - locks;
 - transactions;
 - check-then-write patterns;
-- double booking logic;
 - duplicate submissions;
-- calendar synchronization;
-- background jobs.
+- double booking / double charge logic;
+- synchronization with external systems;
+- background jobs and message consumers (at-least-once delivery, ordering).
 
 Ask:
 
 - Is the lock global?
-- Does one user block another?
+- Does one user (or tenant) block another?
 - Does external I/O happen while holding the lock?
-- Can concurrent requests bypass availability checks?
+- Can concurrent requests bypass availability or balance checks?
 - Can retries duplicate side effects?
 
 Recommend minimizing critical sections.
@@ -399,7 +432,7 @@ Recommend minimizing critical sections.
 
 ## Phase 10 — Abuse and denial of service
 
-Review all public and authenticated endpoints for abuse.
+Review all public and authenticated entry points for abuse.
 
 Look for missing:
 
@@ -407,18 +440,19 @@ Look for missing:
 - bot protection;
 - CAPTCHA/Turnstile;
 - request-size limits;
-- quotas;
+- quotas (per user, per tenant, per API key);
 - throttling;
-- retry limits.
+- retry limits;
+- pagination limits (full-table scans, unbounded queries).
 
-Pay special attention to endpoints that trigger:
+Pay special attention to operations that trigger:
 
 - email;
-- calendar;
 - external APIs;
 - expensive queries;
 - locks;
-- file processing.
+- file processing;
+- AI or batch jobs.
 
 Distinguish between:
 
@@ -434,12 +468,12 @@ application-level abuse.
 
 Review:
 
-- Google Calendar;
-- Gmail;
-- Resend;
 - third-party APIs;
-- OAuth;
-- webhooks.
+- OAuth providers;
+- email providers;
+- calendars;
+- payment providers;
+- webhooks (outbound and inbound).
 
 Check:
 
@@ -449,8 +483,9 @@ Check:
 - failure handling;
 - timeout handling;
 - partial failure;
-- credential scope;
-- duplicate delivery.
+- credential scope (least privilege);
+- duplicate delivery;
+- inbound webhook signature verification.
 
 External service failure should not corrupt core state.
 
@@ -462,13 +497,13 @@ Identify personal or sensitive data.
 
 Review:
 
-- customer profiles;
+- customer and tenant data;
 - notes;
 - emails;
 - phone numbers;
 - consent;
-- booking history;
-- audit logs.
+- history and audit logs;
+- payment references.
 
 Check whether public actions can change private data.
 
@@ -482,39 +517,97 @@ should not automatically overwrite
 
 CustomerProfile.
 
+Where relevant, check data residency, retention, and deletion expectations — but do not equate advisory findings with legal compliance.
+
 ---
 
-## Phase 13 — Frontend security
+## Phase 13 — File handling and uploads
+
+Apply when the product accepts, generates, or processes files.
 
 Review:
+
+- file type validation (real content type vs. extension);
+- filename handling and path traversal;
+- size limits;
+- archive processing (zip bombs);
+- image/media processing libraries;
+- SSRF when fetching user-supplied URLs;
+- storage permissions and public exposure of uploaded files;
+- execution risk of uploaded content on the server.
+
+---
+
+## Phase 14 — Cryptography applied
+
+Review cryptographic choices in context:
+
+- password hashing (Argon2id/bcrypt with adequate cost, never fast hashes);
+- random generation for tokens and IDs (CSPRNG vs. predictable);
+- JWT vs. server-side sessions (trade-offs, revocation);
+- signing of tamper-sensitive tokens (e.g., HMAC for cancellation or email-change tokens);
+- TLS usage and certificate validation (disable verify only with explicit justification);
+- key management and rotation.
+
+Do not recommend cryptographic migrations mechanically; justify by observed risk.
+
+---
+
+## Phase 15 — API surface (REST, GraphQL, gRPC)
+
+Apply when the product exposes or consumes APIs.
+
+Review:
+
+- per-field or per-object authorization (not just endpoint-level);
+- GraphQL introspection and query depth/complexity limits;
+- batching attacks (one request affecting many objects or users);
+- mass assignment of role, tenant, price, or ownership fields;
+- versioning and deprecation of dangerous operations;
+- machine-client key scope and rotation;
+- verbose error responses leaking internals.
+
+---
+
+## Phase 16 — Client security (web, mobile, desktop)
+
+Web:
 
 - unsafe HTML;
 - `dangerouslySetInnerHTML`;
 - URL tokens;
-- localStorage;
-- sessionStorage;
+- localStorage / sessionStorage;
 - exposed environment variables;
 - client-side authorization;
 - CSP;
 - third-party scripts;
 - iframe exposure.
 
+Mobile / desktop:
+
+- secrets embedded in binaries;
+- insecure local storage of tokens;
+- deep links / universal links handling;
+- certificate pinning decisions (weigh availability vs. rotation);
+- export of sensitive data to logs or analytics.
+
 Remember:
 
-React escaping does not fix server-side authorization.
+Client escaping and UI checks do not fix server-side authorization.
 
 ---
 
-## Phase 14 — Dependency review
+## Phase 17 — Dependency review and supply chain
 
 Inspect:
 
-- package.json;
+- package.json / requirements / go.mod / etc.;
 - lockfiles;
 - duplicate package managers;
 - unused dependencies;
 - risky packages;
-- unnecessary frameworks.
+- unnecessary frameworks;
+- dependency audit tooling (`npm audit`, `pip-audit`, OSV) in CI.
 
 Recommend reducing unused dependencies.
 
@@ -522,7 +615,42 @@ Do not remove packages without verifying they are truly unused.
 
 ---
 
-## Phase 15 — Deployment and headers
+## Phase 18 — CI/CD and pipelines
+
+Inspect:
+
+- workflow triggers (danger of `pull_request_target` with secrets on untrusted code);
+- unpinned third-party actions;
+- secrets exposed in logs;
+- branch protections and required reviews;
+- deployment permissions;
+- artifact provenance and pinning;
+- token scope of CI credentials.
+
+A compromised CI pipeline is a supply-chain compromise of the product.
+
+---
+
+## Phase 19 — Cloud, containers, and infrastructure
+
+Apply when the repository contains Dockerfiles, IaC, or deploy config.
+
+Review:
+
+- containers running as root;
+- secrets baked into images;
+- pinned base images and digest usage;
+- overly permissive cloud IAM roles and scopes;
+- storage bucket or database public exposure;
+- network segmentation and security groups;
+- IaC state files containing secrets;
+- Kubernetes misconfigurations (privileged pods, host mounts, RBAC).
+
+Recommendations must match the actual deployment architecture.
+
+---
+
+## Phase 20 — Deployment, headers, and transport
 
 Review:
 
@@ -541,7 +669,7 @@ Recommendations must match the actual deployment architecture.
 
 ---
 
-## Phase 16 — Scalability and architecture advisory
+## Phase 21 — Scalability and architecture advisory
 
 Analyze whether current technology is suitable for the current stage.
 
@@ -599,7 +727,7 @@ If all inputs remain unchanged, the token has not rotated.
 
 ## Public profile mutation
 
-Identify cases where unauthenticated or customer-facing operations modify canonical customer data.
+Identify cases where unauthenticated or customer-facing operations modify canonical customer or tenant data.
 
 ---
 
@@ -613,8 +741,9 @@ Look for authenticated actions such as:
 - health checks;
 - imports;
 - exports;
+- batch or AI jobs;
 
-that may be callable by lower roles.
+that may be callable by lower roles or other tenants.
 
 ---
 
@@ -623,6 +752,12 @@ that may be callable by lower roles.
 Look for global mutexes or script locks in systems with shared resources.
 
 Determine whether one user can degrade service for others.
+
+---
+
+## Cross-tenant leakage
+
+In multi-tenant systems, search for queries, caches, exports, error messages, and background jobs that access data without a tenant filter.
 
 ---
 
@@ -641,7 +776,8 @@ Search for sensitive values in:
 - query strings;
 - route parameters;
 - browser history;
-- referrers.
+- referrers;
+- logs and CI output.
 
 Prefer safer mechanisms.
 
@@ -689,7 +825,7 @@ Prefer:
 - repository interfaces;
 - adapters;
 - centralized authorization;
-- explicit resource ownership;
+- explicit resource and tenant ownership;
 - small interfaces;
 - testable business logic.
 
@@ -699,9 +835,9 @@ Avoid recommending microservices unless scale or organizational complexity justi
 
 # SECURITY CONTROL GUIDANCE
 
-- Verify resource ownership before reading or changing private data.
+- Verify resource (and tenant) ownership before reading or changing private data.
 - Distinguish authenticated identity from user-supplied profile data.
-- Enforce authorization in the backend.
+- Enforce authorization in the backend, for every client type.
 - Generate redacted audit events for sensitive operations.
 - Preserve existing security boundaries during remediation.
 
@@ -715,9 +851,9 @@ Every repository review must include:
 
 Short assessment of overall quality and major risks.
 
-## Architecture Detected
+## Product Type and Architecture Detected
 
-Explain how the application is structured.
+Explain what kind of product it is and how it is structured.
 
 ## Positive Findings
 
@@ -804,6 +940,10 @@ You are working on the repository:
 
 [PROJECT NAME]
 
+Product type:
+
+[WEB APP / SAAS / API / MOBILE / CLI / INFRASTRUCTURE / …]
+
 Architecture:
 
 [ACTUAL ARCHITECTURE]
@@ -817,9 +957,9 @@ Your goal is to remediate these issues incrementally without rewriting the proje
 Rules:
 
 1. Preserve existing behavior unless security requires changing it.
-2. Do not trust frontend validation.
-3. Preserve resource isolation.
-4. Do not introduce secrets into client-side code.
+2. Do not trust client-side validation, in any client.
+3. Preserve resource and tenant isolation.
+4. Do not introduce secrets into client-side code, images, or pipelines.
 5. Do not add unnecessary dependencies.
 6. Add regression tests for every security fix.
 7. Work in small phases.
@@ -854,4 +994,4 @@ At completion provide:
 
 The objective is not to produce the longest vulnerability list.
 
-The objective is to understand the system well enough to identify the failures that actually matter and give the owner a realistic path to improve it.
+The objective is to understand the system well enough to identify the failures that actually matter and give the owner a realistic path to improve it — whatever kind of software it is.
