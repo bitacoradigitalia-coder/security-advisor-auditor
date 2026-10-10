@@ -6,6 +6,7 @@ import tempfile
 
 from .engine import scrub
 from .safeio import no_links, relative_name, remove_owned_tree
+from .verification import validate_state
 
 TYPES = {'confirmed_vulnerability', 'probable_weakness', 'architecture_risk', 'hardening', 'informational'}
 SEVERITIES = {'critical', 'high', 'medium', 'low', 'informational'}
@@ -52,6 +53,17 @@ def validate_report(data):
         if f['type'] == 'confirmed_vulnerability' and (verification['status'] == 'not_verified' or
                 not all(verification.get(k) for k in ('reviewer', 'reachability', 'control_violation'))):
             raise ValueError('Confirmación requiere revisión, ruta alcanzable y control violado')
+        if 'status' in f:
+            if 'state_history' not in verification and f['type'] == 'confirmed_vulnerability':
+                # A legacy reviewed report can replace verification as in v2.0.
+                # Normalize its additive state explicitly rather than leave contradictory labels.
+                f['status'] = 'CONFIRMED'
+                verification.update(reproduction=verification['reachability'], exploitation='not_tested',
+                    state_history=[{'from': 'CANDIDATE', 'to': 'PROBABLE', 'reason': 'Revisión compatible v2.0'},
+                                   {'from': 'PROBABLE', 'to': 'CONFIRMED', 'reason': 'Evidencia revisada v2.0 conservada'}])
+            validate_state(f)
+            if (f['status'] == 'CONFIRMED') != (f['type'] == 'confirmed_vulnerability'):
+                raise ValueError('Estado y tipo contradictorios')
         if 'cvss' in f or 'cve' in f:
             raise ValueError('Este formato base no admite CVSS/CVE sin verificación independiente')
     phases = set()
@@ -78,7 +90,10 @@ def markdown(data):
     validate_report(data); d = scrub(data); p = d['project']; findings = d['findings']
     confirmed = [f for f in findings if f['type'] == 'confirmed_vulnerability']
     lines = ['# Security Advisor Auditor — Informe', '', '## 1. Resumen ejecutivo', '',
-             f'{len(confirmed)} vulnerabilidades confirmadas; {len(findings) - len(confirmed)} observaciones pendientes o recomendaciones.',
+             f'{len(confirmed)} debilidades confirmadas; {len(findings) - len(confirmed)} observaciones o recomendaciones.',
+             'Explotaciones confirmadas: ' + str(sum(f['verification'].get('exploitation') == 'confirmed' for f in findings)) + '.',
+             'Estados: ' + literal(', '.join(f'{state}: {sum(f.get("status") == state for f in findings)}'
+                for state in ('CANDIDATE', 'PROBABLE', 'CONFIRMED', 'FALSE_POSITIVE', 'NOT_VERIFIED'))),
              'Este informe refleja únicamente la cobertura registrada. Cero hallazgos no demuestra seguridad.', '',
              '## 2. Alcance', '', literal(d['scope']), '', '## 3. Proyecto y commit', '',
              f'Proyecto: {literal(p["name"])}. Commit: {literal(p.get("commit") or "no disponible")}.',
@@ -100,10 +115,13 @@ def markdown(data):
             lines += ['', '### ' + f['id'] + ' — ' + literal(f['title']), '',
                       f'- Ubicación: {literal(loc["file"])}:{loc["line_start"]}–{loc["line_end"]}; commit {literal(f.get("commit") or "desconocido")}.',
                       f'- Tipo: {literal(f["type"])}; CWE: {literal(f.get("cwe"))}; severidad: {f["severity"]}; confianza: {f["confidence"]}; prioridad: {literal(f["priority"])}.',
+                      '- Estado contextual: ' + literal(f.get('status', 'legacy: consultar verificación')),
                       '- Justificación: ' + literal(f['severity_reason']),
                       '- Descripción: ' + literal(f['description']),
                       '- Precondiciones: ' + literal('; '.join(f['preconditions'])),
                       '- Evidencia: ' + literal(f['evidence']['summary']),
+                      '- Traza: ' + literal(' → '.join(f['evidence'].get('trace', []))),
+                      '- Mitigación observada: ' + literal(f['evidence'].get('mitigation') or 'no resuelta'),
                       '- Verificación: ' + literal(json.dumps(f['verification'], ensure_ascii=False)),
                       '- Impacto: ' + literal(f['impact']), '- Remediación: ' + literal(f['remediation'])]
     lines += ['', '## 10. Plan priorizado de remediación', '',

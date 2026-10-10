@@ -1,5 +1,6 @@
 """Limited static triage; results are candidates, never exploit confirmation."""
 import ast
+import hashlib
 from collections import Counter
 from datetime import datetime, timezone
 import json
@@ -7,6 +8,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import time
 
 from .safeio import no_links, read_bounded, repository_files
 from .scanners import capabilities
@@ -138,9 +140,17 @@ def python_candidates(text, name, limitations):
     return findings
 
 
-def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_000_000):
-    if min(max_file_bytes, max_files, max_total_bytes) <= 0:
+def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_000_000,
+            mode='QUICK', max_depth=64, max_seconds=30, max_memory_bytes=128_000_000,
+            max_findings=10000, max_ast_nodes=50000, max_call_depth=4):
+    from .contextual import analyze_python
+    from .verification import enrich_candidate
+    if mode not in ('QUICK', 'STANDARD', 'DEEP'):
+        raise ValueError('Modo inválido')
+    if min(max_file_bytes, max_files, max_total_bytes, max_seconds, max_memory_bytes,
+           max_findings, max_ast_nodes, max_call_depth) <= 0 or max_depth < 0:
         raise ValueError('Los límites deben ser positivos')
+    deadline = time.perf_counter() + max_seconds
     root = no_links(root)
     limitations = ['Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories',
                    'Historial Git, archivos binarios y directorios generados no analizados',
@@ -148,7 +158,11 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                    'Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado']
     languages = Counter(); files = []; manifests = []; signals = []; findings = []
     total = read_count = 0; types = set(); frameworks = set(); ast_executed = False
-    for path in repository_files(root, limitations, max_files=max_files):
+    for path in repository_files(root, limitations, max_files=max_files, max_depth=max_depth, deadline=deadline):
+        if time.perf_counter() > deadline:
+            limitations.append('Límite de tiempo alcanzado; archivos restantes sin analizar'); break
+        if len(findings) >= max_findings:
+            limitations.append('Límite de hallazgos alcanzado; archivos restantes sin analizar'); break
         name = path.relative_to(root).as_posix(); files.append(name)
         if path.suffix.lower() in LANGUAGES: languages[LANGUAGES[path.suffix.lower()]] += 1
         if path.name in MANIFESTS: manifests.append(name)
@@ -169,7 +183,9 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                                       'Patrón de credencial; validez y exposición pendientes',
                                       'Verificar exposición; revocar si procede y mover a gestión de secretos', 'low'))
         if path.suffix == '.py':
-            findings.extend(python_candidates(text, name, limitations)); ast_executed = True
+            findings.extend(analyze_python(text, name, limitations, mode=mode,
+                max_nodes=max_ast_nodes, max_memory_bytes=max_memory_bytes,
+                max_call_depth=max_call_depth, deadline=deadline)); ast_executed = True
         if path.suffix in ('.js', '.jsx', '.ts', '.tsx', '.html', '.astro'):
             for m in re.finditer(r'dangerouslySetInnerHTML|\.innerHTML\s*=', text):
                 findings.append(candidate(name, text.count('\n', 0, m.start()) + 1,
@@ -193,12 +209,19 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
         if path.suffix in ('.sh', '.ps1') or 'argparse' in text:
             types.add('cli'); signals.append({'file': name, 'kind': 'cli_candidate'})
     findings.sort(key=lambda f: (f['location']['file'], f['location']['line_start'], f['cwe']))
+    if len(findings) > max_findings:
+        limitations.append('Límite de hallazgos alcanzado; resultados truncados')
+        findings = findings[:max_findings]
     commit = commit_id(root)
-    for index, finding in enumerate(findings, 1):
-        finding['id'] = f'SAA-{index:04d}'; finding['commit'] = commit
+    for finding in findings:
+        if 'status' not in finding: enrich_candidate(finding)
+        identity = (finding['location']['file'], finding['location']['function'],
+                    finding['location']['line_start'], finding.get('category'), finding['cwe'])
+        finding['id'] = 'SAA-' + str(int.from_bytes(hashlib.sha256(repr(identity).encode()).digest()[:12], 'big'))
+        finding['commit'] = commit
     coverage = []
     for phase, title in enumerate(PHASE_TITLES, 1):
-        partial = phase in (1, 7, 8, 14, 16, 17, 19)
+        partial = phase in (1, 7, 8, 14, 16, 17, 19) or mode != 'QUICK' and phase in (4, 5, 11, 13)
         coverage.append({'phase': phase, 'title': title,
                          'status': 'automated_partial' if partial else 'not_evaluated',
                          'reason': 'Inventario/señales limitadas; requiere revisión del agente' if partial else
@@ -219,6 +242,15 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                   'scope': 'Archivos locales del directorio; se incluyen cambios sin commit',
                   'methodology': 'Security Advisor Auditor: 21 fases originales',
                   'coverage': coverage, 'tools': tools, 'findings': findings, 'positive_findings': [],
+                  'analysis': {'version': '2.1', 'mode': mode, 'limits': {
+                      'max_file_bytes': max_file_bytes, 'max_files': max_files,
+                      'max_total_bytes': max_total_bytes, 'max_depth': max_depth,
+                      'max_seconds': max_seconds, 'max_memory_bytes': max_memory_bytes,
+                      'max_findings': max_findings, 'max_ast_nodes': max_ast_nodes,
+                      'max_call_depth': max_call_depth},
+                      'memory_policy': 'Estimated input/AST allocation budget; not a hard RSS cap',
+                      'time_policy': 'Cooperative deadline; parsing bounded by file/node budgets',
+                      'confirmation': 'Automatic results never confirm exploitation'},
                   'limitations': limitations,
                   'references': ['https://owasp.org/www-project-application-security-verification-standard/',
                                  'https://cwe.mitre.org/']})

@@ -4,6 +4,7 @@ from pathlib import Path
 import re
 import stat
 import tempfile
+import time
 import zipfile
 
 EXCLUDED = {'.git', '.hg', '.svn', 'node_modules', '.venv', 'venv', '__pycache__',
@@ -51,7 +52,7 @@ def read_bounded(path, limit):
     return data
 
 
-def repository_files(root, limitations, max_files=10000, max_entries=50000):
+def repository_files(root, limitations, max_files=10000, max_entries=50000, max_depth=64, deadline=None):
     root = no_links(root)
     if not root.is_dir():
         raise ValueError('El objetivo debe ser un directorio')
@@ -59,11 +60,13 @@ def repository_files(root, limitations, max_files=10000, max_entries=50000):
     pending = [(root, 0)]
     while pending:
         folder, depth = pending.pop()
-        if depth > 64:
+        if depth > max_depth:
             limitations.append('Profundidad máxima alcanzada'); continue
         try:
             with os.scandir(folder) as iterator:
                 for entry in iterator:
+                    if deadline is not None and time.perf_counter() > deadline:
+                        limitations.append('Límite de tiempo durante inventario; entradas restantes no analizadas'); return
                     entries += 1
                     if entries > max_entries:
                         limitations.append('Límite de entradas alcanzado'); return
