@@ -1,0 +1,7 @@
+{
+  "hermes": {"home_parts": [".hermes", "skills"], "source": "https://hermes-agent.nousresearch.com/docs/user-guide/features/skills/", "activation": "hermes skills list / skill_view(name)", "runtime_verified": false},
+  "openclaw": {"home_parts": [".openclaw", "skills"], "source": "https://docs.openclaw.ai/tools/skills", "activation": "openclaw skills list / petición por nombre", "runtime_verified": false},
+  "opencode": {"home_parts": [".config", "opencode", "skills"], "source": "https://opencode.ai/docs/skills/", "activation": "skill({name: security-advisor-auditor})", "runtime_verified": false},
+  "codex": {"home_parts": [".agents", "skills"], "source": "https://developers.openai.com/codex/skills/", "activation": "$security-advisor-auditor", "runtime_verified": false},
+  "claude": {"home_parts": [".claude", "skills"], "source": "https://code.claude.com/docs/en/skills", "activation": "/security-advisor-auditor", "runtime_verified": false}
+}
