@@ -12,6 +12,7 @@ from security_auditor.reporting import write_outputs
 from security_auditor.safeio import extract_zip, read_bounded
 from security_auditor.scanners import plans
 from security_auditor.validation import validate_skill
+from security_auditor.sources import project_source
 
 
 def main(argv=None):
@@ -34,7 +35,9 @@ def main(argv=None):
             data = analyze(args.repository, args.max_file_bytes, args.max_files, args.max_total_bytes)
             write_outputs(data, args.output, args.repository)
             print('Informe generado; candidatos pendientes de verificación: ' + str(len(data['findings'])))
-        elif args.command == 'validate-skill': print(json.dumps(validate_skill(args.skill), ensure_ascii=False))
+        elif args.command == 'validate-skill':
+            with project_source(args.skill) as root:
+                print(json.dumps(validate_skill(root), ensure_ascii=False))
         elif args.command == 'tools': print(json.dumps(plans(), ensure_ascii=False, indent=2))
         elif args.command == 'extract-zip':
             extract_zip(args.archive, args.output); print('Extracción completada en destino nuevo')

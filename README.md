@@ -1,4 +1,4 @@
-# Security Advisor Auditor v2.0 Universal
+# Security Advisor Auditor v2.0.1 Universal
 
 Skill especializada para auditar **cualquier software** con evidencias y
 remediación incremental. Preserva íntegramente las **21 fases** originales para
@@ -64,6 +64,51 @@ python install.py --agent opencode
 python install.py --agent codex
 python install.py --agent claude
 ```
+
+GitHub normalmente añade la rama al ZIP y a su carpeta envolvente:
+`security-advisor-auditor-main.zip` → `security-advisor-auditor-main/`.
+**No hay que renombrar la carpeta.** La fuente se identifica mediante `SKILL.md`,
+su identidad en los metadatos, `references/audit-methodology.md` y la integridad
+del texto original. También acepta sufijos de versión y otros nombres.
+La carpeta **instalada** conserva el nombre estándar `security-advisor-auditor`.
+
+Tras revisar el origen y contenido del ZIP, desde la carpeta extraída:
+
+```text
+python install.py --agent hermes --dry-run
+python scripts/audit.py validate-skill .
+python install.py --agent hermes
+```
+
+Desde su directorio padre:
+
+```text
+python security-advisor-auditor-main/install.py --agent hermes --dry-run
+python security-advisor-auditor-main/scripts/audit.py validate-skill .
+python security-advisor-auditor-main/install.py --agent hermes
+```
+
+Para una fuente sin ejecutar su instalador, usar **este instalador de confianza**
+y `--source`. Admite carpeta, padre con una única raíz o ZIP de cualquier nombre:
+
+```text
+python install.py --agent hermes --source /ruta/security-advisor-auditor-main.zip --dry-run
+python install.py --agent hermes --source /ruta/security-advisor-auditor-main.zip
+python install.py --agent opencode --source /ruta/carpeta-padre --skills-dir /ruta/skills --dry-run
+python scripts/audit.py validate-skill /ruta/security-advisor-auditor-main.zip
+```
+
+La extracción es temporal y conserva los controles ZIP. Incluso `--dry-run`
+puede extraer una fuente ZIP en un temporal que se limpia; no escribe en el destino.
+Se rechazan cero o varias raíces, identidad incorrecta, metodología alterada,
+enlaces/reparse, traversal y límites excedidos. No importa ni ejecuta código de
+la fuente indicada por `--source`; copiar código no acredita su autenticidad.
+No mezclar copias válidas bajo un mismo padre para la autodetección.
+
+La integridad documental compara el **texto completo** original mediante SHA256
+canónico UTF-8 sin BOM y con CRLF normalizado a LF. No elimina espacios, secciones
+ni diferencias Unicode. No basta con encontrar 21 encabezados. Comparación con
+Git y explicación de ambos hashes: [correcciones](docs/corrections-2.0.1.md).
 
 Se copia el paquete completo. No instala el cliente ni cambia sus configuraciones.
 El resultado muestra OS, destino, número de archivos e integridad real.
@@ -156,7 +201,8 @@ la comprobación de enlaces no elimina carreras con cambios concurrentes hostile
 Ver [controles](references/ethical-security.md) y [evidencia](references/evidence-policy.md).
 
 - **Verificado localmente:** CLI, formato portable, reportes, redacción sintética,
-  rutas y ciclo de archivos de los cinco perfiles. Resultados en [entrega](docs/delivery.md).
+  rutas y ciclo de archivos de los cinco perfiles. Resultados originales en
+  [entrega v2.0](docs/delivery.md) y actuales en [correcciones v2.0.1](docs/corrections-2.0.1.md).
 - **Experimental:** AST/regex e inferencia de frameworks/superficies; sin análisis
   semántico/interprocedural completo ni advisories transitivos.
 - **No probado:** activación real de clientes, Linux/macOS, scanners ejecutados,

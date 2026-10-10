@@ -9,12 +9,14 @@ import platform
 import re
 import sys
 import tempfile
+import zipfile
 
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / 'scripts'))
 from security_auditor.safeio import no_links, read_bounded, relative_name, remove_owned_tree
 from security_auditor.validation import validate_skill
+from security_auditor.sources import find_project_root, project_source
 
 NAME = 'security-advisor-auditor'
 MANIFEST = '.saa-install.json'
@@ -23,13 +25,13 @@ DIRECTORIES = {'scripts', 'references', 'modules', 'agents', 'assets', 'schemas'
 FILES = {'SKILL.md', 'README.md', 'LICENSE', 'CHANGELOG.md', 'install.py'}
 
 
-def payload():
-    validate_skill(ROOT)
+def payload(source=None):
+    source = find_project_root(source or ROOT)
     result = {}
     for name in sorted(FILES):
-        result[name] = read_bounded(ROOT / name, 2_000_000)
+        result[name] = read_bounded(source / name, 2_000_000)
     for dirname in sorted(DIRECTORIES):
-        base = no_links(ROOT / dirname)
+        base = no_links(source / dirname)
         if not base.is_dir(): continue
         for folder, dirs, files in os.walk(base, followlinks=False):
             for name in dirs + files: no_links(Path(folder) / name)
@@ -37,7 +39,7 @@ def payload():
             for name in sorted(files):
                 if name.endswith(('.pyc', '.pyo')): continue
                 path = Path(folder) / name
-                relative = path.relative_to(ROOT).as_posix()
+                relative = path.relative_to(source).as_posix()
                 relative_name(relative)
                 result[relative] = read_bounded(path, 2_000_000)
     if len(result) > 1000 or sum(map(len, result.values())) > 20_000_000:
@@ -84,18 +86,23 @@ def installed_manifest(destination, agent):
     return data
 
 
-def operate(agent, skills_dir, dry_run=False, uninstall=False, update=False):
+def operate(agent, skills_dir, dry_run=False, uninstall=False, update=False, source=None):
+    with project_source(source or ROOT) as root:
+        return _operate(agent, skills_dir, dry_run, uninstall, update, root)
+
+
+def _operate(agent, skills_dir, dry_run, uninstall, update, source):
     directory = no_links(skills_dir)
     destination = directory / NAME
     no_links(destination)
-    if destination.resolve() == ROOT or destination.resolve().is_relative_to(ROOT):
+    if any(destination.is_relative_to(p) or p.is_relative_to(destination) for p in (ROOT, source)):
         raise ValueError('No instalar sobre/dentro del paquete fuente')
     exists = os.path.lexists(destination)
     if uninstall or update:
         if not exists: raise ValueError('No hay instalación para actualizar/desinstalar')
         installed_manifest(destination, agent)
     elif exists: raise ValueError('Destino existente; usa --update para instalación administrada intacta')
-    contents = None if uninstall else payload()
+    contents = None if uninstall else payload(source)
     if dry_run: return {'status': 'dry_run', 'destination': str(destination), 'agent': agent,
                          'operation': 'uninstall' if uninstall else 'update' if update else 'install'}
     if uninstall:
@@ -112,7 +119,7 @@ def operate(agent, skills_dir, dry_run=False, uninstall=False, update=False):
             with target.open('xb') as out: out.write(content)
             hashes[name] = hashlib.sha256(read_bounded(target, 2_000_000)).hexdigest()
             if hashes[name] != hashlib.sha256(content).hexdigest(): raise ValueError('Integridad de copia fallida')
-        manifest = {'format': 1, 'name': NAME, 'agent': agent, 'version': '2.0.0', 'files': hashes}
+        manifest = {'format': 1, 'name': NAME, 'agent': agent, 'version': '2.0.1', 'files': hashes}
         (staging / MANIFEST).write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
         if update:
             installed_manifest(destination, agent)
@@ -138,16 +145,17 @@ def main(argv=None):
     parser.add_argument('--agent', required=True, choices=sorted(profiles))
     parser.add_argument('--skills-dir', type=Path, help='Directorio padre de skills explícito (no carpeta de la skill)')
     parser.add_argument('--dry-run', action='store_true')
+    parser.add_argument('--source', type=Path, help='Carpeta fuente, padre con raíz única o ZIP; no ejecuta su código')
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument('--uninstall', action='store_true'); mode.add_argument('--update', action='store_true')
     args = parser.parse_args(argv)
     directory = args.skills_dir or Path.home().joinpath(*profiles[args.agent]['home_parts'])
     try:
-        result = operate(args.agent, directory, args.dry_run, args.uninstall, args.update)
+        result = operate(args.agent, directory, args.dry_run, args.uninstall, args.update, args.source)
         result['os'] = platform.system(); result['python'] = platform.python_version()
         print(json.dumps(result, ensure_ascii=False, indent=2)); return 0
-    except (OSError, ValueError, TypeError, KeyError):
-        print('Instalación rechazada: comprueba destino, enlaces, manifest y cambios locales. No se fuerza sobrescritura.', file=sys.stderr)
+    except (OSError, ValueError, RuntimeError, TypeError, KeyError, zipfile.BadZipFile):
+        print('Instalación rechazada: comprueba raíz única, identidad, integridad documental, destino, enlaces y cambios locales. No se fuerza sobrescritura.', file=sys.stderr)
         return 2
 
 

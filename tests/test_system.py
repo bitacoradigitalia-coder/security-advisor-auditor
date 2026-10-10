@@ -64,8 +64,9 @@ class SystemTests(unittest.TestCase):
             self.assertEqual(len(data['findings']), 1)
 
     def test_methodology_preserved(self):
-        self.assertEqual(hashlib.sha256((ROOT / 'references/audit-methodology.md').read_bytes()).hexdigest(),
-                         '0e3076fc257a0d37e388db7af901d45bb6cd83dc5fa3d5dc5d411cd46c73c95d')
+        from security_auditor.integrity import verify_methodology
+        self.assertEqual(verify_methodology(ROOT / 'references/audit-methodology.md')['canonical_sha256'],
+                         '904d385ea10a960b5b0b383b99471fc3250c0f753ef63a3d5a36f86ebeed928a')
 
     def test_scan_redacts_and_does_not_execute_instructions(self):
         with tempfile.TemporaryDirectory() as td:

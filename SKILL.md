@@ -4,7 +4,7 @@ description: "Auditar y asesorar sobre seguridad de cualquier tipo de software: 
 license: MIT
 compatibility: La revisión requiere acceso de lectura al objetivo. Herramientas locales opcionales requieren Python 3.10 o posterior. Sin red ni scanners obligatorios; adaptar comandos y permisos al agente anfitrión.
 metadata:
-  version: "2.0.0"
+  version: "2.0.1"
 ---
 
 # Asesor y Auditor de Seguridad
