@@ -9,3 +9,8 @@ No inferir acceso público por nombre de ruta. Distinguir middleware global,
 autorización de función y de objeto. Usar pares de usuarios/tenants sintéticos
 en sandbox autorizado para regresión; no llamar servicios públicos de forma
 automática. Fuente: [OWASP API Security](https://owasp.org/www-project-api-security/).
+
+
+Ampliación v2.1: consultar docs/architecture.md, docs/coverage.md y docs/evaluation.md.
+Los estados contextuales conservan evidencia y motivos; explotación confirmada
+requiere una prueba autorizada ejecutada, separada de confirmación estática.

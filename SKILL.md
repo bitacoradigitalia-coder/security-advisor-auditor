@@ -4,7 +4,7 @@ description: "Auditar y asesorar sobre seguridad de cualquier tipo de software: 
 license: MIT
 compatibility: La revisión requiere acceso de lectura al objetivo. Herramientas locales opcionales requieren Python 3.10 o posterior. Sin red ni scanners obligatorios; adaptar comandos y permisos al agente anfitrión.
 metadata:
-  version: "2.0.1"
+  version: "2.1.0"
 ---
 
 # Asesor y Auditor de Seguridad
@@ -111,3 +111,31 @@ estructurados y [knowledge-index.md](references/knowledge-index.md) para fuentes
 locales ampliables. Ver [platform-compatibility.md](references/platform-compatibility.md)
 para rutas, descubrimiento, restricciones y estado de verificación por cliente.
 Ningún adaptador concede permisos ni garantiza herramientas del anfitrión.
+
+
+## v2.1 — Inteligencia y precisión
+
+Elegir profundidad explícitamente: QUICK conserva el triaje prioritario;
+STANDARD añade contexto/flujo Python y observaciones de autorización;
+DEEP correlaciona llamadas locales directas acotadas. El modo predeterminado
+sigue siendo QUICK por compatibilidad.
+
+```text
+python scripts/audit.py scan /ruta/objetivo --output /ruta/informe-nuevo --mode STANDARD
+python scripts/audit.py scan /ruta/objetivo --output /ruta/informe-profundo --mode DEEP
+```
+
+Distinguir `CANDIDATE` (operación sospechosa), `PROBABLE` (contexto inseguro),
+`CONFIRMED` (debilidad demostrada y revisada), `FALSE_POSITIVE` (hipótesis
+invalidada localmente) y `NOT_VERIFIED` (información insuficiente). Explotación
+confirmada es un campo independiente: exige consecuencia reproducida, resultado,
+autorización y aislamiento. No confirmar por confianza ni por una coincidencia.
+No sobrescribir silenciosamente estados/evidencias; registrar transiciones con
+motivo. Las mitigaciones invalidan solo la hipótesis concreta, no prueban seguridad
+global. No considerar segura una función por llamarse validate/sanitize/escape.
+
+Consultar [architecture.md](docs/architecture.md), [coverage.md](docs/coverage.md)
+y [evaluation.md](docs/evaluation.md). El agente revisa middleware, roles,
+políticas, sesiones, tenancy y exposición que el motor no puede resolver.
+JS/TS conserva patrones de triaje; no atribuir AST/taint sin un parser real.
+Sin llamadas automáticas a IA ni exposición de repositorios privados.

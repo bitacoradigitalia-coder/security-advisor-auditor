@@ -26,3 +26,8 @@ No asignar CVE propio. El esquema base no admite CVE/CVSS: adjuntar advisories
 oficiales y evaluaciones justificadas como referencias, verificadas con fecha.
 Nunca afirmar ausencia de vulnerabilidades a partir de cero coincidencias.
 No arrastrar hallazgos entre versiones sin verificarlos de nuevo.
+
+
+Ampliación v2.1: consultar docs/architecture.md, docs/coverage.md y docs/evaluation.md.
+Los estados contextuales conservan evidencia y motivos; explotación confirmada
+requiere una prueba autorizada ejecutada, separada de confirmación estática.

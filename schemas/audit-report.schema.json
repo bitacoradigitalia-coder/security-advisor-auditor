@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Security Advisor Auditor report v2",
+  "title": "Security Advisor Auditor report v2.0 with optional v2.1 evidence extensions",
   "type": "object",
   "required": [
     "schema_version",
@@ -159,6 +159,42 @@
       "items": {
         "type": "string"
       }
+    },
+    "analysis": {
+      "type": "object",
+      "required": [
+        "version",
+        "mode",
+        "limits",
+        "memory_policy",
+        "time_policy",
+        "confirmation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "2.1"
+        },
+        "mode": {
+          "enum": [
+            "QUICK",
+            "STANDARD",
+            "DEEP"
+          ]
+        },
+        "limits": {
+          "type": "object"
+        },
+        "memory_policy": {
+          "type": "string"
+        },
+        "time_policy": {
+          "type": "string"
+        },
+        "confirmation": {
+          "type": "string"
+        }
+      }
     }
   },
   "$defs": {
@@ -294,6 +330,42 @@
             "summary": {
               "type": "string",
               "minLength": 1
+            },
+            "source": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sink": {
+              "type": "string"
+            },
+            "trace": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mitigation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "context": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "snippet": {
+              "type": "string"
             }
           },
           "additionalProperties": false
@@ -330,6 +402,72 @@
             "test_result": {
               "type": "string",
               "minLength": 1
+            },
+            "method": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exploitation": {
+              "enum": [
+                "not_tested",
+                "confirmed"
+              ]
+            },
+            "reproduction": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authorization": {
+              "type": "string",
+              "minLength": 1
+            },
+            "isolation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "from",
+                  "to",
+                  "reason"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "from": {
+                    "enum": [
+                      "CANDIDATE",
+                      "PROBABLE",
+                      "CONFIRMED",
+                      "FALSE_POSITIVE",
+                      "NOT_VERIFIED"
+                    ]
+                  },
+                  "to": {
+                    "enum": [
+                      "CANDIDATE",
+                      "PROBABLE",
+                      "CONFIRMED",
+                      "FALSE_POSITIVE",
+                      "NOT_VERIFIED"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
             }
           },
           "additionalProperties": false
@@ -354,6 +492,27 @@
             "null"
           ],
           "pattern": "^[a-f0-9]{40,64}$"
+        },
+        "status": {
+          "enum": [
+            "CANDIDATE",
+            "PROBABLE",
+            "CONFIRMED",
+            "FALSE_POSITIVE",
+            "NOT_VERIFIED"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "analyzer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regression_test": {
+          "type": "string",
+          "minLength": 1
         }
       },
       "allOf": [
@@ -417,6 +576,74 @@
                 "properties": {
                   "executed": {
                     "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "CONFIRMED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "confirmed_vulnerability"
+              },
+              "verification": {
+                "required": [
+                  "reviewer",
+                  "reachability",
+                  "control_violation",
+                  "reproduction"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification": {
+                "required": [
+                  "exploitation"
+                ],
+                "properties": {
+                  "exploitation": {
+                    "const": "confirmed"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "CONFIRMED"
+              },
+              "verification": {
+                "required": [
+                  "authorization",
+                  "isolation",
+                  "test_result"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "local_test"
+                  },
+                  "executed": {
+                    "const": true
                   }
                 }
               }

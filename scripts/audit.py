@@ -8,7 +8,7 @@ import zipfile
 
 sys.dont_write_bytecode = True
 from security_auditor.engine import analyze
-from security_auditor.reporting import write_outputs
+from security_auditor.reporting import write_outputs, legacy_report
 from security_auditor.safeio import extract_zip, read_bounded
 from security_auditor.scanners import plans
 from security_auditor.validation import validate_skill
@@ -27,10 +27,11 @@ def main(argv=None):
     scan.add_argument('--max-depth', type=int, default=64)
     scan.add_argument('--max-seconds', type=float, default=30)
     scan.add_argument('--max-memory-bytes', type=int, default=128_000_000,
-                      help='Presupuesto estimado de asignaciones AST; no límite físico RSS')
+                      help='Límite de memoria del subproceso parser y presupuesto estimado AST')
     scan.add_argument('--max-findings', type=int, default=10000)
     scan.add_argument('--max-ast-nodes', type=int, default=50000)
     scan.add_argument('--max-call-depth', type=int, default=4)
+    scan.add_argument('--legacy-report', action='store_true', help='Exportar únicamente campos del contrato v2.0')
     validate = commands.add_parser('validate-skill'); validate.add_argument('skill', type=Path)
     report = commands.add_parser('report', help='Validar y convertir audit.json revisado')
     report.add_argument('json_file', type=Path); report.add_argument('--output', type=Path, required=True)
@@ -44,6 +45,7 @@ def main(argv=None):
                 mode=args.mode, max_depth=args.max_depth, max_seconds=args.max_seconds,
                 max_memory_bytes=args.max_memory_bytes, max_findings=args.max_findings,
                 max_ast_nodes=args.max_ast_nodes, max_call_depth=args.max_call_depth)
+            if args.legacy_report: data = legacy_report(data)
             write_outputs(data, args.output, args.repository)
             print('Informe generado; observaciones registradas: ' + str(len(data['findings'])))
         elif args.command == 'validate-skill':

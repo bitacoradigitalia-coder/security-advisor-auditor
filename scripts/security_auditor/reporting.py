@@ -177,3 +177,18 @@ def write_outputs(data, destination, target=None):
     finally:
         if staging.exists(): remove_owned_tree(staging)
     return destination
+
+
+def legacy_report(data):
+    """Explicit export for strict v2.0 schemas; never mutates the enriched input."""
+    import copy
+    result = copy.deepcopy(data)
+    result.pop('analysis', None)
+    evidence_fields = {'kind', 'summary'}
+    verification_fields = {'status', 'executed', 'reviewer', 'reachability', 'control_violation', 'test_result'}
+    for f in result['findings']:
+        for key in ('status', 'category', 'analyzer', 'regression_test'): f.pop(key, None)
+        f['evidence'] = {k:v for k,v in f['evidence'].items() if k in evidence_fields}
+        f['verification'] = {k:v for k,v in f['verification'].items() if k in verification_fields}
+    validate_report(result)
+    return result

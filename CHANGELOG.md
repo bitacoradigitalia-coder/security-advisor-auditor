@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.0 — 2026-10-11
+
+- AST/flujo Python con fuentes, propagación, guards y mitigaciones por contexto.
+- Estados comprobables, trazas y distinción debilidad/explotación confirmada.
+- Autorización Flask/Flask-Login y formas de consulta propietario/tenant; JWT acotado.
+- QUICK/STANDARD/DEEP, parser en subproceso con límites de tiempo/memoria.
+- Esquema con extensiones opcionales y exportación --legacy-report.
+- Fixtures, baseline v2.0.1 congelado, evaluación por categoría y regresiones.
+- Metodología íntegra, instalador, cinco perfiles y controles previos preservados.
+- Límites y evidencias reales en docs/architecture.md, coverage.md y evaluation.md.
+
 ## 2.0.1 — 2026-10-10
 
 - Corregida identificación de fuentes descargadas: carpeta de cualquier nombre,

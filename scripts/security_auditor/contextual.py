@@ -7,6 +7,7 @@ from .dataflow import Value, merge, join_environments
 from .verification import enrich_candidate, transition
 
 RULES = {
+    'jwt-signature': ('Firma JWT desactivada explícitamente', 'CWE-347', 3, 'Verificar firma, algoritmos permitidos, emisor y audiencia según política'),
     'code-injection': ('Evaluación dinámica contextual', 'CWE-95', 8, 'Sustituir evaluación por operaciones explícitas'),
     'sql-injection': ('Consulta SQL contextual', 'CWE-89', 8, 'Usar parámetros y listas permitidas para identificadores'),
     'command-injection': ('Comando interpretado por shell', 'CWE-78', 8, 'Usar argumentos separados sin shell y validar valores'),
@@ -45,6 +46,7 @@ class Analyzer:
                 for a in n.names: self.aliases[a.asname or a.name.split('.')[0]] = a.name if a.asname else a.name.split('.')[0]
             elif isinstance(n, ast.ImportFrom):
                 for a in n.names: self.aliases[a.asname or a.name] = (n.module or '') + '.' + a.name
+        for name in self.functions: self.aliases.pop(name, None)
         for n in tree.body:
             if isinstance(n, ast.Assign) and isinstance(n.value, ast.Call) and self.resolve(n.value.func) in ('flask.Flask', 'flask.Blueprint'):
                 self.receivers.update(t.id for t in n.targets if isinstance(t, ast.Name))
@@ -203,10 +205,18 @@ class Analyzer:
         if category and (self.mode != 'QUICK' or category == 'code-injection' or
                 category == 'command-injection' and (func in ('os.system', 'os.popen') or kw.get('shell', Value()).literals == (True,))):
             self.finding(node, category, value, mitigation=mitigation)
+        if self.mode != 'QUICK' and func == 'jwt.decode':
+            for keyword in node.keywords:
+                if keyword.arg == 'options' and isinstance(keyword.value, ast.Dict):
+                    disabled = any(isinstance(k, ast.Constant) and k.value == 'verify_signature' and
+                        isinstance(v, ast.Constant) and v.value is False for k,v in zip(keyword.value.keys, keyword.value.values))
+                    if disabled:
+                        self.finding(node, 'jwt-signature', value, context={'verify_signature': False,
+                            'pending': 'Comprobar uso de claims como identidad y si existe verificación externa'})
         if self.mode != 'QUICK' and self.model.get('route') and query_call(node):
-            scope = query_scope(node, self.aliases)
+            scope = query_scope(node, {k:v for k,v in self.aliases.items() if k not in self.env})
             control_unknown = self.model.get('unresolved') or self.external_policy
-            self.finding(node, 'resource-authorization', merge(*args, *kw.values()),
+            self.finding(node, 'resource-authorization', merge(self.value(node.func.value), *args, *kw.values()),
                 mitigation=scope, unresolved='Decorador/middleware externo o política no resuelta' if control_unknown and not scope else None,
                 context={'authentication': self.model.get('authentication', False),
                          'action': dotted(node.func).rsplit('.', 1)[-1], 'policy': scope or 'no observada en la función'})
@@ -270,33 +280,43 @@ class Analyzer:
         for index, n in enumerate(body):
             self.check_time()
             if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)): continue
-            if isinstance(n, (ast.Import, ast.ImportFrom)): continue
+            if isinstance(n, ast.Import):
+                for a in n.names: self.aliases[a.asname or a.name.split('.')[0]] = a.name if a.asname else a.name.split('.')[0]
+                continue
+            if isinstance(n, ast.ImportFrom):
+                for a in n.names: self.aliases[a.asname or a.name] = (n.module or '') + '.' + a.name
+                continue
             if isinstance(n, ast.Assign):
                 v = self.value(n.value)
                 for target in n.targets:
                     if isinstance(target, ast.Name):
                         self.env[target.id] = v.step(target.id)
+                        self.aliases.pop(target.id, None)
                         resource_assignments.pop(target.id, None)
                         if isinstance(n.value, ast.Call) and query_call(n.value):
                             resource_assignments[target.id] = (index, self.emitted.get((n.value.lineno, 'resource-authorization', self.function.name if self.function else '')))
             elif isinstance(n, ast.AnnAssign):
                 v = self.value(n.value)
-                if isinstance(n.target, ast.Name): self.env[n.target.id] = v.step(n.target.id)
+                if isinstance(n.target, ast.Name):
+                    self.env[n.target.id] = v.step(n.target.id)
+                    self.aliases.pop(n.target.id, None)
             elif isinstance(n, ast.AugAssign):
                 if isinstance(n.target, ast.Name): self.env[n.target.id] = merge(self.env.get(n.target.id, Value(unknown=True)), self.value(n.value)).step(n.target.id)
             elif isinstance(n, ast.If):
                 self.value(n.test)
                 original = dict(self.env); then = dict(original); other = dict(original)
                 self.refine(n.test, then, True); self.refine(n.test, other, False)
-                self.env = then; self.block(n.body); then = self.env
-                self.env = other; self.block(n.orelse); other = self.env
+                self.env = then; then_return = self.block(n.body); then = self.env
+                self.env = other; other_return = self.block(n.orelse); other = self.env
+                if any(isinstance(x, ast.Return) for stmt in n.body for x in ast.walk(stmt)): returns.append(then_return)
+                if any(isinstance(x, ast.Return) for stmt in n.orelse for x in ast.walk(stmt)): returns.append(other_return)
                 stop_then = denied(n.body, self.aliases) or any(isinstance(x, ast.Return) for x in n.body)
                 stop_other = denied(n.orelse, self.aliases) or any(isinstance(x, ast.Return) for x in n.orelse)
                 self.env = other if stop_then and not stop_other else then if stop_other and not stop_then else join_environments(then, other)
                 owner = owner_guard(n.test, self.aliases)
                 resource = resource_assignments.get(owner)
                 f = resource[1] if resource and resource[0] == index - 1 else None
-                if f and denied(n.body, self.aliases) and f['status'] == 'PROBABLE' and not self.model.get('unresolved') and not self.external_policy:
+                if f and not self.opaque_flow and denied(n.body, self.aliases) and f['status'] == 'PROBABLE' and not self.model.get('unresolved') and not self.external_policy:
                     f['evidence']['mitigation'] = 'Rechazo dominante si propietario/tenant difiere de la identidad Flask-Login'
                     transition(f, 'FALSE_POSITIVE', f['evidence']['mitigation'])
             elif isinstance(n, ast.Return):
@@ -323,16 +343,17 @@ class Analyzer:
         return merge(*returns) if returns else Value(unknown=True)
 
     def run_function(self, function, env, model):
-        previous = (self.function, self.env, self.model)
+        previous = (self.function, self.env, self.model, dict(self.aliases))
         # Global reads are modeled from module assignments, but local names hide globals
         # even before their first assignment (Python lexical scope).
         local_names = {n.id for n in ast.walk(function) if isinstance(n, ast.Name) and isinstance(n.ctx, ast.Store)}
         inherited = {k: v for k, v in self.globals.items() if k not in local_names}
+        for name in local_names | set(env): self.aliases.pop(name, None)
         self.function, self.env, self.model = function, {**inherited, **env}, model
         self.call_stack.append(function.name)
         try: return self.block(function.body)
         finally:
-            self.call_stack.pop(); self.function, self.env, self.model = previous
+            self.call_stack.pop(); self.function, self.env, self.model, self.aliases = previous
 
     def run(self):
         self.block(self.tree.body)

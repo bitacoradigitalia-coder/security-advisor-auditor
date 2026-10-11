@@ -25,3 +25,8 @@ cambio, límites de alcance, preservar comportamiento/tenancy y regresión. Los
 comandos de tests/typecheck/lint/build deben existir y revisarse antes de ejecutar;
 el motor no ejecuta scripts encontrados en manifests ni los presenta como seguros.
 Exportaciones PDF/DOCX quedan a herramientas independientes, no implementadas.
+
+
+Ampliación v2.1: consultar docs/architecture.md, docs/coverage.md y docs/evaluation.md.
+Los estados contextuales conservan evidencia y motivos; explotación confirmada
+requiere una prueba autorizada ejecutada, separada de confirmación estática.

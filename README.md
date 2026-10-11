@@ -1,4 +1,4 @@
-# Security Advisor Auditor v2.0.1 Universal
+# Security Advisor Auditor v2.1 — Inteligencia y precisión
 
 Skill especializada para auditar **cualquier software** con evidencias y
 remediación incremental. Preserva íntegramente las **21 fases** originales para
@@ -6,7 +6,8 @@ web, SaaS, APIs, backend, móviles, escritorio, CLI, bibliotecas, automatizacion
 CI/CD e infraestructura. Licencia MIT.
 
 Combina la revisión contextual del agente con un helper local de **triaje estático**.
-Sus coincidencias son candidatos, pueden tener falsos positivos y omisiones.
+QUICK conserva candidatos sintácticos. STANDARD/DEEP añaden contexto Python,
+trazas y estados conservadores; pueden tener falsos positivos y omisiones.
 Cero coincidencias no demuestra seguridad. La revisión conserva arquitectura,
 auth/authz, tenancy, lógica de negocio, concurrencia, privacidad y asesoría.
 
@@ -14,7 +15,9 @@ auth/authz, tenancy, lógica de negocio, concurrencia, privacidad y asesoría.
 
 - Skill Agent Skills con referencias progresivas y seis guías por dominio.
 - Inventario de lenguajes, manifests, frameworks y posibles superficies de ataque.
-- AST Python: eval/exec, shell, pickle y TLS desactivado; aliases simples.
+- AST Python: contexto, propagación y llamadas locales acotadas; eval/exec, SQL,
+  comandos, rutas, SSRF, plantillas, HTML marcado seguro y firma JWT desactivada.
+  Conserva pickle y TLS; cobertura acotada descrita en docs/coverage.md.
 - Heurísticas de credenciales embebidas y HTML dinámico JS/TS.
 - ID, CWE, archivo/líneas, commit, fase, tipo, confianza, severidad justificada,
   impacto, precondiciones, evidencia y estado de verificación.
@@ -226,3 +229,33 @@ Actualizar perfiles frente a documentación oficial y guardar pruebas reales.
 
 Contribuciones: unittest, validate-skill y revisión de diff; documentar alcance
 y limitaciones. Los fixtures inseguros son entradas estáticas; nunca ejecutarlos.
+
+
+## Profundidad y límites v2.1
+
+```text
+python scripts/audit.py scan /ruta/repo --output /ruta/informe --mode STANDARD
+python scripts/audit.py scan /ruta/repo --output /ruta/informe-deep --mode DEEP --max-seconds 30 --max-memory-bytes 128000000 --max-findings 1000 --max-depth 32
+python scripts/audit.py scan /ruta/repo --output /ruta/informe-legacy --mode STANDARD --legacy-report
+python -B tests/evaluate_precision.py --output /ruta/evaluacion-nueva.json
+python -B -m unittest discover -s tests -v
+```
+
+QUICK es el predeterminado para conservar el flujo anterior. STANDARD usa AST,
+propagación intraprocedimental y modelos de consultas Flask. DEEP añade funciones
+locales directas sin decoradores/variádicos, con profundidad limitada. No es
+análisis interprocedimental completo. El parser corre en subproceso confiable
+con límite de tiempo y memoria: Job Object en Windows, RLIMIT_AS en POSIX.
+Si no puede imponer el límite, omite el archivo e informa del motivo.
+Esto limita recursos del parser; no es un sandbox para ejecutar el objetivo.
+También hay límites de archivos, bytes, nodos AST, profundidad y hallazgos.
+El inventario tiene plazo cooperativo; lectura local y Git tienen límites separados.
+
+`schema_version` sigue siendo 2.0 con extensiones opcionales. Consumidores
+estrictos del esquema antiguo deben actualizarlo o usar `--legacy-report`.
+Los IDs son deterministas por ubicación/regla/función y no cambian al añadir
+hallazgos en otros archivos; desplazar líneas sí cambia la identidad.
+
+Los estados y ejemplos se explican en [docs/architecture.md](docs/architecture.md),
+[docs/coverage.md](docs/coverage.md) y [docs/evaluation.md](docs/evaluation.md).
+La precisión del conjunto sintético no representa la precisión general.

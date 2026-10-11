@@ -1,6 +1,7 @@
 """Limited static triage; results are candidates, never exploit confirmation."""
 import ast
 import hashlib
+import math
 from collections import Counter
 from datetime import datetime, timezone
 import json
@@ -143,8 +144,9 @@ def python_candidates(text, name, limitations):
 def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_000_000,
             mode='QUICK', max_depth=64, max_seconds=30, max_memory_bytes=128_000_000,
             max_findings=10000, max_ast_nodes=50000, max_call_depth=4):
-    from .contextual import analyze_python
+    from .isolation import isolated_python
     from .verification import enrich_candidate
+    if not math.isfinite(max_seconds): raise ValueError('Tiempo no finito')
     if mode not in ('QUICK', 'STANDARD', 'DEEP'):
         raise ValueError('Modo inválido')
     if min(max_file_bytes, max_files, max_total_bytes, max_seconds, max_memory_bytes,
@@ -157,7 +159,7 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                    'Prompt injection: contenido leído como datos; comportamiento de modelos no probado',
                    'Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado']
     languages = Counter(); files = []; manifests = []; signals = []; findings = []
-    total = read_count = 0; types = set(); frameworks = set(); ast_executed = False
+    total = read_count = 0; types = set(); frameworks = set(); ast_executed = False; ast_attempted = False
     for path in repository_files(root, limitations, max_files=max_files, max_depth=max_depth, deadline=deadline):
         if time.perf_counter() > deadline:
             limitations.append('Límite de tiempo alcanzado; archivos restantes sin analizar'); break
@@ -183,9 +185,12 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                                       'Patrón de credencial; validez y exposición pendientes',
                                       'Verificar exposición; revocar si procede y mover a gestión de secretos', 'low'))
         if path.suffix == '.py':
-            findings.extend(analyze_python(text, name, limitations, mode=mode,
+            execution = {}; ast_attempted = True
+            findings.extend(isolated_python(text, name, limitations, mode=mode,
                 max_nodes=max_ast_nodes, max_memory_bytes=max_memory_bytes,
-                max_call_depth=max_call_depth, deadline=deadline)); ast_executed = True
+                max_call_depth=max_call_depth, seconds=max(0.000001, deadline - time.perf_counter()),
+                max_findings=max_findings - len(findings), execution=execution))
+            ast_executed = ast_executed or execution.get('completed', False)
         if path.suffix in ('.js', '.jsx', '.ts', '.tsx', '.html', '.astro'):
             for m in re.finditer(r'dangerouslySetInnerHTML|\.innerHTML\s*=', text):
                 findings.append(candidate(name, text.count('\n', 0, m.start()) + 1,
@@ -229,7 +234,8 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                          'finding_ids': [f['id'] for f in findings if f['phase'] == phase]})
     tools = capabilities()
     for tool in tools:
-        if tool['name'] == 'python-ast' and ast_executed: tool['status'] = 'executed'
+        if tool['name'] == 'python-ast' and ast_attempted:
+            tool['status'] = 'executed' if ast_executed else 'attempted_limited'
         if tool['name'] == 'git' and tool['status'] != 'unavailable':
             tool['status'] = 'executed' if commit else 'attempted_no_commit'
         if tool['status'] == 'unavailable': limitations.append('Herramienta opcional no disponible: ' + tool['name'])
@@ -248,8 +254,8 @@ def analyze(root, max_file_bytes=1_000_000, max_files=10000, max_total_bytes=20_
                       'max_seconds': max_seconds, 'max_memory_bytes': max_memory_bytes,
                       'max_findings': max_findings, 'max_ast_nodes': max_ast_nodes,
                       'max_call_depth': max_call_depth},
-                      'memory_policy': 'Estimated input/AST allocation budget; not a hard RSS cap',
-                      'time_policy': 'Cooperative deadline; parsing bounded by file/node budgets',
+                      'memory_policy': 'Parser subprocess: Windows Job process-memory or POSIX RLIMIT_AS, plus estimated AST budget',
+                      'time_policy': 'Hard parser subprocess timeout plus cooperative inventory deadline; local I/O and Git timeout separate',
                       'confirmation': 'Automatic results never confirm exploitation'},
                   'limitations': limitations,
                   'references': ['https://owasp.org/www-project-application-security-verification-standard/',
