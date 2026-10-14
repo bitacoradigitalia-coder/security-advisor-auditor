@@ -1,0 +1,394 @@
+name: Bug Bounty Management
+
+# Bug Bounty workflow for Security Advisor Auditor v3.0
+# This workflow helps manage Bug Bounty programs and submissions
+
+on:
+  workflow_dispatch:
+    description: 'Manage Bug Bounty programs and submissions'
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+        - list-programs
+        - add-program
+        - list-findings
+        - generate-report
+        - submit-report
+      program_name:
+        description: 'Name of the Bug Bounty program'
+        required: false
+        default: ''
+      program_scope:
+        description: 'Scope of the program (comma-separated domains)'
+        required: false
+        default: ''
+      program_platform:
+        description: 'Platform (hackerone, bugcrowd, intigriti)'
+        required: false
+        default: 'hackerone'
+        type: choice
+        options:
+        - hackerone
+        - bugcrowd
+        - intigriti
+        - other
+      program_handle:
+        description: 'Program handle on the platform'
+        required: false
+        default: ''
+      finding_id:
+        description: 'ID of the finding to manage'
+        required: false
+        default: ''
+      report_format:
+        description: 'Report format (markdown, html, json)'
+        required: false
+        default: 'markdown'
+        type: choice
+        options:
+        - markdown
+        - html
+        - json
+      platform_token:
+        description: 'API token for the platform (secret)'
+        required: false
+        default: ''
+
+jobs:
+  # ========================================================================
+  # Bug Bounty Management Job
+  # ========================================================================
+  bugbounty-management:
+    name: Bug Bounty Management
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'requirements.txt'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Initialize Bug Bounty Manager
+      run: |
+        mkdir -p reports/bugbounty
+        python -c "from scripts.bugbounty.manager import BugBountyManager; m = BugBountyManager(); print('Bug Bounty Manager initialized')"
+    
+    - name: Perform action
+      id: action
+      run: |
+        ACTION="${{ inputs.action }}"
+        
+        case "$ACTION" in
+          "list-programs")
+            python -c "
+from scripts.bugbounty.manager import BugBountyManager
+m = BugBountyManager()
+programs = m.list_programs()
+print('Programs:')
+for p in programs:
+    print(f'  - {p}')
+" | tee reports/bugbounty/programs.txt
+            ;;
+          
+          "add-program")
+            python -c "
+from scripts.bugbounty.manager import BugBountyManager
+m = BugBountyManager()
+m.add_program(
+    name='${{ inputs.program_name }}',
+    scope='${{ inputs.program_scope }}',
+    platform='${{ inputs.program_platform }}',
+    platform_handle='${{ inputs.program_handle }}'
+)
+print(f'Program {inputs.program_name} added')
+" | tee reports/bugbounty/add-program.txt
+            ;;
+          
+          "list-findings")
+            python -c "
+from scripts.bugbounty.manager import BugBountyManager
+m = BugBountyManager()
+findings = m.list_findings('${{ inputs.program_name }}') if '${{ inputs.program_name }}' else m.list_all_findings()
+print(f'Findings for {\"${{ inputs.program_name }}\" if inputs.program_name else \"all programs\"}:')
+for f in findings:
+    print(f'  [{f.severity.upper()}] {f.id}: {f.title}')
+" | tee reports/bugbounty/findings.txt
+            ;;
+          
+          "generate-report")
+            python -c "
+from scripts.bugbounty.manager import BugBountyManager
+m = BugBountyManager()
+report = m.generate_report('${{ inputs.finding_id }}', format='${{ inputs.report_format }}')
+with open('reports/bugbounty/report.${{ inputs.report_format }}', 'w') as f:
+    f.write(report)
+print(f'Report generated for finding {inputs.finding_id}')
+" | tee reports/bugbounty/generate-report.txt
+            ;;
+          
+          "submit-report")
+            # For security, we don't actually submit without explicit confirmation
+            # This just generates the report and shows what would be submitted
+            python -c "
+from scripts.bugbounty.manager import BugBountyManager
+m = BugBountyManager()
+report = m.generate_report('${{ inputs.finding_id }}', format='${{ inputs.report_format }}')
+with open('reports/bugbounty/submit-preview.${{ inputs.report_format }}', 'w') as f:
+    f.write(report)
+print(f'Preview report for submission: reports/bugbounty/submit-preview.${{ inputs.report_format }}')
+print('To actually submit, run this workflow with manual confirmation')
+" | tee reports/bugbounty/submit-preview.txt
+            ;;
+          
+          *)
+            echo "Unknown action: $ACTION"
+            exit 1
+            ;;
+        esac
+      continue-on-error: true
+    
+    - name: Upload Bug Bounty reports
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: bugbounty-reports
+        path: reports/bugbounty/
+        retention-days: 30
+
+  # ========================================================================
+  # Statistics Job
+  # ========================================================================
+  statistics:
+    name: Generate Statistics
+    needs: bugbounty-management
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Generate statistics
+      run: |
+        python -c "
+from scripts.bugbounty.manager import BugBountyManager
+import json
+
+m = BugBountyManager()
+stats = m.get_statistics()
+
+with open('reports/bugbounty/statistics.json', 'w') as f:
+    json.dump(stats, f, indent=2)
+
+print('Statistics:')
+print(f'  Total Programs: {stats[\"total_programs\"]}')
+print(f'  Total Findings: {stats[\"total_findings\"]}')
+print(f'  By Severity: {stats[\"findings_by_severity\"]}')
+print(f'  By Status: {stats[\"findings_by_status\"]}')
+print(f'  By Type: {stats[\"findings_by_type\"]}')
+print(f'  Total Rewards: ${stats[\"rewards\"][\"total\"]}')
+" | tee reports/bugbounty/statistics.txt
+    
+    - name: Upload statistics
+      uses: actions/upload-artifact@v3
+      with:
+        name: bugbounty-statistics
+        path: reports/bugbounty/statistics.*
+        retention-days: 30
+
+  # ========================================================================
+  # Prioritization Job
+  # ========================================================================
+  prioritization:
+    name: Prioritize Findings
+    needs: bugbounty-management
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Prioritize findings
+      run: |
+        python -c "
+from scripts.bugbounty.manager import BugBountyManager
+from scripts.bugbounty.prioritizer import FindingPrioritizer
+import json
+
+m = BugBountyManager()
+findings = [f.to_dict() for f in m.list_all_findings()]
+
+prioritizer = FindingPrioritizer()
+scores = prioritizer.prioritize(findings)
+
+# Save prioritized findings
+prioritized = []
+for score in scores:
+    finding = next(f for f in findings if f['id'] == score.finding_id)
+    prioritized.append({
+        **finding,
+        'priority_score': score.score,
+        'priority_level': prioritizer.get_priority_level(score.score),
+        'recommendation': prioritizer.get_recommendation(score)
+    })
+
+with open('reports/bugbounty/prioritized_findings.json', 'w') as f:
+    json.dump(prioritized, f, indent=2)
+
+# Save triage order
+triage_order = prioritizer.get_triage_order(findings)
+with open('reports/bugbounty/triage_order.txt', 'w') as f:
+    for finding_id in triage_order:
+        f.write(f'{finding_id}\n')
+
+print('Findings prioritized:')
+for i, score in enumerate(scores, 1):
+    finding = next(f for f in findings if f['id'] == score.finding_id)
+    print(f'{i}. [{prioritizer.get_priority_level(score.score).upper()}] {finding[\"title\"]} (Score: {score.score:.2f})')
+" | tee reports/bugbounty/prioritization.txt
+    
+    - name: Upload prioritization
+      uses: actions/upload-artifact@v3
+      with:
+        name: bugbounty-prioritization
+        path: reports/bugbounty/prioritized_*
+        retention-days: 30
+
+  # ========================================================================
+  # Notification Job
+  # ========================================================================
+  notify:
+    name: Send Notification
+    needs: [bugbounty-management, statistics, prioritization]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Download reports
+      uses: actions/download-artifact@v3
+      with:
+        path: reports/bugbounty/
+        pattern: bugbounty-*
+        merge-multiple: true
+    
+    - name: Get statistics
+      id: stats
+      run: |
+        if [ -f reports/bugbounty/statistics.json ]; then
+          TOTAL=$(jq '.total_findings' reports/bugbounty/statistics.json 2>/dev/null || echo 0)
+          PROGRAMS=$(jq '.total_programs' reports/bugbounty/statistics.json 2>/dev/null || echo 0)
+          CRITICAL=$(jq '.findings_by_severity.critical // 0' reports/bugbounty/statistics.json 2>/dev/null || echo 0)
+          HIGH=$(jq '.findings_by_severity.high // 0' reports/bugbounty/statistics.json 2>/dev/null || echo 0)
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "programs=$PROGRAMS" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+        else
+          echo "total=0" >> $GITHUB_OUTPUT
+          echo "programs=0" >> $GITHUB_OUTPUT
+          echo "critical=0" >> $GITHUB_OUTPUT
+          echo "high=0" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Create summary
+      id: summary
+      run: |
+        TOTAL="${{ steps.stats.outputs.total }}"
+        PROGRAMS="${{ steps.stats.outputs.programs }}"
+        CRITICAL="${{ steps.stats.outputs.critical }}"
+        HIGH="${{ steps.stats.outputs.high }}"
+        
+        if [ "$CRITICAL" -gt 0 ]; then
+          STATUS="🔴 CRITICAL FINDINGS"
+          COLOR="danger"
+        elif [ "$HIGH" -gt 0 ]; then
+          STATUS="🟠 HIGH SEVERITY FINDINGS"
+          COLOR="warning"
+        elif [ "$TOTAL" -gt 0 ]; then
+          STATUS="🟡 FINDINGS AVAILABLE"
+          COLOR="caution"
+        else
+          STATUS="🟢 NO FINDINGS"
+          COLOR="good"
+        fi
+        
+        echo "status=$STATUS" >> $GITHUB_OUTPUT
+        echo "color=$COLOR" >> $GITHUB_OUTPUT
+    
+    - name: Send GitHub notification
+      uses: actions/github-script@v6
+      env:
+        STATUS: ${{ steps.summary.outputs.status }}
+        TOTAL: ${{ steps.stats.outputs.total }}
+        PROGRAMS: ${{ steps.stats.outputs.programs }}
+        CRITICAL: ${{ steps.stats.outputs.critical }}
+        HIGH: ${{ steps.stats.outputs.high }}
+        ACTION: ${{ inputs.action }}
+      with:
+        script: |
+          const status = process.env.STATUS;
+          const total = process.env.TOTAL;
+          const programs = process.env.PROGRAMS;
+          const critical = process.env.CRITICAL;
+          const high = process.env.HIGH;
+          const action = process.env.ACTION;
+          
+          const message = `
+          🎯 *Bug Bounty Management* 🎯
+          
+          **Action:** ${action}
+          **Status:** ${status}
+          
+          **Statistics:**
+          - Programs: ${programs}
+          - Total Findings: ${total}
+          - Critical: ${critical}
+          - High: ${high}
+          
+          [View Results](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+          `;
+          
+          await github.rest.repos.createCommitComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+            body: message
+          });

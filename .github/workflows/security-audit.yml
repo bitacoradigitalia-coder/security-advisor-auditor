@@ -1,0 +1,334 @@
+name: Security Audit
+
+# Security Advisor Auditor v3.0 - GitHub Actions Workflow
+# This workflow runs security audits on push, pull requests, and on a schedule
+
+on:
+  push:
+    branches: [ main, develop, master ]
+  pull_request:
+    branches: [ main, develop, master ]
+  schedule:
+    # Run every Sunday at midnight UTC
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    # Allow manual triggering
+    inputs:
+      target:
+        description: 'Target URL or path to scan'
+        required: false
+        default: ''
+      mode:
+        description: 'Scan mode (QUICK, STANDARD, DEEP, ACTIVE)'
+        required: false
+        default: 'STANDARD'
+      active:
+        description: 'Enable active scanning'
+        required: false
+        default: 'false'
+
+jobs:
+  # ========================================================================
+  # Static Analysis Job
+  # ========================================================================
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Get full history for better analysis
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: 'requirements.txt'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Run static analysis
+      id: static-analysis
+      run: |
+        mkdir -p reports/static-analysis
+        python scripts/audit.py scan . \
+          --output reports/static-analysis \
+          --mode DEEP \
+          --max-file-bytes 2000000 \
+          --max-files 20000 \
+          --max-total-bytes 50000000
+      continue-on-error: true
+    
+    - name: Upload static analysis results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: static-analysis-results
+        path: reports/static-analysis/
+        retention-days: 30
+    
+    - name: Display summary
+      run: |
+        echo "Static analysis completed"
+        echo "Results saved to reports/static-analysis/"
+        if [ -f reports/static-analysis/audit.json ]; then
+          echo "Findings: $(jq '.findings | length' reports/static-analysis/audit.json)"
+        fi
+
+  # ========================================================================
+  # Active Scanning Job (conditional)
+  # ========================================================================
+  active-scanning:
+    name: Active Scanning
+    needs: static-analysis
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.active == 'true' || github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Install Nuclei
+      run: |
+        # Download and install Nuclei
+        wget https://github.com/projectdiscovery/nuclei/releases/latest/download/nuclei_$(uname -m)_linux -O nuclei
+        chmod +x nuclei
+        sudo mv nuclei /usr/local/bin/nuclei
+        nuclei -version
+    
+    - name: Determine target
+      id: target
+      run: |
+        # Use input target or default to repository
+        if [ -n "${{ inputs.target }}" ]; then
+          echo "target=${{ inputs.target }}" >> $GITHUB_OUTPUT
+        else
+          echo "target=https://${{ github.repository_owner }}.github.io" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Run active scan
+      id: active-scan
+      run: |
+        mkdir -p reports/active-scan
+        TARGET="${{ steps.target.outputs.target }}"
+        
+        # Run active scan
+        python scripts/audit.py scan "$TARGET" \
+          --output reports/active-scan \
+          --active \
+          --nuclei \
+          --mode ${{ inputs.mode || 'STANDARD' }} \
+          --max-file-bytes 2000000 \
+          --timeout 60
+      continue-on-error: true
+    
+    - name: Upload active scan results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: active-scan-results
+        path: reports/active-scan/
+        retention-days: 7
+    
+    - name: Display summary
+      run: |
+        echo "Active scanning completed"
+        echo "Results saved to reports/active-scan/"
+        if [ -f reports/active-scan/active-scan-summary.json ]; then
+          echo "Summary: $(cat reports/active-scan/active-scan-summary.json | jq .)"
+        fi
+
+  # ========================================================================
+  # Report Generation Job
+  # ========================================================================
+  generate-report:
+    name: Generate Report
+    needs: [static-analysis, active-scanning]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Download static analysis results
+      uses: actions/download-artifact@v3
+      if: always()
+      with:
+        name: static-analysis-results
+        path: reports/static-analysis/
+    
+    - name: Download active scan results
+      uses: actions/download-artifact@v3
+      if: always()
+      with:
+        name: active-scan-results
+        path: reports/active-scan/
+    
+    - name: Generate combined report
+      run: |
+        mkdir -p reports/final
+        
+        # Generate Markdown report
+        python scripts/audit.py report reports/static-analysis/audit.json \
+          --output reports/final/report.md \
+          --format markdown
+        
+        # Generate HTML report
+        python scripts/audit.py report reports/static-analysis/audit.json \
+          --output reports/final/report.html \
+          --format html
+        
+        # Generate JSON report
+        python scripts/audit.py report reports/static-analysis/audit.json \
+          --output reports/final/report.json \
+          --format json
+    
+    - name: Upload final report
+      uses: actions/upload-artifact@v3
+      with:
+        name: final-report
+        path: reports/final/
+        retention-days: 90
+
+  # ========================================================================
+  # Notification Job
+  # ========================================================================
+  notify:
+    name: Send Notification
+    needs: generate-report
+    runs-on: ubuntu-latest
+    if: always() && github.event_name != 'pull_request'
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Download final report
+      uses: actions/download-artifact@v3
+      with:
+        name: final-report
+        path: reports/final/
+    
+    - name: Get statistics
+      id: stats
+      run: |
+        if [ -f reports/final/report.json ]; then
+          TOTAL=$(jq '.findings | length' reports/final/report.json)
+          CRITICAL=$(jq '.findings | map(select(.severity == "critical")) | length' reports/final/report.json)
+          HIGH=$(jq '.findings | map(select(.severity == "high")) | length' reports/final/report.json)
+          
+          echo "total=$TOTAL" >> $GITHUB_OUTPUT
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+        else
+          echo "total=0" >> $GITHUB_OUTPUT
+          echo "critical=0" >> $GITHUB_OUTPUT
+          echo "high=0" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Create summary
+      id: summary
+      run: |
+        TOTAL="${{ steps.stats.outputs.total }}"
+        CRITICAL="${{ steps.stats.outputs.critical }}"
+        HIGH="${{ steps.stats.outputs.high }}"
+        
+        if [ "$CRITICAL" -gt 0 ]; then
+          STATUS="🔴 CRITICAL"
+          COLOR="danger"
+        elif [ "$HIGH" -gt 0 ]; then
+          STATUS="🟠 HIGH"
+          COLOR="warning"
+        elif [ "$TOTAL" -gt 0 ]; then
+          STATUS="🟡 MEDIUM"
+          COLOR="caution"
+        else
+          STATUS="🟢 GOOD"
+          COLOR="good"
+        fi
+        
+        echo "status=$STATUS" >> $GITHUB_OUTPUT
+        echo "color=$COLOR" >> $GITHUB_OUTPUT
+    
+    - name: Send GitHub notification
+      uses: actions/github-script@v6
+      env:
+        STATUS: ${{ steps.summary.outputs.status }}
+        TOTAL: ${{ steps.stats.outputs.total }}
+        CRITICAL: ${{ steps.stats.outputs.critical }}
+        HIGH: ${{ steps.stats.outputs.high }}
+      with:
+        script: |
+          const status = process.env.STATUS;
+          const total = process.env.TOTAL;
+          const critical = process.env.CRITICAL;
+          const high = process.env.HIGH;
+          
+          const message = `
+          🔒 *Security Audit Report* 🔒
+          
+          **Status:** ${status}
+          
+          **Findings:**
+          - Total: ${total}
+          - Critical: ${critical}
+          - High: ${high}
+          - Medium: ${total - critical - high}
+          
+          [View Report](${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID})
+          `;
+          
+          // Create a comment on the commit if this is a push event
+          if (context.eventName === 'push') {
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: context.sha,
+              body: message
+            });
+          }
+
+  # ========================================================================
+  # Cleanup Job (optional)
+  # ========================================================================
+  cleanup:
+    name: Cleanup
+    needs: [static-analysis, active-scanning, generate-report, notify]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+    - name: Remove old artifacts
+      uses: GeekyEggo/delete-artifact@v2
+      with:
+        name: |
+          static-analysis-results
+          active-scan-results
+        retainDays: 30

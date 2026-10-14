@@ -1,0 +1,83 @@
+# Security Advisor Auditor v3.0 - Requirements
+# ============================================
+# Core dependencies for static analysis, active scanning, and pentesting
+
+# Core Python dependencies
+requests>=2.31.0
+pyyaml>=6.0.1
+beautifulsoup4>=4.12.0
+colorama>=0.4.6
+jinja2>=3.1.2
+markdown>=3.4.4
+
+# Security and web
+urllib3>=2.0.0
+certifi>=2023.0.0
+charset-normalizer>=3.0.0
+idna>=3.4.0
+
+# For PDF report generation (optional)
+# pdfkit>=1.0.0
+# weasyprint>=60.0
+
+# For advanced features (optional)
+# flask>=3.0.0
+# flask-cors>=4.0.0
+
+# ============================================
+# Development dependencies (for testing)
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.4.0
+
+# ============================================
+# External tools (must be installed separately)
+# These are NOT Python packages but standalone tools:
+#
+# - Nuclei: https://github.com/projectdiscovery/nuclei
+#   Download: https://github.com/projectdiscovery/nuclei/releases
+#   Installation: Download binary and add to PATH
+#
+# - FFuF: https://github.com/ffuf/ffuf
+#   go install github.com/ffuf/ffuf/v2@latest
+#
+# - Gobuster: https://github.com/OJ/gobuster
+#   go install github.com/OJ/gobuster@latest
+#
+# - Nikto: https://github.com/sullo/nikto
+#   Package manager: apt install nikto (Debian/Ubuntu)
+#
+# - SQLMap: https://github.com/sqlmapproject/sqlmap
+#   git clone https://github.com/sqlmapproject/sqlmap.git
+#
+# - Metasploit Framework: https://www.metasploit.com/
+#   Package manager: apt install metasploit-framework (Kali Linux)
+#
+# - Burp Suite: https://portswigger.net/burp
+#   Download: https://portswigger.net/burp/communitydownload
+#
+# - Nmap: https://nmap.org/
+#   Package manager: apt install nmap
+
+# ============================================
+# Installation instructions:
+#
+# 1. Install Python dependencies:
+#    pip install -r requirements.txt
+#
+# 2. Install external tools (optional, for active scanning):
+#    - Download Nuclei from GitHub releases
+#    - Install FFuF, Gobuster, Nikto, etc.
+#
+# 3. For PDF generation:
+#    pip install pdfkit weasyprint
+#    OR on Debian/Ubuntu: apt install weasyprint
+#
+# 4. For web dashboard:
+#    pip install flask flask-cors
+
+# ============================================
+# Note: This file is for Python dependencies only.
+# External tools must be installed separately and added to PATH.
