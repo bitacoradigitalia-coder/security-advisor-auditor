@@ -16,7 +16,34 @@ certifi>=2023.0.0
 charset-normalizer>=3.0.0
 idna>=3.4.0
 
-# Pentesting and Bug Bounty dependencies
+# ============================================
+# STATIC ANALYSIS DEPENDENCIES (Multi-Language Support)
+# ============================================
+
+# Semgrep - Static analysis for 30+ languages
+# Install: pip install semgrep
+semgrep>=1.50.0
+
+# Bandit - Security linter for Python
+# Install: pip install bandit
+bandit>=1.7.5
+
+# ESLint + Security Plugin - For JavaScript/TypeScript
+# Install: npm install -g eslint eslint-plugin-security
+# Note: Requires Node.js and npm
+
+# PHPStan - Static analysis for PHP
+# Install: composer global require phpstan/phpstan
+# Note: Requires PHP and Composer
+
+# Nuclei - Vulnerability scanner
+# Install: Download from https://github.com/projectdiscovery/nuclei/releases
+# Note: Standalone binary, not a Python package
+
+# ============================================
+# PENTESTING AND BUG BOUNTY DEPENDENCIES
+# ============================================
+
 # For session management and authentication
 session>=0.0.0
 cookies>=0.0.0
