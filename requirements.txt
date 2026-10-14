@@ -16,6 +16,36 @@ certifi>=2023.0.0
 charset-normalizer>=3.0.0
 idna>=3.4.0
 
+# Pentesting and Bug Bounty dependencies
+# For session management and authentication
+session>=0.0.0
+cookies>=0.0.0
+
+# For fuzzing and parameter testing
+fuzzywuzzy>=1.0.0
+python-Levenshtein>=0.21.0
+
+# For exploit development and PoC generation
+pwntools>=4.9.0
+capstone>=5.0.0
+keystone-engine>=0.9.2
+
+# For vulnerability scanning
+python-nmap>=0.7.1
+scapy>=2.5.0
+
+# For web application testing
+selenium>=4.10.0
+webdriver-manager>=3.8.6
+
+# For API testing
+pytest-requests>=0.3.0
+responses>=0.24.1
+
+# For Bug Bounty platform integrations
+hackerone>=0.1.0
+bugcrowd>=1.0.0
+
 # For PDF report generation (optional)
 # pdfkit>=1.0.0
 # weasyprint>=60.0

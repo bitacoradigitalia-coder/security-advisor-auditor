@@ -154,6 +154,18 @@ class FindingPrioritizer:
         # Sort by score (descending)
         return sorted(scores, key=lambda x: x.score, reverse=True)
     
+    def prioritize_multiple(self, findings: List[Dict[str, Any]]) -> List[PriorityScore]:
+        """
+        Prioritize multiple findings (alias for prioritize).
+        
+        Args:
+            findings: List of finding dictionaries
+        
+        Returns:
+            List of PriorityScore objects sorted by score (highest first)
+        """
+        return self.prioritize(findings)
+    
     def calculate_score(self, finding: Dict[str, Any]) -> PriorityScore:
         """
         Calculate priority score for a single finding.

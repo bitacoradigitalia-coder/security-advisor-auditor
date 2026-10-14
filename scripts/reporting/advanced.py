@@ -943,6 +943,7 @@ The recommendations are organized by priority and category to help prioritize re
         """Calculate overall risk rating."""
         critical = severity_counts.get('critical', 0)
         high = severity_counts.get('high', 0)
+        low = severity_counts.get("low", 0)
         medium = severity_counts.get('medium', 0)
         
         if critical > 0:
