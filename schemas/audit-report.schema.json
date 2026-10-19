@@ -1,0 +1,656 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Security Advisor Auditor report v2.0 with optional v2.1 evidence extensions",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "generated_at",
+    "project",
+    "scope",
+    "methodology",
+    "coverage",
+    "tools",
+    "findings",
+    "positive_findings",
+    "limitations",
+    "references"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "2.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "project": {
+      "type": "object",
+      "required": [
+        "name",
+        "commit",
+        "architecture",
+        "files_read"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "architecture": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files_read": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1
+    },
+    "methodology": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coverage": {
+      "type": "array",
+      "minItems": 21,
+      "maxItems": 21,
+      "items": {
+        "type": "object",
+        "required": [
+          "phase",
+          "title",
+          "status",
+          "reason",
+          "finding_ids"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "phase": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 21
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "not_evaluated",
+              "automated_partial",
+              "reviewed",
+              "not_applicable"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "finding_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "tools": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "name",
+          "status",
+          "purpose"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "enum": [
+              "executed",
+              "available_not_executed",
+              "unavailable",
+              "attempted_no_commit"
+            ]
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "positive_findings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "references": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "required": [
+        "version",
+        "mode",
+        "limits",
+        "memory_policy",
+        "time_policy",
+        "confirmation"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "2.1"
+        },
+        "mode": {
+          "enum": [
+            "QUICK",
+            "STANDARD",
+            "DEEP"
+          ]
+        },
+        "limits": {
+          "type": "object"
+        },
+        "memory_policy": {
+          "type": "string"
+        },
+        "time_policy": {
+          "type": "string"
+        },
+        "confirmation": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "type",
+        "cwe",
+        "severity",
+        "severity_reason",
+        "priority",
+        "confidence",
+        "phase",
+        "location",
+        "description",
+        "preconditions",
+        "evidence",
+        "verification",
+        "impact",
+        "remediation",
+        "references",
+        "commit"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^SAA-[0-9]{4,}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "type": {
+          "enum": [
+            "confirmed_vulnerability",
+            "probable_weakness",
+            "architecture_risk",
+            "hardening",
+            "informational"
+          ]
+        },
+        "cwe": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^CWE-[0-9]+$"
+        },
+        "severity": {
+          "enum": [
+            "critical",
+            "high",
+            "medium",
+            "low",
+            "informational"
+          ]
+        },
+        "severity_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "priority": {
+          "type": "string",
+          "minLength": 1
+        },
+        "confidence": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "phase": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 21
+        },
+        "location": {
+          "type": "object",
+          "required": [
+            "file",
+            "line_start",
+            "line_end",
+            "function"
+          ],
+          "properties": {
+            "file": {
+              "type": "string",
+              "minLength": 1
+            },
+            "line_start": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "line_end": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "function": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "preconditions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "evidence": {
+          "type": "object",
+          "required": [
+            "kind",
+            "summary"
+          ],
+          "properties": {
+            "kind": {
+              "type": "string",
+              "minLength": 1
+            },
+            "summary": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sink": {
+              "type": "string"
+            },
+            "trace": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "controls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "mitigation": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "context": {
+              "type": [
+                "object",
+                "null"
+              ]
+            },
+            "snippet": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "verification": {
+          "type": "object",
+          "required": [
+            "status",
+            "executed"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "not_verified",
+                "static_trace",
+                "local_test"
+              ]
+            },
+            "executed": {
+              "type": "boolean"
+            },
+            "reviewer": {
+              "type": "string",
+              "minLength": 1
+            },
+            "reachability": {
+              "type": "string",
+              "minLength": 1
+            },
+            "control_violation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "test_result": {
+              "type": "string",
+              "minLength": 1
+            },
+            "method": {
+              "type": "string"
+            },
+            "result": {
+              "type": "string"
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "exploitation": {
+              "enum": [
+                "not_tested",
+                "confirmed"
+              ]
+            },
+            "reproduction": {
+              "type": "string",
+              "minLength": 1
+            },
+            "authorization": {
+              "type": "string",
+              "minLength": 1
+            },
+            "isolation": {
+              "type": "string",
+              "minLength": 1
+            },
+            "state_history": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "from",
+                  "to",
+                  "reason"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "from": {
+                    "enum": [
+                      "CANDIDATE",
+                      "PROBABLE",
+                      "CONFIRMED",
+                      "FALSE_POSITIVE",
+                      "NOT_VERIFIED"
+                    ]
+                  },
+                  "to": {
+                    "enum": [
+                      "CANDIDATE",
+                      "PROBABLE",
+                      "CONFIRMED",
+                      "FALSE_POSITIVE",
+                      "NOT_VERIFIED"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "remediation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "commit": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[a-f0-9]{40,64}$"
+        },
+        "status": {
+          "enum": [
+            "CANDIDATE",
+            "PROBABLE",
+            "CONFIRMED",
+            "FALSE_POSITIVE",
+            "NOT_VERIFIED"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "analyzer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "regression_test": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "confirmed_vulnerability"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification": {
+                "required": [
+                  "reviewer",
+                  "reachability",
+                  "control_violation"
+                ],
+                "properties": {
+                  "status": {
+                    "enum": [
+                      "static_trace",
+                      "local_test"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification": {
+                "properties": {
+                  "status": {
+                    "const": "local_test"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "verification": {
+                "required": [
+                  "test_result"
+                ],
+                "properties": {
+                  "executed": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "verification": {
+                "properties": {
+                  "executed": {
+                    "const": false
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "CONFIRMED"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "type": {
+                "const": "confirmed_vulnerability"
+              },
+              "verification": {
+                "required": [
+                  "reviewer",
+                  "reachability",
+                  "control_violation",
+                  "reproduction"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification": {
+                "required": [
+                  "exploitation"
+                ],
+                "properties": {
+                  "exploitation": {
+                    "const": "confirmed"
+                  }
+                }
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "const": "CONFIRMED"
+              },
+              "verification": {
+                "required": [
+                  "authorization",
+                  "isolation",
+                  "test_result"
+                ],
+                "properties": {
+                  "status": {
+                    "const": "local_test"
+                  },
+                  "executed": {
+                    "const": true
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

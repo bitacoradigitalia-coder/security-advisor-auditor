@@ -1,0 +1,63 @@
+{
+  "tests": 61,
+  "passed": 60,
+  "skipped": 1,
+  "skip_reason": "OS does not grant symlink creation",
+  "regression_log": "../regression-final.log",
+  "baseline_tests": 36,
+  "baseline_passed": 35,
+  "methodology": {
+    "raw_sha256": "0e3076fc257a0d37e388db7af901d45bb6cd83dc5fa3d5dc5d411cd46c73c95d",
+    "canonical_sha256": "904d385ea10a960b5b0b383b99471fc3250c0f753ef63a3d5a36f86ebeed928a",
+    "normalization": "UTF-8 sin BOM; CRLF a LF únicamente",
+    "verified": true
+  },
+  "modes": [
+    "QUICK",
+    "STANDARD",
+    "DEEP"
+  ],
+  "profile_files_tested": [
+    "hermes",
+    "openclaw",
+    "opencode",
+    "codex",
+    "claude"
+  ],
+  "diff_check": "passed",
+  "main": "51a3abb390b799a13baceb0cfb922e8786e4d6ac",
+  "branch": "feature/intelligence-precision-v2.1",
+  "unmodified": [
+    "references/audit-methodology.md",
+    "install.py",
+    "adapters/profiles.json",
+    "agents/openai.yaml",
+    "LICENSE",
+    "assets/icon.svg"
+  ],
+  "evaluation": {
+    "v201": {
+      "tp": 3,
+      "fp": 3,
+      "fn": 11,
+      "tn": 11,
+      "precision": 0.5,
+      "recall": 0.21428571428571427,
+      "f1": 0.3,
+      "labeled": 28,
+      "unlabeled": 2
+    },
+    "v21": {
+      "tp": 14,
+      "fp": 0,
+      "fn": 0,
+      "tn": 14,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "labeled": 28,
+      "unlabeled": 2
+    }
+  },
+  "note": "Windows only; no native Linux/macOS, no real agent activation, no deployment or exploit reproduced"
+}

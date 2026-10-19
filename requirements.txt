@@ -1,0 +1,140 @@
+# Security Advisor Auditor v3.0 - Requirements
+# ============================================
+# Core dependencies for static analysis, active scanning, and pentesting
+
+# Core Python dependencies
+requests>=2.31.0
+pyyaml>=6.0.1
+beautifulsoup4>=4.12.0
+colorama>=0.4.6
+jinja2>=3.1.2
+markdown>=3.4.4
+
+# Security and web
+urllib3>=2.0.0
+certifi>=2023.0.0
+charset-normalizer>=3.0.0
+idna>=3.4.0
+
+# ============================================
+# STATIC ANALYSIS DEPENDENCIES (Multi-Language Support)
+# ============================================
+
+# Semgrep - Static analysis for 30+ languages
+# Install: pip install semgrep
+semgrep>=1.50.0
+
+# Bandit - Security linter for Python
+# Install: pip install bandit
+bandit>=1.7.5
+
+# ESLint + Security Plugin - For JavaScript/TypeScript
+# Install: npm install -g eslint eslint-plugin-security
+# Note: Requires Node.js and npm
+
+# PHPStan - Static analysis for PHP
+# Install: composer global require phpstan/phpstan
+# Note: Requires PHP and Composer
+
+# Nuclei - Vulnerability scanner
+# Install: Download from https://github.com/projectdiscovery/nuclei/releases
+# Note: Standalone binary, not a Python package
+
+# ============================================
+# PENTESTING AND BUG BOUNTY DEPENDENCIES
+# ============================================
+
+# For session management and authentication
+session>=0.0.0
+cookies>=0.0.0
+
+# For fuzzing and parameter testing
+fuzzywuzzy>=1.0.0
+python-Levenshtein>=0.21.0
+
+# For exploit development and PoC generation
+pwntools>=4.9.0
+capstone>=5.0.0
+keystone-engine>=0.9.2
+
+# For vulnerability scanning
+python-nmap>=0.7.1
+scapy>=2.5.0
+
+# For web application testing
+selenium>=4.10.0
+webdriver-manager>=3.8.6
+
+# For API testing
+pytest-requests>=0.3.0
+responses>=0.24.1
+
+# For Bug Bounty platform integrations
+hackerone>=0.1.0
+bugcrowd>=1.0.0
+
+# For PDF report generation (optional)
+# pdfkit>=1.0.0
+# weasyprint>=60.0
+
+# For advanced features (optional)
+# flask>=3.0.0
+# flask-cors>=4.0.0
+
+# ============================================
+# Development dependencies (for testing)
+# pytest>=7.4.0
+# pytest-cov>=4.1.0
+# black>=23.0.0
+# flake8>=6.0.0
+# mypy>=1.4.0
+
+# ============================================
+# External tools (must be installed separately)
+# These are NOT Python packages but standalone tools:
+#
+# - Nuclei: https://github.com/projectdiscovery/nuclei
+#   Download: https://github.com/projectdiscovery/nuclei/releases
+#   Installation: Download binary and add to PATH
+#
+# - FFuF: https://github.com/ffuf/ffuf
+#   go install github.com/ffuf/ffuf/v2@latest
+#
+# - Gobuster: https://github.com/OJ/gobuster
+#   go install github.com/OJ/gobuster@latest
+#
+# - Nikto: https://github.com/sullo/nikto
+#   Package manager: apt install nikto (Debian/Ubuntu)
+#
+# - SQLMap: https://github.com/sqlmapproject/sqlmap
+#   git clone https://github.com/sqlmapproject/sqlmap.git
+#
+# - Metasploit Framework: https://www.metasploit.com/
+#   Package manager: apt install metasploit-framework (Kali Linux)
+#
+# - Burp Suite: https://portswigger.net/burp
+#   Download: https://portswigger.net/burp/communitydownload
+#
+# - Nmap: https://nmap.org/
+#   Package manager: apt install nmap
+
+# ============================================
+# Installation instructions:
+#
+# 1. Install Python dependencies:
+#    pip install -r requirements.txt
+#
+# 2. Install external tools (optional, for active scanning):
+#    - Download Nuclei from GitHub releases
+#    - Install FFuF, Gobuster, Nikto, etc.
+#
+# 3. For PDF generation:
+#    pip install pdfkit weasyprint
+#    OR on Debian/Ubuntu: apt install weasyprint
+#
+# 4. For web dashboard:
+#    pip install flask flask-cors
+
+# ============================================
+# Note: This file is for Python dependencies only.
+# External tools must be installed separately and added to PATH.

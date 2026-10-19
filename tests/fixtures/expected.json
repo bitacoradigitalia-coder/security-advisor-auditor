@@ -1,0 +1,300 @@
+[
+  {
+    "case": "A1_constant_eval",
+    "group": "context",
+    "category": "code-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "A1_constant_eval/app.py"
+  },
+  {
+    "case": "A2_external_eval",
+    "group": "context",
+    "category": "code-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "A2_external_eval/app.py"
+  },
+  {
+    "case": "A3_unresolved_entry",
+    "group": "context",
+    "category": "code-injection",
+    "unsafe": null,
+    "expected_states": [
+      "NOT_VERIFIED"
+    ],
+    "file": "A3_unresolved_entry/app.py"
+  },
+  {
+    "case": "A4_effective_validation",
+    "group": "context",
+    "category": "code-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "A4_effective_validation/app.py"
+  },
+  {
+    "case": "A5_insufficient_validation",
+    "group": "context",
+    "category": "code-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "A5_insufficient_validation/app.py"
+  },
+  {
+    "case": "B6_parameterized",
+    "group": "sql",
+    "category": "sql-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "B6_parameterized/app.py"
+  },
+  {
+    "case": "B7_concatenated",
+    "group": "sql",
+    "category": "sql-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "B7_concatenated/app.py"
+  },
+  {
+    "case": "B8_orm_parameters",
+    "group": "sql",
+    "category": "sql-injection",
+    "unsafe": false,
+    "expected_states": [],
+    "file": "B8_orm_parameters/app.py"
+  },
+  {
+    "case": "B9_identifier_allowlist",
+    "group": "sql",
+    "category": "sql-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "B9_identifier_allowlist/app.py"
+  },
+  {
+    "case": "B10_dynamic_fragment",
+    "group": "sql",
+    "category": "sql-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "B10_dynamic_fragment/app.py"
+  },
+  {
+    "case": "C11_fixed_argv",
+    "group": "command",
+    "category": "command-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "C11_fixed_argv/app.py"
+  },
+  {
+    "case": "C12_external_shell",
+    "group": "command",
+    "category": "command-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "C12_external_shell/app.py"
+  },
+  {
+    "case": "C13_program_arguments",
+    "group": "command",
+    "category": "argument-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "C13_program_arguments/app.py"
+  },
+  {
+    "case": "C14_command_allowlist",
+    "group": "command",
+    "category": "command-injection",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "C14_command_allowlist/app.py"
+  },
+  {
+    "case": "D15_fixed_file",
+    "group": "path",
+    "category": "path-traversal",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "D15_fixed_file/app.py"
+  },
+  {
+    "case": "D16_external_path",
+    "group": "path",
+    "category": "path-traversal",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "D16_external_path/app.py"
+  },
+  {
+    "case": "D17_confined_path",
+    "group": "path",
+    "category": "path-traversal",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "D17_confined_path/app.py"
+  },
+  {
+    "case": "D18_text_prefix",
+    "group": "path",
+    "category": "path-traversal",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "D18_text_prefix/app.py"
+  },
+  {
+    "case": "E19_owner_query",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "E19_owner_query/app.py"
+  },
+  {
+    "case": "E20_missing_owner",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "E20_missing_owner/app.py"
+  },
+  {
+    "case": "E21_authenticated_tenant",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "E21_authenticated_tenant/app.py"
+  },
+  {
+    "case": "E22_client_tenant",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "E22_client_tenant/app.py"
+  },
+  {
+    "case": "E23_owner_guard",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "E23_owner_guard/app.py"
+  },
+  {
+    "case": "E24_authentication_only",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "E24_authentication_only/app.py"
+  },
+  {
+    "case": "E25_external_middleware",
+    "group": "authorization",
+    "category": "resource-authorization",
+    "unsafe": null,
+    "expected_states": [
+      "NOT_VERIFIED"
+    ],
+    "file": "E25_external_middleware/app.py"
+  },
+  {
+    "case": "S1_ssrf",
+    "group": "ssrf",
+    "category": "ssrf",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "S1_ssrf/app.py"
+  },
+  {
+    "case": "S2_ssrf_constant",
+    "group": "ssrf",
+    "category": "ssrf",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "S2_ssrf_constant/app.py"
+  },
+  {
+    "case": "T1_template",
+    "group": "template",
+    "category": "template-injection",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "T1_template/app.py"
+  },
+  {
+    "case": "X1_html",
+    "group": "xss",
+    "category": "xss",
+    "unsafe": true,
+    "expected_states": [
+      "PROBABLE"
+    ],
+    "file": "X1_html/app.py"
+  },
+  {
+    "case": "X2_context_escape",
+    "group": "xss",
+    "category": "xss",
+    "unsafe": false,
+    "expected_states": [
+      "FALSE_POSITIVE"
+    ],
+    "file": "X2_context_escape/app.py"
+  }
+]

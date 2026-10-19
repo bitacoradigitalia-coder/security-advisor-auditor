@@ -1,0 +1,3176 @@
+{
+  "scope": "Synthetic fixture set only; not general product precision. No fixture executed.",
+  "baseline_commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac",
+  "baseline_sha256": "1d29050c8fd06a32dc9998847b3e6c9d88fb6fbed1fac5bc4f159c3aa1411586",
+  "versions": {
+    "v201": {
+      "tp": 3,
+      "fp": 3,
+      "fn": 11,
+      "tn": 11,
+      "precision": 0.5,
+      "recall": 0.21428571428571427,
+      "f1": 0.3,
+      "labeled": 28,
+      "unlabeled": 2
+    },
+    "v21": {
+      "tp": 14,
+      "fp": 0,
+      "fn": 0,
+      "tn": 14,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "labeled": 28,
+      "unlabeled": 2
+    }
+  },
+  "by_category": {
+    "argument-injection": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 1,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 1,
+        "unlabeled": 0
+      }
+    },
+    "code-injection": {
+      "v201": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "tn": 0,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "labeled": 4,
+        "unlabeled": 1
+      },
+      "v21": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 4,
+        "unlabeled": 1
+      }
+    },
+    "command-injection": {
+      "v201": {
+        "tp": 1,
+        "fp": 1,
+        "fn": 0,
+        "tn": 1,
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "labeled": 3,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 3,
+        "unlabeled": 0
+      }
+    },
+    "path-traversal": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "tn": 2,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 4,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 2,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 4,
+        "unlabeled": 0
+      }
+    },
+    "resource-authorization": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 6,
+        "unlabeled": 1
+      },
+      "v21": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 6,
+        "unlabeled": 1
+      }
+    },
+    "sql-injection": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "tn": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 5,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 5,
+        "unlabeled": 0
+      }
+    },
+    "ssrf": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 2,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 2,
+        "unlabeled": 0
+      }
+    },
+    "template-injection": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 1,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 1,
+        "unlabeled": 0
+      }
+    },
+    "xss": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 1,
+        "tn": 1,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 2,
+        "unlabeled": 0
+      },
+      "v21": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "tn": 1,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 2,
+        "unlabeled": 0
+      }
+    }
+  },
+  "by_language": {
+    "Python": {
+      "v201": {
+        "tp": 3,
+        "fp": 3,
+        "fn": 11,
+        "tn": 11,
+        "precision": 0.5,
+        "recall": 0.21428571428571427,
+        "f1": 0.3,
+        "labeled": 28,
+        "unlabeled": 2
+      },
+      "v21": {
+        "tp": 14,
+        "fp": 0,
+        "fn": 0,
+        "tn": 14,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 28,
+        "unlabeled": 2
+      }
+    }
+  },
+  "by_framework": {
+    "Flask/Flask-Login query shape": {
+      "v201": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 3,
+        "tn": 3,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "labeled": 6,
+        "unlabeled": 1
+      },
+      "v21": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 0,
+        "tn": 3,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 6,
+        "unlabeled": 1
+      }
+    },
+    "stdlib/library call shape": {
+      "v201": {
+        "tp": 3,
+        "fp": 3,
+        "fn": 8,
+        "tn": 8,
+        "precision": 0.5,
+        "recall": 0.2727272727272727,
+        "f1": 0.3529411764705882,
+        "labeled": 22,
+        "unlabeled": 1
+      },
+      "v21": {
+        "tp": 11,
+        "fp": 0,
+        "fn": 0,
+        "tn": 11,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "labeled": 22,
+        "unlabeled": 1
+      }
+    }
+  },
+  "state_accuracy": 1.0,
+  "results": [
+    {
+      "case": "A1_constant_eval",
+      "group": "context",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "code-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-10595576351572460899357592912",
+          "title": "Evaluación dinámica contextual",
+          "type": "informational",
+          "cwe": "CWE-95",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 1,
+            "line_end": 1,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → eval(...)",
+            "source": [],
+            "sink": "eval",
+            "trace": [
+              "literal",
+              "eval(...)"
+            ],
+            "controls": [],
+            "mitigation": "Expresión literal limitada a constantes y operaciones aritméticas",
+            "context": null,
+            "snippet": "eval(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Expresión literal limitada a constantes y operaciones aritméticas"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Sustituir evaluación por operaciones explícitas",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/95.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "code-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "A2_external_eval",
+      "group": "context",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "code-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-28421203622203686681136278378",
+          "title": "Evaluación dinámica contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-95",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → y → eval(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "eval",
+            "trace": [
+              "input(...)",
+              "x",
+              "y",
+              "eval(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "eval(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Sustituir evaluación por operaciones explícitas",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/95.html"
+          ],
+          "status": "PROBABLE",
+          "category": "code-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "A3_unresolved_entry",
+      "group": "context",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "code-injection",
+      "label": null,
+      "expected_states": [
+        "NOT_VERIFIED"
+      ],
+      "obtained_states": [
+        "NOT_VERIFIED"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-63177234182067703485767713884",
+          "title": "Evaluación dinámica contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-95",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": "hidden"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "x → eval(...)",
+            "source": [],
+            "sink": "eval",
+            "trace": [
+              "x",
+              "eval(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "eval(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "NOT_VERIFIED",
+                "reason": "Origen de datos o punto de entrada no resuelto"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes",
+              "Origen de datos o punto de entrada no resuelto"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Sustituir evaluación por operaciones explícitas",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/95.html"
+          ],
+          "status": "NOT_VERIFIED",
+          "category": "code-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "A4_effective_validation",
+      "group": "context",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "code-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-1394375014684617045473406008",
+          "title": "Evaluación dinámica contextual",
+          "type": "informational",
+          "cwe": "CWE-95",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 4,
+            "line_end": 4,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → control:code-allowlist → eval(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "eval",
+            "trace": [
+              "input(...)",
+              "x",
+              "control:code-allowlist",
+              "eval(...)"
+            ],
+            "controls": [
+              "code-allowlist"
+            ],
+            "mitigation": "Lista finita de expresiones aritméticas con rechazo dominante",
+            "context": null,
+            "snippet": "eval(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Lista finita de expresiones aritméticas con rechazo dominante"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Sustituir evaluación por operaciones explícitas",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/95.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "code-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "A5_insufficient_validation",
+      "group": "context",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "code-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-1394375014684617045473406008",
+          "title": "Evaluación dinámica contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-95",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 4,
+            "line_end": 4,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → eval(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "eval",
+            "trace": [
+              "input(...)",
+              "x",
+              "eval(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "eval(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Sustituir evaluación por operaciones explícitas",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/95.html"
+          ],
+          "status": "PROBABLE",
+          "category": "code-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "B6_parameterized",
+      "group": "sql",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "sql-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-75006154428208295095469314644",
+          "title": "Consulta SQL contextual",
+          "type": "informational",
+          "cwe": "CWE-89",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → cursor.execute(...)",
+            "source": [],
+            "sink": "cursor.execute",
+            "trace": [
+              "literal",
+              "cursor.execute(...)"
+            ],
+            "controls": [],
+            "mitigation": "Texto SQL fijo; valores separados en parámetros si existen",
+            "context": null,
+            "snippet": "cursor.execute(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Texto SQL fijo; valores separados en parámetros si existen"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar parámetros y listas permitidas para identificadores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/89.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "sql-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "B7_concatenated",
+      "group": "sql",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "sql-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-76982321368620274071248674219",
+          "title": "Consulta SQL contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-89",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → binary-operation → q → cursor.execute(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "cursor.execute",
+            "trace": [
+              "input(...)",
+              "x",
+              "binary-operation",
+              "q",
+              "cursor.execute(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "cursor.execute(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar parámetros y listas permitidas para identificadores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/89.html"
+          ],
+          "status": "PROBABLE",
+          "category": "sql-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "B8_orm_parameters",
+      "group": "sql",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "sql-injection",
+      "label": false,
+      "expected_states": [],
+      "obtained_states": [],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "B9_identifier_allowlist",
+      "group": "sql",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "sql-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-6994143458849762724758058091",
+          "title": "Consulta SQL contextual",
+          "type": "informational",
+          "cwe": "CWE-89",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 4,
+            "line_end": 4,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → table → control:sql-allowlist → control:command-allowlist → formatted-string → cursor.execute(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "cursor.execute",
+            "trace": [
+              "input(...)",
+              "table",
+              "control:sql-allowlist",
+              "control:command-allowlist",
+              "formatted-string",
+              "cursor.execute(...)"
+            ],
+            "controls": [
+              "command-allowlist",
+              "sql-allowlist"
+            ],
+            "mitigation": "Fragmento SQL restringido a identificadores literales",
+            "context": null,
+            "snippet": "cursor.execute(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Fragmento SQL restringido a identificadores literales"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar parámetros y listas permitidas para identificadores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/89.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "sql-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "B10_dynamic_fragment",
+      "group": "sql",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "sql-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-75006154428208295095469314644",
+          "title": "Consulta SQL contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-89",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → q → formatted-string → cursor.execute(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "cursor.execute",
+            "trace": [
+              "input(...)",
+              "q",
+              "formatted-string",
+              "cursor.execute(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "cursor.execute(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar parámetros y listas permitidas para identificadores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/89.html"
+          ],
+          "status": "PROBABLE",
+          "category": "sql-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "C11_fixed_argv",
+      "group": "command",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "command-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-50844535108867757463807764903",
+          "title": "Comando interpretado por shell",
+          "type": "informational",
+          "cwe": "CWE-78",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal sequence → subprocess.run(...)",
+            "source": [],
+            "sink": "subprocess.run",
+            "trace": [
+              "literal sequence",
+              "subprocess.run(...)"
+            ],
+            "controls": [],
+            "mitigation": "Argumentos fijos sin interpretación shell",
+            "context": null,
+            "snippet": "subprocess.run(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Argumentos fijos sin interpretación shell"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar argumentos separados sin shell y validar valores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/78.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "command-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "C12_external_shell",
+      "group": "command",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "command-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-13160830962934115995519860494",
+          "title": "Comando interpretado por shell",
+          "type": "probable_weakness",
+          "cwe": "CWE-78",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → binary-operation → subprocess.run(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "subprocess.run",
+            "trace": [
+              "input(...)",
+              "x",
+              "binary-operation",
+              "subprocess.run(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "subprocess.run(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar argumentos separados sin shell y validar valores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/78.html"
+          ],
+          "status": "PROBABLE",
+          "category": "command-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "C13_program_arguments",
+      "group": "command",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "argument-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-40064366500596687464859773557",
+          "title": "Argumento externo para programa sensible",
+          "type": "probable_weakness",
+          "cwe": "CWE-88",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → input(...) → x → subprocess.run(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "subprocess.run",
+            "trace": [
+              "literal",
+              "input(...)",
+              "x",
+              "subprocess.run(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "subprocess.run(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Restringir opciones/destinos según el programa invocado",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/88.html"
+          ],
+          "status": "PROBABLE",
+          "category": "argument-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "C14_command_allowlist",
+      "group": "command",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "command-injection",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": true,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-47258097880010673871663359971",
+          "title": "Comando interpretado por shell",
+          "type": "informational",
+          "cwe": "CWE-78",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 5,
+            "line_end": 5,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → control:sql-allowlist → control:command-allowlist → subprocess.run(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "subprocess.run",
+            "trace": [
+              "input(...)",
+              "x",
+              "control:sql-allowlist",
+              "control:command-allowlist",
+              "subprocess.run(...)"
+            ],
+            "controls": [
+              "command-allowlist",
+              "sql-allowlist"
+            ],
+            "mitigation": "Lista permitida de comandos literales sin metacaracteres",
+            "context": null,
+            "snippet": "subprocess.run(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Lista permitida de comandos literales sin metacaracteres"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar argumentos separados sin shell y validar valores",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/78.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "command-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "D15_fixed_file",
+      "group": "path",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "path-traversal",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-51467233116679786191108429302",
+          "title": "Acceso contextual a archivo",
+          "type": "informational",
+          "cwe": "CWE-22",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 13,
+          "location": {
+            "file": "app.py",
+            "line_start": 1,
+            "line_end": 1,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → open(...)",
+            "source": [],
+            "sink": "open",
+            "trace": [
+              "literal",
+              "open(...)"
+            ],
+            "controls": [],
+            "mitigation": "Nombre de archivo fijo: sin traversal controlado observado",
+            "context": null,
+            "snippet": "open(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Nombre de archivo fijo: sin traversal controlado observado"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Resolver y confinar rutas; revisar enlaces y carreras de archivos",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/22.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "path-traversal",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "D16_external_path",
+      "group": "path",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "path-traversal",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-16040711161927139638440997668",
+          "title": "Acceso contextual a archivo",
+          "type": "probable_weakness",
+          "cwe": "CWE-22",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 13,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → binary-operation → p → open(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "open",
+            "trace": [
+              "input(...)",
+              "x",
+              "binary-operation",
+              "p",
+              "open(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "open(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Resolver y confinar rutas; revisar enlaces y carreras de archivos",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/22.html"
+          ],
+          "status": "PROBABLE",
+          "category": "path-traversal",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "D17_confined_path",
+      "group": "path",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "path-traversal",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-42088444809099488485762246987",
+          "title": "Acceso contextual a archivo",
+          "type": "informational",
+          "cwe": "CWE-22",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 13,
+          "location": {
+            "file": "app.py",
+            "line_start": 6,
+            "line_end": 6,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Path(...) → resolve() → base → input(...) → path join → resolve() → p → control:path-confinement → open(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "open",
+            "trace": [
+              "literal",
+              "Path(...)",
+              "resolve()",
+              "base",
+              "input(...)",
+              "path join",
+              "resolve()",
+              "p",
+              "control:path-confinement",
+              "open(...)"
+            ],
+            "controls": [
+              "path-confinement"
+            ],
+            "mitigation": "Ruta resuelta con confinamiento estructural; enlaces y carreras runtime pendientes",
+            "context": null,
+            "snippet": "open(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Ruta resuelta con confinamiento estructural; enlaces y carreras runtime pendientes"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Resolver y confinar rutas; revisar enlaces y carreras de archivos",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/22.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "path-traversal",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "D18_text_prefix",
+      "group": "path",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "path-traversal",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-42088444809099488485762246987",
+          "title": "Acceso contextual a archivo",
+          "type": "probable_weakness",
+          "cwe": "CWE-22",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 13,
+          "location": {
+            "file": "app.py",
+            "line_start": 6,
+            "line_end": 6,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → Path(...) → resolve() → base → input(...) → path join → resolve() → p → open(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "open",
+            "trace": [
+              "literal",
+              "Path(...)",
+              "resolve()",
+              "base",
+              "input(...)",
+              "path join",
+              "resolve()",
+              "p",
+              "open(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "open(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Resolver y confinar rutas; revisar enlaces y carreras de archivos",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/22.html"
+          ],
+          "status": "PROBABLE",
+          "category": "path-traversal",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E19_owner_query",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-62191138596599275566222105752",
+          "title": "Ámbito del recurso solicitado",
+          "type": "informational",
+          "cwe": "CWE-639",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 7,
+            "line_end": 7,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → current_user → .id → .filter_by(...) → .first(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": ".first",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "current_user",
+              ".id",
+              ".filter_by(...)",
+              ".first(...)"
+            ],
+            "controls": [],
+            "mitigation": "owner_id ligado a flask_login.current_user",
+            "context": {
+              "authentication": true,
+              "action": "first",
+              "policy": "owner_id ligado a flask_login.current_user"
+            },
+            "snippet": ".first(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "owner_id ligado a flask_login.current_user"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E20_missing_owner",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-10845260240186777481195111065",
+          "title": "Ámbito del recurso solicitado",
+          "type": "probable_weakness",
+          "cwe": "CWE-639",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 6,
+            "line_end": 6,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → Record.query.get(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": "Record.query.get",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "Record.query.get(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": {
+              "authentication": false,
+              "action": "get",
+              "policy": "no observada en la función"
+            },
+            "snippet": "Record.query.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "PROBABLE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E21_authenticated_tenant",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-62191138596599275566222105752",
+          "title": "Ámbito del recurso solicitado",
+          "type": "informational",
+          "cwe": "CWE-639",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 7,
+            "line_end": 7,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → current_user → .tenant_id → .filter_by(...) → .first(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": ".first",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "current_user",
+              ".tenant_id",
+              ".filter_by(...)",
+              ".first(...)"
+            ],
+            "controls": [],
+            "mitigation": "tenant_id ligado a flask_login.current_user",
+            "context": {
+              "authentication": true,
+              "action": "first",
+              "policy": "tenant_id ligado a flask_login.current_user"
+            },
+            "snippet": ".first(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "tenant_id ligado a flask_login.current_user"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E22_client_tenant",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-10845260240186777481195111065",
+          "title": "Ámbito del recurso solicitado",
+          "type": "probable_weakness",
+          "cwe": "CWE-639",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 6,
+            "line_end": 6,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → flask.request.args → subscript → .filter_by(...) → .first(...)",
+            "source": [
+              "route-parameter:resource_id",
+              "flask.request.args"
+            ],
+            "sink": ".first",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "flask.request.args",
+              "subscript",
+              ".filter_by(...)",
+              ".first(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": {
+              "authentication": false,
+              "action": "first",
+              "policy": "no observada en la función"
+            },
+            "snippet": ".first(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "PROBABLE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E23_owner_guard",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-62191138596599275566222105752",
+          "title": "Ámbito del recurso solicitado",
+          "type": "informational",
+          "cwe": "CWE-639",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 7,
+            "line_end": 7,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → Record.query.get(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": "Record.query.get",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "Record.query.get(...)"
+            ],
+            "controls": [],
+            "mitigation": "Rechazo dominante si propietario/tenant difiere de la identidad Flask-Login",
+            "context": {
+              "authentication": true,
+              "action": "get",
+              "policy": "no observada en la función"
+            },
+            "snippet": "Record.query.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              },
+              {
+                "from": "PROBABLE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Rechazo dominante si propietario/tenant difiere de la identidad Flask-Login"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E24_authentication_only",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-62191138596599275566222105752",
+          "title": "Ámbito del recurso solicitado",
+          "type": "probable_weakness",
+          "cwe": "CWE-639",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 7,
+            "line_end": 7,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → Record.query.get(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": "Record.query.get",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "Record.query.get(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": {
+              "authentication": true,
+              "action": "get",
+              "policy": "no observada en la función"
+            },
+            "snippet": "Record.query.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "PROBABLE",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "E25_external_middleware",
+      "group": "authorization",
+      "language": "Python",
+      "framework": "Flask/Flask-Login query shape",
+      "category": "resource-authorization",
+      "label": null,
+      "expected_states": [
+        "NOT_VERIFIED"
+      ],
+      "obtained_states": [
+        "NOT_VERIFIED"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-62191138596599275566222105752",
+          "title": "Ámbito del recurso solicitado",
+          "type": "probable_weakness",
+          "cwe": "CWE-639",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 4,
+          "location": {
+            "file": "app.py",
+            "line_start": 7,
+            "line_end": 7,
+            "function": "endpoint"
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "Record → .query → resource_id → Record.query.get(...)",
+            "source": [
+              "route-parameter:resource_id"
+            ],
+            "sink": "Record.query.get",
+            "trace": [
+              "Record",
+              ".query",
+              "resource_id",
+              "Record.query.get(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": {
+              "authentication": false,
+              "action": "get",
+              "policy": "no observada en la función"
+            },
+            "snippet": "Record.query.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "NOT_VERIFIED",
+                "reason": "Decorador/middleware externo o política no resuelta"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes",
+              "Decorador/middleware externo o política no resuelta"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Aplicar política de propiedad/tenant en el servidor",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/639.html"
+          ],
+          "status": "NOT_VERIFIED",
+          "category": "resource-authorization",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "S1_ssrf",
+      "group": "ssrf",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "ssrf",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-4410731973265931202112761076",
+          "title": "Destino HTTP contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-918",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 11,
+          "location": {
+            "file": "app.py",
+            "line_start": 3,
+            "line_end": 3,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → x → requests.get(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "requests.get",
+            "trace": [
+              "input(...)",
+              "x",
+              "requests.get(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "requests.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Restringir destinos, redirecciones y resolución DNS",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/918.html"
+          ],
+          "status": "PROBABLE",
+          "category": "ssrf",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "S2_ssrf_constant",
+      "group": "ssrf",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "ssrf",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-16711649511715179091836722745",
+          "title": "Destino HTTP contextual",
+          "type": "informational",
+          "cwe": "CWE-918",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 11,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "literal → requests.get(...)",
+            "source": [],
+            "sink": "requests.get",
+            "trace": [
+              "literal",
+              "requests.get(...)"
+            ],
+            "controls": [],
+            "mitigation": "URL fija: sin destino directamente controlado en esta llamada",
+            "context": null,
+            "snippet": "requests.get(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "URL fija: sin destino directamente controlado en esta llamada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "context-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Restringir destinos, redirecciones y resolución DNS",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/918.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "ssrf",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "T1_template",
+      "group": "template",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "template-injection",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-13035961365459662977668875843",
+          "title": "Plantilla dinámica contextual",
+          "type": "probable_weakness",
+          "cwe": "CWE-1336",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 8,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → jinja2.Template(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "jinja2.Template",
+            "trace": [
+              "input(...)",
+              "jinja2.Template(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "jinja2.Template(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Usar plantillas fijas con datos separados",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/1336.html"
+          ],
+          "status": "PROBABLE",
+          "category": "template-injection",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "X1_html",
+      "group": "xss",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "xss",
+      "label": true,
+      "expected_states": [
+        "PROBABLE"
+      ],
+      "obtained_states": [
+        "PROBABLE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": true,
+      "findings": [
+        {
+          "id": "SAA-31524754530163910057802281602",
+          "title": "HTML marcado como seguro",
+          "type": "probable_weakness",
+          "cwe": "CWE-79",
+          "severity": "medium",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "investigate",
+          "confidence": "medium",
+          "phase": 16,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → markupsafe.Markup(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "markupsafe.Markup",
+            "trace": [
+              "input(...)",
+              "markupsafe.Markup(...)"
+            ],
+            "controls": [],
+            "mitigation": null,
+            "context": null,
+            "snippet": "markupsafe.Markup(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "PROBABLE",
+                "reason": "Flujo o condición contextual observado; sin explotación ejecutada"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Escapar texto en su contexto, no marcar entrada externa como HTML seguro",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/79.html"
+          ],
+          "status": "PROBABLE",
+          "category": "xss",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    },
+    {
+      "case": "X2_context_escape",
+      "group": "xss",
+      "language": "Python",
+      "framework": "stdlib/library call shape",
+      "category": "xss",
+      "label": false,
+      "expected_states": [
+        "FALSE_POSITIVE"
+      ],
+      "obtained_states": [
+        "FALSE_POSITIVE"
+      ],
+      "correct_state": true,
+      "v201_alert": false,
+      "v21_alert": false,
+      "findings": [
+        {
+          "id": "SAA-31524754530163910057802281602",
+          "title": "HTML marcado como seguro",
+          "type": "informational",
+          "cwe": "CWE-79",
+          "severity": "informational",
+          "severity_reason": "Impacto potencial; alcance y alcanzabilidad pendientes",
+          "priority": "no_action",
+          "confidence": "medium",
+          "phase": 16,
+          "location": {
+            "file": "app.py",
+            "line_start": 2,
+            "line_end": 2,
+            "function": null
+          },
+          "description": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "preconditions": [
+            "Confirmar que entrada no confiable alcanza esta operación"
+          ],
+          "evidence": {
+            "kind": "static_data_flow",
+            "summary": "input(...) → control:html-text-escape → markupsafe.Markup(...)",
+            "source": [
+              "input"
+            ],
+            "sink": "markupsafe.Markup",
+            "trace": [
+              "input(...)",
+              "control:html-text-escape",
+              "markupsafe.Markup(...)"
+            ],
+            "controls": [
+              "html-text-escape"
+            ],
+            "mitigation": "Escape MarkupSafe aplicado al texto HTML",
+            "context": null,
+            "snippet": "markupsafe.Markup(...)"
+          },
+          "verification": {
+            "status": "not_verified",
+            "executed": false,
+            "exploitation": "not_tested",
+            "state_history": [
+              {
+                "from": "CANDIDATE",
+                "to": "FALSE_POSITIVE",
+                "reason": "Escape MarkupSafe aplicado al texto HTML"
+              }
+            ],
+            "method": "static-data-flow",
+            "limitations": [
+              "Comportamiento en ejecución no probado",
+              "Alcanzabilidad y configuración externa pendientes"
+            ],
+            "result": "source-to-sink-path-observed"
+          },
+          "impact": "Observación contextual; alcanzabilidad y controles externos requieren revisión",
+          "remediation": "Escapar texto en su contexto, no marcar entrada externa como HTML seguro",
+          "references": [
+            "https://cwe.mitre.org/data/definitions/79.html"
+          ],
+          "status": "FALSE_POSITIVE",
+          "category": "xss",
+          "analyzer": "python-context-v2.1",
+          "regression_test": "Probar entradas seguras y peligrosas en aislamiento autorizado",
+          "commit": "51a3abb390b799a13baceb0cfb922e8786e4d6ac"
+        }
+      ],
+      "limitations": [
+        "Análisis estático limitado: sin ejecución del objetivo, pruebas activas ni consultas de advisories",
+        "Historial Git, archivos binarios y directorios generados no analizados",
+        "Prompt injection: contenido leído como datos; comportamiento de modelos no probado",
+        "Sin defensa contra modificación concurrente hostil del sistema de archivos; usar snapshot aislado",
+        "Herramienta opcional no disponible: semgrep",
+        "Herramienta opcional no disponible: gitleaks",
+        "Herramienta opcional no disponible: osv-scanner",
+        "Herramienta opcional no disponible: trivy"
+      ]
+    }
+  ]
+}
