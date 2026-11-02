@@ -217,7 +217,7 @@ Examples:
     report = commands.add_parser('report', help='Generación de reportes avanzados')
     report.add_argument('input', type=Path, help='Archivo audit.json de entrada')
     report.add_argument('--output', type=Path, required=True, help='Directorio o archivo de salida')
-    report.add_argument('--format', type=str, default='markdown',
+    report.add_argument('--format', type=str, default='json',
                         choices=['markdown', 'html', 'pdf', 'json'],
                         help='Formato del reporte')
     report.add_argument('--template', type=str, help='Plantilla personalizada')
@@ -228,7 +228,7 @@ Examples:
     # POC COMMAND - Generación de PoCs
     # ========================================================================
     poc = commands.add_parser('poc', help='Generación de Proof of Concepts')
-    poc.add_argument('finding-id', type=str, required=True, help='ID del hallazgo')
+    poc.add_argument('finding-id', type=str, help='ID del hallazgo')
     poc.add_argument('--input', type=Path, required=True, help='Archivo audit.json')
     poc.add_argument('--output', type=Path, help='Archivo de salida (default: poc_{finding-id}.py)')
     poc.add_argument('--language', type=str, default='python',
@@ -792,23 +792,29 @@ def _handle_report(args):
     reporter = ProfessionalReporter()
     
     # Generate report
+    # For JSON format, always create a directory with audit.json inside
+    # For other formats, create the file directly
     if args.format == 'json':
-        # Just reformat
-        output_path = args.output
-        if output_path.is_dir():
-            output_path = output_path / 'report.json'
+        # Create directory if it doesn't exist
+        if not args.output.exists():
+            args.output.mkdir(parents=True, exist_ok=True)
+        elif not args.output.is_dir():
+            # If it exists but is not a directory, this is an error
+            print(f"[-] Error: {args.output} existe pero no es un directorio", file=sys.stderr)
+            return
+        output_path = args.output / 'audit.json'
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
     else:
-        report = reporter.generate_report(data, format=args.format)
-        
-        # Save report
-        if args.output.is_dir():
+        # For other formats, output is a file
+        if args.output.exists() and args.output.is_dir():
             extension = 'html' if args.format == 'html' else 'md'
             output_path = args.output / f'report.{extension}'
         else:
             output_path = args.output
+            args.output.parent.mkdir(parents=True, exist_ok=True)
         
+        report = reporter.generate_report(data, format=args.format)
         with open(output_path, 'w', encoding='utf-8', newline='\n') as f:
             f.write(report)
     
@@ -962,7 +968,7 @@ if grep -q "$PAYLOAD" response.txt; then
 fi
 
 # Check for SQL errors
-if grep -qi "sql syntax\|mysql\|postgresql\|oracle\|syntax error" response.txt; then
+if grep -qi "sql syntax\\|mysql\\|postgresql\\|oracle\\|syntax error" response.txt; then
     echo "[+] SQL error detected!"
 fi
 '''
