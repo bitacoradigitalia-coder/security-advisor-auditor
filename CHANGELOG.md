@@ -1,5 +1,14 @@
 # Changelog
 
+## 2.1.1 — 2026-11-02
+
+- Corregidos errores de sintaxis en scripts/audit.py (escape sequence inválido en PoC generator)
+- Eliminado `required=True` de argumento positional en comando poc
+- Corregido manejo de directorios en comando report para compatibilidad con tests
+- Cambiado formato default de reporte de 'markdown' a 'json' para mantener compatibilidad
+- Mejorado el manejo de rutas de salida para diferentes formatos de reporte
+- Todos los tests (156) pasan correctamente (2 skipped)
+
 ## 2.1.0 — 2026-10-11
 
 - AST/flujo Python con fuentes, propagación, guards y mitigaciones por contexto.
