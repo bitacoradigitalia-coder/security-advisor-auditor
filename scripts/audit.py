@@ -14,6 +14,14 @@ from security_auditor.scanners import plans
 from security_auditor.validation import validate_skill
 from security_auditor.sources import project_source
 
+# Import core security components
+try:
+    from scripts.core.scope_manager import ScopeManager, ScopeConfig
+    from scripts.core.engagement_manager import EngagementManager
+    SCOPE_AVAILABLE = True
+except ImportError:
+    SCOPE_AVAILABLE = False
+
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
@@ -55,6 +63,13 @@ Examples:
     )
     
     commands = parser.add_subparsers(dest='command', required=True)
+
+    # Global security options
+    parser.add_argument("--scope-config", type=str, help="Archivo de configuracion de alcance (JSON)")
+    parser.add_argument("--engagement-id", type=str, help="ID del engagement para autorizacion")
+    parser.add_argument("--engagement-file", type=str, help="Archivo de engagements (JSON)")
+    parser.add_argument("--no-scope-validation", action="store_true",
+                    help="Deshabilitar validacion de alcance (NO RECOMENDADO)")
     
     # ========================================================================
     # SCAN COMMAND - Análisis completo (estático + activo)
@@ -252,22 +267,46 @@ Examples:
     # Parse arguments and execute
     # ========================================================================
     args = parser.parse_args(argv)
+
+    # Initialize security components
+    scope_manager = None
+    engagement_manager = None
+    if not args.no_scope_validation:
+        if SCOPE_AVAILABLE:
+            try:
+                if args.scope_config:
+                    scope_config = ScopeConfig.from_json_file(args.scope_config)
+                    scope_manager = ScopeManager(scope_config)
+                else:
+                    # Create default scope manager with basic protections
+                    scope_manager = ScopeManager(ScopeConfig())
+            except Exception as e:
+                print(f"Warning: Could not initialize ScopeManager: {e}", file=sys.stderr)
+            
+            try:
+                if args.engagement_file:
+                    engagement_manager = EngagementManager(args.engagement_file)
+                elif args.engagement_id:
+                    # Create engagement manager with default storage
+                    engagement_manager = EngagementManager()
+            except Exception as e:
+                print(f"Warning: Could not initialize EngagementManager: {e}", file=sys.stderr)
     
     try:
         if args.command == 'scan':
             # Handle both file paths and URLs
             if args.target.startswith(('http://', 'https://')):
                 # Active scanning for URLs
-                _handle_active_scan(args)
+                _handle_active_scan(args, scope_manager, engagement_manager, args.engagement_id)
             else:
                 # Static analysis for file paths
                 _handle_static_scan(args)
         
         elif args.command == 'fuzz':
-            _handle_fuzzing(args)
+            _handle_fuzzing(args, scope_manager, engagement_manager, args.engagement_id)
         
         elif args.command == 'exploit':
-            _handle_exploitation(args)
+            _handle_exploitation(args, scope_manager, engagement_manager, args.engagement_id)
         
         elif args.command == 'bugbounty':
             _handle_bugbounty(args)
@@ -329,7 +368,7 @@ def _handle_static_scan(args):
     print(f'Informe generado; observaciones registradas: {len(data["findings"])}')
 
 
-def _handle_active_scan(args):
+def _handle_active_scan(args, scope_manager=None, engagement_manager=None, engagement_id=None):
     """Handle active scanning for URLs."""
     from pathlib import Path
     from pentesting.scanner import ActiveScanner, ScanConfig
@@ -494,7 +533,7 @@ def _handle_active_scan(args):
     print(f"    - {summary_path}")
 
 
-def _handle_fuzzing(args):
+def _handle_fuzzing(args, scope_manager=None, engagement_manager=None, engagement_id=None):
     """Handle fuzzing command."""
     from pentesting.fuzzer import Fuzzer, FuzzConfig
     import json
@@ -533,7 +572,7 @@ def _handle_fuzzing(args):
         delay=args.delay
     )
     
-    fuzzer = Fuzzer(fuzz_config)
+    fuzzer = Fuzzer(fuzz_config, scope_manager=scope_manager, engagement_manager=engagement_manager, engagement_id=engagement_id)
     results = fuzzer.fuzz()
     
     # Save results
@@ -552,7 +591,7 @@ def _handle_fuzzing(args):
     print(f"[+] Resultados guardados en {json_path}")
 
 
-def _handle_exploitation(args):
+def _handle_exploitation(args, scope_manager=None, engagement_manager=None, engagement_id=None):
     """Handle exploitation command."""
     from pentesting.exploit import ExploitManager, ExploitConfig
     from pentesting.auth import PermissionManager
@@ -589,7 +628,7 @@ def _handle_exploitation(args):
     )
     
     # Execute exploitation
-    manager = ExploitManager(exploit_config)
+    manager = ExploitManager(exploit_config, scope_manager=scope_manager, engagement_manager=engagement_manager, engagement_id=engagement_id)
     results = manager.exploit()
     
     # Save results
