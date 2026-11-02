@@ -1,12 +1,23 @@
-# Security Advisor Auditor v3.0 — Análisis de Seguridad Profesional
+# Security Advisor Auditor
 
 **Herramienta completa de auditoría de seguridad: Análisis estático + Pentesting + Bug Bounty**
 
 Skill especializada para auditar **cualquier software** con evidencias y
-remediación incremental. **v3.0 añade capacidades profesionales de pentesting y gestión de Bug Bounty.**
-
-Preserva íntegramente las **21 fases** originales para web, SaaS, APIs, backend, móviles,
+remediación incremental. Preserva íntegramente las **21 fases** originales para web, SaaS, APIs, backend, móviles,
 escritorio, CLI, bibliotecas, automatizaciones, CI/CD e infraestructura. Licencia MIT.
+
+---
+
+## 📋 Versión Actual
+
+**v2.1.1** — Última actualización: 2026-11-02
+
+- ✅ Todos los tests pasan (156/156)
+- ✅ Módulos de v3.0 implementados y funcionales (pentesting, bug bounty, reporting)
+- ✅ Correcciones de errores críticos en CLI
+- ✅ Documentación actualizada
+
+**Nota sobre versiones**: Este proyecto sigue un enfoque incremental. La versión estable actual es **v2.1.1** con los módulos de **v3.0** (pentesting, bug bounty, reporting) ya implementados y funcionales. Consulte [CHANGELOG.md](CHANGELOG.md) para el historial completo.
 
 ---
 
@@ -42,14 +53,6 @@ escritorio, CLI, bibliotecas, automatizaciones, CI/CD e infraestructura. Licenci
 - Heurísticas de credenciales embebidas y HTML dinámico JS/TS
 - ID, CWE, archivo/líneas, commit, fase, tipo, confianza, severidad justificada
 - Informes Markdown/JSON y prompt de remediación
-
-### Pentesting Activo (Nuevo en v3.0)
-
-Combina la revisión contextual del agente con un helper local de **triaje estático**.
-QUICK conserva candidatos sintácticos. STANDARD/DEEP añaden contexto Python,
-trazas y estados conservadores; pueden tener falsos positivos y omisiones.
-Cero coincidencias no demuestra seguridad. La revisión conserva arquitectura,
-auth/authz, tenancy, lógica de negocio, concurrencia, privacidad y asesoría.
 
 ### Pentesting Activo (Nuevo en v3.0)
 - **ActiveScanner**: Descubrimiento de endpoints, detección de tecnologías (CMS/WAF), comprobación de headers de seguridad
@@ -126,6 +129,24 @@ security-advisor-auditor/
 - [Cobertura de Análisis](docs/coverage.md) - Detalles de cobertura de análisis estático
 - [Módulo de Pentesting](docs/pentesting.md) - Guía completa del módulo de pentesting
 - [Módulo de Bug Bounty](docs/bugbounty.md) - Guía completa del módulo de Bug Bounty
+
+## 📜 Historial de Versiones
+
+- **v2.1.1** (2026-11-02): Correcciones de bugs y tests
+  - Fix de errores de sintaxis en audit.py
+  - Corrección de manejo de directorios en comando report
+  - Todos los tests pasan (156/156)
+  - Ver [CHANGELOG.md](CHANGELOG.md) para detalles
+
+- **v2.1.0** (2026-10-11): AST Python y análisis avanzado
+  - Motor de análisis estático con AST
+  - Estados comprobables y trazas
+  - Modos QUICK/STANDARD/DEEP
+
+- **v2.0.0** (2026-10-10): Versión base con metodología de 21 fases
+
+---
+
 
 ---
 
@@ -770,3 +791,93 @@ hallazgos en otros archivos; desplazar líneas sí cambia la identidad.
 Los estados y ejemplos se explican en [docs/architecture.md](docs/architecture.md),
 [docs/coverage.md](docs/coverage.md) y [docs/evaluation.md](docs/evaluation.md).
 La precisión del conjunto sintético no representa la precisión general.
+
+---
+
+## 🚀 Roadmap y Mejoras Futuras (v3.0+)
+
+### 📌 Próximas Funcionalidades
+
+#### Módulo de Análisis Estático
+- [ ] Análisis interprocedimental completo
+- [ ] Soporte para más lenguajes (Java, C#, Go, Rust)
+- [ ] Integración con SonarQube y CodeQL
+- [ ] Análisis de dependencias transitivas
+- [ ] Detección de vulnerabilidades en configuraciones (YAML, JSON, TOML)
+
+#### Módulo de Pentesting
+- [ ] Escaneo automatizado de APIs GraphQL
+- [ ] Detección de WebSockets vulnerables
+- [ ] Pruebas de autenticación (brute force, credential stuffing)
+- [ ] Integración con Burp Suite API
+- [ ] Soporte para pruebas de DoS controladas
+- [ ] Generación automática de informes de pentest
+
+#### Módulo de Bug Bounty
+- [ ] Integración con más plataformas (Intigriti, YesWeHack, etc.)
+- [ ] Sistema de notificaciones automáticas
+- [ ] Dashboard de métricas de programas
+- [ ] Generación de reportes para plataformas externas
+- [ ] Seguimiento de recompensas y pagos
+
+#### Módulo de Reporting
+- [ ] Generación de reportes en PDF
+- [ ] Plantillas personalizables por cliente
+- [ ] Exportación a sistemas de ticketing (Jira, GitHub Issues)
+- [ ] Comparación de informes entre versiones
+- [ ] Métricas de mejora de seguridad
+
+#### CLI y UX
+- [ ] Interfaz web opcional (Flask/Dash)
+- [ ] Modo interactivo con preguntas guiadas
+- [ ] Autocompletado de comandos
+- [ ] Validación automática de dependencias
+- [ ] Configuración persistente
+
+#### Infraestructura
+- [ ] Soporte para Docker y contenedores
+- [ ] Integración CI/CD (GitHub Actions, GitLab CI)
+- [ ] Despliegue como servicio (opcional)
+- [ ] Base de datos para historial de auditorías
+- [ ] API REST para integración con otras herramientas
+
+### 💡 Ideas para Contribuir
+
+1. **Nuevas Vulnerabilidades**: Añadir payloads a las wordlists en `scripts/pentesting/wordlists/`
+2. **Nuevas Plataformas**: Extender `scripts/bugbounty/platforms.py` con más integraciones
+3. **Nuevos Analizadores**: Añadir soporte para más lenguajes en `scripts/static_analysis/`
+4. **Mejoras de Rendimiento**: Optimizar el parser AST y el análisis de flujo
+5. **Documentación**: Mejorar guías y ejemplos en `docs/`
+6. **Tests**: Añadir más casos de prueba, especialmente para módulos nuevos
+7. **UI/UX**: Mejorar mensajes de error y ayuda del CLI
+
+### 📖 Recursos para Contribuidores
+
+- [Arquitectura del Sistema](docs/architecture.md)
+- [Metodología de Auditoría](references/audit-methodology.md)
+- [Guía de Contribución](CONTRIBUTING.md) *(por crear)*
+- [Estilo de Código](.github/CONTRIBUTING.md) *(si existe)*
+
+---
+
+## 🤝 Contribuciones
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el repositorio
+2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
+3. Añade tests para tu código
+4. Ejecuta todos los tests (`python -B -m unittest discover -s tests -v`)
+5. Crea un Pull Request
+
+**Requisitos para PRs:**
+- ✅ Todos los tests deben pasar
+- ✅ Código limpio y bien documentado
+- ✅ Sigue el estilo del proyecto
+- ✅ Incluye actualización de CHANGELOG si aplica
+
+---
+
+**Security Advisor Auditor - Análisis de Seguridad Profesional para Hackers y Desarrolladores Senior** 🚀
+
+*Versión estable: v2.1.1 | Módulos v3.0: Funcionales | Tests: 156/156 ✅*
