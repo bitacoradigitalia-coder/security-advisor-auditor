@@ -1,0 +1,47 @@
+.................................................................... [ 32%]
+................FF.....................................................................s..... [ 76%]
+...........................................s.....       [100%]
+=================================== FAILURES ===================================
+_______________ TestOOBScannerE2E.test_sin_callback_no_confirma ________________
+
+self = <tests.test_oob.TestOOBScannerE2E testMethod=test_sin_callback_no_confirma>
+
+    def test_sin_callback_no_confirma(self):
+        results = self.scanner.probe_parameter(
+            self.base_url + "/private/", "url", vuln_types=["ssrf_blind"],
+        )
+        self.assertEqual(len(results), 1)
+        self.assertFalse(results[0].is_confirmed)
+        self.assertIsNone(results[0].callback)
+        # El numero de findings no crece con la sonda negativa
+>       self.assertEqual(len(self.scanner.get_findings()), 1)
+E       AssertionError: 0 != 1
+
+tests/test_oob.py:123: AssertionError
+__________ TestOOBScannerE2E.test_ssrf_blind_confirmado_con_callback ___________
+
+self = <tests.test_oob.TestOOBScannerE2E testMethod=test_ssrf_blind_confirmado_con_callback>
+
+    def test_ssrf_blind_confirmado_con_callback(self):
+        results = self.scanner.probe_parameter(
+            self.base_url + "/fetch", "url", vuln_types=["ssrf_blind"],
+        )
+        self.assertEqual(len(results), 1)
+        result = results[0]
+        self.assertTrue(result.is_confirmed)
+        self.assertIsNotNone(result.callback)
+        assert result.callback is not None
+        self.assertEqual(result.callback.interaction_id, result.interaction_id)
+        # Finding CONFIRMADO con evidencias
+        findings = self.scanner.get_findings()
+        self.assertTrue(findings)
+        finding = findings[-1]
+        self.assertEqual(finding.vulnerability_type, "ssrf_blind")
+>       self.assertEqual(finding.verification_status, VerificationStatus.CONFIRMED)
+E       AssertionError: <VerificationStatus.CONFIRMED: 'CONFIRMED'> != <VerificationStatus.CONFIRMED: 'CONFIRMED'>
+
+tests/test_oob.py:112: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_oob.py::TestOOBScannerE2E::test_sin_callback_no_confirma - AssertionError: 0 != 1
+FAILED tests/test_oob.py::TestOOBScannerE2E::test_ssrf_blind_confirmado_con_callback - AssertionError: <VerificationStatus.CONFIRMED: 'CONFIRMED'> != <VerificationStatus.CONFIRMED: 'CONFIRMED'>
+2 failed, 206 passed, 2 skipped, 72 subtests passed in 41.81s
