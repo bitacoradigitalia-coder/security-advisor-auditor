@@ -19,6 +19,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      - name: Parche JS006 (js_analyzer.py)
+        run: |
+          set -e
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python .github/fix_js006.py
+          git add -A
+          git diff --cached --quiet || git commit -m "reparar: escapar comillas del patron JS006 (SyntaxError en js_analyzer)"
+          git push origin main || true
       - name: Instalar dependencias
         run: pip install requests mypy pytest pyyaml
       - name: Tests
