@@ -6,49 +6,17 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
-      - name: Parches post-restauracion
-        run: |
-          set +e
-          python .github/fix_js006.py > patch.log 2>&1
-          python .github/fix_v2.py >> patch.log 2>&1
-          cat patch.log
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || git commit -m "reparar: scan_comments para TS002 + accion de falso positivo del AIEngine"
-          git push origin main 2>> patch.log || echo "push fallido" >> patch.log
       - name: Instalar dependencias
-        run: pip install requests mypy pytest pyyaml
+        run: pip install -r requirements.txt pytest mypy
       - name: Tests
-        run: |
-          set +e
-          python -m pytest tests/ -q > pytest.log 2>&1
-          pcode=$?
-          mypy --config-file mypy.ini > mypy.log 2>&1
-          mcode=$?
-          echo "PYTEST_EXIT=$pcode MYPY_EXIT=$mcode"
-          tail -60 pytest.log
-          tail -15 mypy.log
-          test $pcode -eq 0
-      - name: Subir logs a rama ci-diag
-        if: always()
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B ci-diag
-          git add -f pytest.log mypy.log patch.log 2>/dev/null || true
-          git commit -m "diag: logs CI" || true
-          git push -f origin ci-diag || true
+        run: python -m pytest tests/ -q
+      - name: Mypy (advisory, no bloqueante)
+        run: mypy --config-file mypy.ini || true
