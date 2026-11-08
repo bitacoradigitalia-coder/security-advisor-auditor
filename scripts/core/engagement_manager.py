@@ -705,6 +705,8 @@ class EngagementManager:
     
     def _load_engagements(self) -> None:
         """Load engagements from storage file."""
+        if not self.storage_path:
+            return
         try:
             with open(self.storage_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
