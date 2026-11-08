@@ -1,0 +1,109 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/test_fp_benchmark.py __________________
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/python.py:528: in importtestmodule
+    mod = import_path(
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/pathlib.py:640: in import_path
+    importlib.import_module(module_name)
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/assertion/rewrite.py:185: in exec_module
+    exec(co, module.__dict__)
+tests/test_fp_benchmark.py:19: in <module>
+    from static_analysis import JavaScriptAnalyzer, TypeScriptAnalyzer
+scripts/static_analysis/__init__.py:20: in <module>
+    from .iac_analyzer import IaCAnalyzer
+E     File "/home/runner/work/security-advisor-auditor/security-advisor-auditor/scripts/static_analysis/iac_analyzer.py", line 99
+E       pattern=r"(acl|public)\s*=\s*"?(public|true)",
+E                                                   ^
+E   SyntaxError: unterminated string literal (detected at line 99)
+_________________ ERROR collecting tests/test_iac_analyzer.py __________________
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/python.py:528: in importtestmodule
+    mod = import_path(
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/pathlib.py:640: in import_path
+    importlib.import_module(module_name)
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/assertion/rewrite.py:185: in exec_module
+    exec(co, module.__dict__)
+tests/test_iac_analyzer.py:15: in <module>
+    from static_analysis.iac_analyzer import IaCAnalyzer
+scripts/static_analysis/__init__.py:20: in <module>
+    from .iac_analyzer import IaCAnalyzer
+E     File "/home/runner/work/security-advisor-auditor/security-advisor-auditor/scripts/static_analysis/iac_analyzer.py", line 99
+E       pattern=r"(acl|public)\s*=\s*"?(public|true)",
+E                                                   ^
+E   SyntaxError: unterminated string literal (detected at line 99)
+________________ ERROR collecting tests/test_js_ts_analyzers.py ________________
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/python.py:528: in importtestmodule
+    mod = import_path(
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/pathlib.py:640: in import_path
+    importlib.import_module(module_name)
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/assertion/rewrite.py:185: in exec_module
+    exec(co, module.__dict__)
+tests/test_js_ts_analyzers.py:11: in <module>
+    from static_analysis import JavaScriptAnalyzer, TypeScriptAnalyzer, get_analyzer
+scripts/static_analysis/__init__.py:20: in <module>
+    from .iac_analyzer import IaCAnalyzer
+E     File "/home/runner/work/security-advisor-auditor/security-advisor-auditor/scripts/static_analysis/iac_analyzer.py", line 99
+E       pattern=r"(acl|public)\s*=\s*"?(public|true)",
+E                                                   ^
+E   SyntaxError: unterminated string literal (detected at line 99)
+_________________ ERROR collecting tests/test_php_analyzer.py __________________
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/python.py:528: in importtestmodule
+    mod = import_path(
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/pathlib.py:640: in import_path
+    importlib.import_module(module_name)
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1050: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1027: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1006: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:688: in _load_unlocked
+    ???
+/opt/hostedtoolcache/Python/3.10.22/x64/lib/python3.10/site-packages/_pytest/assertion/rewrite.py:185: in exec_module
+    exec(co, module.__dict__)
+tests/test_php_analyzer.py:11: in <module>
+    from static_analysis import PHPAnalyzer, get_analyzer
+scripts/static_analysis/__init__.py:20: in <module>
+    from .iac_analyzer import IaCAnalyzer
+E     File "/home/runner/work/security-advisor-auditor/security-advisor-auditor/scripts/static_analysis/iac_analyzer.py", line 99
+E       pattern=r"(acl|public)\s*=\s*"?(public|true)",
+E                                                   ^
+E   SyntaxError: unterminated string literal (detected at line 99)
+=========================== short test summary info ============================
+ERROR tests/test_fp_benchmark.py
+ERROR tests/test_iac_analyzer.py
+ERROR tests/test_js_ts_analyzers.py
+ERROR tests/test_php_analyzer.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!
+4 errors in 0.57s
