@@ -36,6 +36,7 @@ TS_RULES: List[Rule] = [
         pattern=r"//\s*@(ts-ignore|ts-expect-error)",
         message="Suprimir errores del compilador puede ocultar vulnerabilidades o bugs",
         remediation="Corregir el error de tipo en lugar de ignorarlo",
+        scan_comments=True,
         tags=["typescript"],
     ),
     Rule(

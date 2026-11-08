@@ -1,1 +1,4 @@
 fix_js006: patron JS006 corregido
+regex_rules: scan_comments anadido
+ts_analyzer: TS002 con scan_comments
+ai_engine: accion FP actualizada

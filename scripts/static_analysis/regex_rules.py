@@ -29,6 +29,7 @@ class Rule:
     references: List[str] = field(default_factory=list)
     tags: List[str] = field(default_factory=list)
     case_insensitive: bool = False
+    scan_comments: bool = False
 
     _compiled: Any = None
 
@@ -61,9 +62,12 @@ class RuleEngine:
         findings: List[Finding] = []
         for lineno, line in enumerate(code.split("\n"), start=1):
             stripped = line.strip()
-            if not stripped or stripped.startswith("//") or stripped.startswith("*") or stripped.startswith("/*"):
+            if not stripped:
                 continue
+            is_comment = stripped.startswith("//") or stripped.startswith("*") or stripped.startswith("/*")
             for rule in self.rules:
+                if is_comment and not rule.scan_comments:
+                    continue
                 match = rule.regex.search(line)
                 if not match:
                     continue

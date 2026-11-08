@@ -129,7 +129,7 @@ class AIEngine:
                 priority=PriorityLevel.P4,
                 rationale=["Descartado: marcado como falso positivo por el VerificationEngine"],
                 context_signals=signals,
-                recommended_action="Cerrar el hallazgo y registrar la justificacion",
+                recommended_action="Cerrar el hallazgo (falso positivo) y registrar la justificacion",
             )
 
         base = self.SEVERITY_WEIGHT.get(finding.severity, 10.0)
