@@ -24,6 +24,7 @@ jobs:
           set +e
           python -m pytest tests/ -q > pytest.log 2>&1
           pcode=$?
+          python .github/bench_debug.py >> pytest.log 2>&1 || true
           echo "PYTEST_EXIT=$pcode"
           tail -40 pytest.log
           test $pcode -eq 0
