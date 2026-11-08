@@ -8,7 +8,7 @@
 ## Estado global
 - CI: pytest BLOQUEANTE + mypy BLOQUEANTE (0 errores) en `ci-tests.yml`. Los dos deben seguir en verde tras cada paso.
 - Base actual: v2.2.0-alpha (tag d1e7ffd). Fases 1-5 + mejoras 1-10 completadas.
-- Mejoras e issues: M11 ⏳ (#5) | M12 ⏳ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
+- Mejoras e issues: M11 ✅ (#5) | M12 ⏳ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
 
 ---
 
@@ -26,23 +26,25 @@
 - Verificación de transcripción: usar números de línea conocidos como anclas (content.split con nueva línea, línea n-1 recortada debe coincidir con la línea esperada) ANTES de pushear.
 - `open_url` sobre raw.githubusercontent ENVUELVE líneas y trunca a ~32.8k: NUNCA re-subir contenido leído así.
 - `create_or_update_file` corrompe contenido: no usar.
-- Diagnóstico de CI que FUNCIONA: paso en el workflow (con permissions contents write) que sube logs a una rama `ci-diag` vía curl PUT a la API contents con secrets.GITHUB_TOKEN (el push git desde el runner falla silenciosamente); luego leer con get_file_contents ref ci-diag. ELIMINAR el paso de diagnóstico al terminar.
+- Diagnóstico de CI que FUNCIONA: paso en el workflow (con permissions contents write) que sube logs a una rama `ci-diag` vía curl PUT a la API contents con secrets.GITHUB_TOKEN (el push git desde el runner falla silenciosamente); luego leer con get_file_contents ref ci-diag. ELIMINAR el paso de diagnóstico al terminar. El nombre del archivo de log debe usar `${{ github.run_id }}` (coincide con el id de la API de runs).
+- Doble import `core.X` vs `scripts.core.X`: `scripts/` es namespace package, ambos cargan como módulos DISTINTOS y sus enums/clases NO son comparables (== falla aunque el repr sea idéntico). Los módulos de scripts deben preferir `core.*` en el try (fallback `scripts.core.*`) para alinearse con los tests.
+- `pytest | tee log` MASCARA el exit code de pytest (devuelve el de tee): nunca usarlo como paso bloqueante.
 - YAML de workflows: nunca step name con ": " sin comillas; nunca heredocs con cuerpo a indentación 0 (usar scripts auxiliares como `scripts/bugbounty/ci_actions.py`).
 - El laboratorio de pruebas es `tests/lab/vulnerable_app.py` (127.0.0.1, stdlib solo) y el conector GitHub NO expone crear tags/releases (manual).
 
 ---
 
 ## M11 — Servidor OOB para vulnerabilidades ciegas (SSRF/XXE/RCE blind)
-**Estado: ⏳ pendiente | Issue: #5 | Prioridad: ALTA (hueco funcional mayor)**
+**Estado: ✅ completada (2026-11-08, CI #73 verde) | Issue: #5 cerrado | Prioridad: ALTA (hueco funcional mayor)**
 
 Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interactsh), integrado con el modelo de confianza (evidencia de callback → CONFIRMED).
 
-- [ ] 11.1 Diseñar `scripts/core/oob.py`: `OOBServer` (HTTP listener en 127.0.0.1 puerto efímero con stdlib http.server, registro de callbacks con timestamp + payload-id) y `OOBClient` (polling con timeout). Interfaz agnóstica para poder apuntar a un servidor real en producción (interactsh self-hosted) sin cambiar el calling code.
-- [ ] 11.2 Integración en `Fuzzer`: payloads ciegos (SSRF blind, XXE blind, RCE blind) parametrizados con subdominio/ID único por petición (`oob_id` en el payload).
-- [ ] 11.3 Integración con `EvidenceEngine`: al detectarse callback, crear evidencia EvidenceType.REQUEST con el callback y pasar el hallazgo a VerificationStatus.CONFIRMED / ConfidenceLevel.CONFIRMED.
-- [ ] 11.4 Extender el laboratorio (`tests/lab/vulnerable_app.py`) con un endpoint vulnerable a SSRF ciego (p.ej. /fetch?url= que hace petición interna) SIN romper los tests existentes.
-- [ ] 11.5 Tests (`tests/test_oob.py`): callback detectado end-to-end contra el laboratorio, timeout sin callback (hallazgo queda PROBABLE), aislamiento por oob_id.
-- [ ] 11.6 CI verde + CHANGELOG + checkpoint. Estado M11 → ✅.
+- [x] 11.1 `scripts/core/oob.py`: `OOBServer` (HTTP listener en 127.0.0.1 puerto efímero con stdlib http.server, registro de callbacks con timestamp + payload-id, thread-safe, context manager) y `OOBClient` (polling con timeout, fetch inyectado para servidor remoto interactsh-like). Interfaz agnóstica (`new_interaction`/`url_for`/`wait_for_callback`).
+- [x] 11.2 **Desviación documentada**: en vez de integrar en `Fuzzer` (re-transcribir ~1000 líneas con riesgo de corrupción), se creó `scripts/pentesting/oob_scanner.py` (`OOBScanner`) con payloads ciegos SSRF/XXE/RCE parametrizados con interaction_id único, validación de scope/engagement y `probe_parameter()`. Equivalente funcional; la integración en Fuzzer queda como mejora futura opcional.
+- [x] 11.3 Integración con `EvidenceEngine`: al detectarse callback, evidencia REQUEST (interacción) + evidencia LOG (callback) y hallazgo a VerificationStatus.CONFIRMED / ConfidenceLevel.CONFIRMED vía `set_verification_status`.
+- [x] 11.4 Laboratorio extendido: `/fetch?url=` con `urllib.request.urlopen` sin validación (SSRF ciego) en `tests/lab/vulnerable_app.py`, tests existentes intactos.
+- [x] 11.5 Tests (`tests/test_oob.py`): registro y aislamiento por interaction_id, OOBClient con fetch inyectado, E2E SSRF ciego CONFIRMED (≥2 evidencias) y sonda negativa sin callback (order-independientes). Fix de CI: los tests NO pueden asumir orden alfabético de unittest, y el scanner prefiere `core.*` en el import dual (evita enums no comparables por doble módulo).
+- [x] 11.6 CI verde (#73: 208 passed, 2 skipped) + CHANGELOG + checkpoint. Estado M11 → ✅.
 
 ## M12 — SCA / SBOM con advisory matching (OSV)
 **Estado: ⏳ pendiente | Issue: #6 | Prioridad: ALTA**

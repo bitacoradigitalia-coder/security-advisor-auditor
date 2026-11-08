@@ -1,6 +1,12 @@
 # Changelog
 
-## 2.2.0-alpha — 2026-11-08 (en desarrollo)
+## 2.3.0 (en desarrollo)
+
+### Mejoras v2.3
+
+11. **M11 — Canal OOB para vulnerabilidades ciegas** (2026-11-08, CI #73 verde): `scripts/core/oob.py` (`OOBServer` HTTP en 127.0.0.1 puerto efímero con stdlib, callbacks con timestamp e interaction_id; `OOBClient` genérico interactsh-like con fetch inyectado) y `scripts/pentesting/oob_scanner.py` (`OOBScanner` con payloads ciegos SSRF/XXE/RCE, validación de scope/engagement, findings CONFIRMED con evidencias de interacción + callback). Laboratorio extendido con `/fetch?url=` (SSRF ciego). Tests E2E en `tests/test_oob.py`. Fix de dos bugs de CI detectados por el laboratorio: tests order-independientes (unittest ejecuta en orden alfabético) y doble import `core`/`scripts.core` evitado (enums no comparables por módulos distintos).
+
+## 2.2.0-alpha — 2026-11-08 (publicada)
 
 Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan completadas.
 
@@ -18,7 +24,7 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan compl
 7. **Workflows reparados**: `security-audit.yml` reescrito (YAML válido, escaneo activo solo manual con opt-in, steps tolerantes a fallos); `bugbounty.yml` reescrito (inputs de schema correctos, artifact v4, helper `scripts/bugbounty/ci_actions.py`); fix del test E2E del laboratorio (robots.txt revela `/debug`).
 8. **Deuda mypy eliminada**: corregidos los 8 errores heredados en `evidence_engine.py`, `scope_manager.py` (incl. `import time`) y `engagement_manager.py`; mypy pasa a ser bloqueante en CI con 0 errores.
 9. **README pulido**: reparados los saltos de línea a mitad de palabra heredados de la corrupción de commits; contador de tests y descripciones de fases actualizados (PHP nativo, IA con deduplicación).
-10. **Release**: pendiente tag manual `v2.2.0-alpha` + GitHub Release (issue #4).
+10. **Release**: tag `v2.2.0-alpha` + GitHub Release publicados (d1e7ffd, issue #4 cerrado).
 
 ### Reparación de estabilidad (2026-11-08, CI verde)
 
@@ -39,7 +45,7 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan compl
 - FASE 4 (Multilenguaje): analizadores nativos offline JavaScriptAnalyzer (15 reglas) y TypeScriptAnalyzer (4 reglas TS), motor de reglas compartido (`regex_rules.py`), integrados en `get_analyzer()` (issue #2)
 - FASE 5 (IA): `AIEngine` heurístico offline con interpretación contextual, priorización automática P0-P4, riesgo 0-100 con justificación auditable, correlación de hallazgos e informe resumen (issue #3)
 
-**v2.2 es feature-complete.** Pendiente: tag v2.2.0-alpha + GitHub Release (issue #4).
+**v2.2 es feature-complete y publicada como v2.2.0-alpha.**
 
 ## 2.1.1 — 2026-11-02
 
