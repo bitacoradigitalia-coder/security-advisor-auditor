@@ -91,59 +91,7 @@ jobs:
         REPORT_FORMAT: ${{ inputs.report_format }}
       run: |
         mkdir -p reports/bugbounty
-        case "$ACTION" in
-          list-programs)
-            python - <<'PY' | tee reports/bugbounty/programs.txt
-from scripts.bugbounty.manager import BugBountyManager
-m = BugBountyManager()
-for p in m.list_programs():
-    print(f'  - {p}')
-PY
-            ;;
-          add-program)
-            python - <<'PY' | tee reports/bugbounty/add-program.txt
-import os
-from scripts.bugbounty.manager import BugBountyManager
-m = BugBountyManager()
-m.add_program(
-    name=os.environ["PROGRAM_NAME"],
-    scope=os.environ["PROGRAM_SCOPE"],
-    platform=os.environ["PROGRAM_PLATFORM"],
-    platform_handle=os.environ["PROGRAM_HANDLE"],
-)
-print("Program added")
-PY
-            ;;
-          list-findings)
-            python - <<'PY' | tee reports/bugbounty/findings.txt
-import os
-from scripts.bugbounty.manager import BugBountyManager
-m = BugBountyManager()
-if os.environ["PROGRAM_NAME"]:
-    findings = m.list_findings(os.environ["PROGRAM_NAME"])
-else:
-    findings = m.list_all_findings()
-for f in findings:
-    print(f'  [{f.severity.upper()}] {f.id}: {f.title}')
-PY
-            ;;
-          generate-report|submit-report)
-            python - <<'PY' | tee reports/bugbounty/generate-report.txt
-import os
-from scripts.bugbounty.manager import BugBountyManager
-m = BugBountyManager()
-fmt = os.environ["REPORT_FORMAT"] or "markdown"
-report = m.generate_report(os.environ["FINDING_ID"], format=fmt)
-out = "reports/bugbounty/report." + fmt
-with open(out, "w") as f:
-    f.write(report)
-print("Report generated: " + out)
-PY
-            ;;
-          *)
-            echo "Unknown action: $ACTION"
-            ;;
-        esac
+        python scripts/bugbounty/ci_actions.py
 
     - name: Upload Bug Bounty reports
       uses: actions/upload-artifact@v4
@@ -151,6 +99,7 @@ PY
       with:
         name: bugbounty-reports
         path: reports/bugbounty/
+        if-no-files-found: ignore
         retention-days: 30
 
     - name: Job summary
