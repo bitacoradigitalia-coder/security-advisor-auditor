@@ -8,6 +8,8 @@
 
 12. **M12 — SCA: SBOM + advisories** (2026-11-08, CI #75 verde): `scripts/sca/sbom.py` (SBOM CycloneDX 1.5 determinista desde requirements.txt), `scripts/sca/osv_client.py` (`OSVClient` offline por defecto con caché versionada `advisories.json`, modo online opt-in contra OSV.dev con validación de ScopeManager), `scripts/sca/scanner.py` (`SCAScanner`: advisory → finding CONFIRMED con severidad, CWE y fix sugerido), `scripts/sca/cli.py` (CLI propia: `--requirements`, `--output`, `--online`). Tests en `tests/test_sca.py` con fixture `tests/fixtures/sca/`. Desviaciones documentadas: priorización por AIEngine diferida y CLI propia en vez de subcomando de audit.py.
 
+13. **M13 — Escaneo IaC y CI/CD** (2026-11-08, CI #85 verde): `scripts/static_analysis/iac_analyzer.py` (`IaCAnalyzer`, tool `iac_native`) reutilizando el `RuleEngine` compartido, con dispatch por familia (nombre de archivo, extensión, marcadores de contenido): Dockerfile (DOCK001-004), K8s/compose (K8S001-004, con K8S003 runAsNonRoot ausente como check de archivo), Terraform (TF001-003, con TF002 bucket sin cifrado como check de archivo) y GitHub Actions (GHA001-004). Comentarios (`#`) descartados antes de escanear. Registrado en `static_analysis` (lenguajes docker/yaml/terraform/hcl/k8s/iac). Fixtures `tests/fixtures/iac/` (5) y `tests/test_iac_analyzer.py` (10 tests). Dogfooding documentado en `docs/iac.md`. Fixes de iteración: TF003 con raw string de comillas simples (SyntaxError con comilla doble anidada) y fixture deployment.yaml completado con `privileged: true`.
+
 ## 2.2.0-alpha — 2026-11-08 (publicada)
 
 Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan completadas.

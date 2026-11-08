@@ -8,7 +8,7 @@
 ## Estado global
 - CI: pytest BLOQUEANTE + mypy BLOQUEANTE (0 errores) en `ci-tests.yml`. Los dos deben seguir en verde tras cada paso.
 - Base actual: v2.2.0-alpha (tag d1e7ffd). Fases 1-5 + mejoras 1-10 completadas.
-- Mejoras e issues: M11 ✅ (#5) | M12 ✅ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
+- Mejoras e issues: M11 ✅ (#5) | M12 ✅ (#6) | M13 ✅ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
 
 ---
 
@@ -26,7 +26,9 @@
 - Verificación de transcripción: usar números de línea conocidos como anclas (content.split con nueva línea, línea n-1 recortada debe coincidir con la línea esperada) ANTES de pushear.
 - `open_url` sobre raw.githubusercontent ENVUELVE líneas y trunca a ~32.8k: NUNCA re-subir contenido leído así.
 - `create_or_update_file` corrompe contenido: no usar.
-- Diagnóstico de CI que FUNCIONA: paso en el workflow (con permissions contents write) que sube logs a una rama `ci-diag` vía curl PUT a la API contents con secrets.GITHUB_TOKEN (el push git desde el runner falla silenciosamente); luego leer con get_file_contents ref ci-diag. ELIMINAR el paso de diagnóstico al terminar. El nombre del archivo de log debe usar `${{ github.run_id }}` (coincide con el id de la API de runs).
+- Diagnóstico de CI que FUNCIONA: paso en el workflow (con permissions contents write) que sube logs a una rama `ci-diag` vía curl PUT a la API contents con secrets.GITHUB_TOKEN (el push git desde el runner falla silenciosamente); luego leer con get_file_contents ref ci-diag. ELIMINAR el paso de diagnóstico al terminar. El nombre del archivo de log debe usar `${{ github.run_id }}` (coincide con el id de la API de runs). IMPORTANTE: pasar el token y el run_id por `env:` del step (GH_TOKEN, RUN_ID) y construir el JSON con `printf`; incrustar `${{ ... }}` directo en el bloque run también funciona pero la receta validada es env+printf.
+- `list_commits` (github_app): usar el parámetro `sha` para listar una rama (p.ej. "ci-diag"); con el parámetro `branch` puede devolver la rama por defecto. Para averiguar el nombre del archivo de log subido, abrir la página del commit "diag" en github.com (muestra el árbol de archivos).
+- Regex de Python en strings: NUNCA una comilla doble dentro de raw string de comillas dobles (SyntaxError). Usar `r'...'` con comillas simples.
 - Doble import `core.X` vs `scripts.core.X`: `scripts/` es namespace package, ambos cargan como módulos DISTINTOS y sus enums/clases NO son comparables (== falla aunque el repr sea idéntico). Los módulos de scripts deben preferir `core.*` en el try (fallback `scripts.core.*`) para alinearse con los tests.
 - `pytest | tee log` MASCARA el exit code de pytest (devuelve el de tee): nunca usarlo como paso bloqueante.
 - YAML de workflows: nunca step name con ": " sin comillas; nunca heredocs con cuerpo a indentación 0 (usar scripts auxiliares como `scripts/bugbounty/ci_actions.py`).
@@ -57,17 +59,18 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [x] 12.6 CI verde (#75) + CHANGELOG + checkpoint. Estado M12 → ✅.
 
 ## M13 — Escaneo IaC y CI/CD (Dockerfile, compose, K8s, Terraform, GitHub Actions)
-**Estado: ⏳ pendiente | Issue: #7 | Prioridad: ALTA (el propio repo tiene workflows)**
+**Estado: ✅ completada (2026-11-08, CI #85 verde) | Issue: #7 cerrado | Prioridad: ALTA (el propio repo tiene workflows)**
 
-- [ ] 13.1 `scripts/static_analysis/iac_analyzer.py` (`IaCAnalyzer`, TOOL_NAME="iac_native") reutilizando `RuleEngine`. Reglas:
+- [x] 13.1 `scripts/static_analysis/iac_analyzer.py` (`IaCAnalyzer`, TOOL_NAME="iac_native") reutilizando `RuleEngine`. Reglas:
   - Dockerfile: DOCK001 root USER, DOCK002 secrets en ENV/RUN, DOCK003 ADD de URL, DOCK004 tag :latest
   - docker-compose / K8s: K8S001 privileged true, K8S002 hostPort/hostNetwork, K8S003 runAsNonRoot ausente, K8S004 capabilities ADD
   - Terraform: TF001 security group 0.0.0.0/0, TF002 bucket sin encryption, TF003 recursos públicos
   - GitHub Actions: GHA001 pull_request_target con checkout de head, GHA002 inyección de expresiones de evento en bloques run, GHA003 permissions amplios, GHA004 secrets volcadas a env
-- [ ] 13.2 Registrar en `static_analysis/__init__.py` (analyze_directory por extensión: Dockerfile, .yml/.yaml, .tf, .hcl).
-- [ ] 13.3 Auto-auditoría: el propio repo debe pasar limpio o con hallazgos justificados (dogfooding; documentar en `docs/iac.md`).
-- [ ] 13.4 Tests (`tests/test_iac_analyzer.py`): al menos 1 test por familia, 0 falsos positivos en fixtures limpios.
-- [ ] 13.5 CI verde + CHANGELOG + checkpoint. Estado M13 → ✅.
+  - Notas de implementación: comentarios (#) descartados antes de escanear; K8S003 y TF002 son checks de AUSENCIA a nivel archivo (fuera del motor lineal); DOCK004 y GHA002 requieren la expresión en la misma línea (motor lineal). Fix de CI: TF003 con raw string de comillas simples (la versión con comilla doble dentro era SyntaxError) y fixture deployment.yaml completado con `privileged: true` (faltaba para K8S001).
+- [x] 13.2 Registrar en `static_analysis/__init__.py` (analyze_directory por extensión: Dockerfile, .yml/.yaml, .tf, .hcl). Tool `iac_native`; dispatch por nombre de archivo, extensión y marcadores de contenido (k8s, GitHub Actions, compose).
+- [x] 13.3 Auto-auditoría: el propio repo debe pasar limpio o con hallazgos justificados (dogfooding; documentar en `docs/iac.md`).
+- [x] 13.4 Tests (`tests/test_iac_analyzer.py`): al menos 1 test por familia, 0 falsos positivos en fixtures limpios. 10 tests (por familia + directorio con 5 fixtures y >10 findings).
+- [x] 13.5 CI verde (#85: 226 passed, 2 skipped; runs #77-#84 fueron iteraciones de fix diagnosticadas vía ci-diag) + CHANGELOG + checkpoint. Estado M13 → ✅.
 
 ## M14 — Verificación de XSS en DOM con navegador headless (Playwright opcional)
 **Estado: ⏳ pendiente | Issue: #8 | Prioridad: MEDIA**
