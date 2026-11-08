@@ -23,16 +23,13 @@ jobs:
         run: python -m pytest tests/ -q 2>&1 | tee pytest.log
       - name: Mypy
         run: mypy --config-file mypy.ini 2>&1 | tee -a pytest.log
-      - name: Subir log
+      - name: Subir log via API
         if: always()
         run: |
-          git config --global user.name "ci-diag"
-          git config --global user.email "ci@diag"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/bitacoradigitalia-coder/security-advisor-auditor.git
-          git fetch origin ci-diag || git switch -c ci-diag
-          git switch ci-diag || true
-          mkdir -p logs
-          cp pytest.log logs/pytest-run-${{ github.run_id }}.txt
-          git add logs
-          git commit -m "diag run ${{ github.run_id }}"
-          git push origin ci-diag
+          B64=$(base64 -w0 pytest.log)
+          RUNID=${{ github.run_id }}
+          SHA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/bitacoradigitalia-coder/security-advisor-auditor/contents/logs/pytest-run-$RUNID.txt?ref=ci-diag | jq -r '.sha // empty')
+          cat > payload.json <<EOF
+          {"message":"diag run $RUNID","content":"$B64","branch":"ci-diag","sha":"$SHA"}
+          EOF
+          curl -s -X PUT -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d @payload.json https://api.github.com/repos/bitacoradigitalia-coder/security-advisor-auditor/contents/logs/pytest-run-$RUNID.txt
