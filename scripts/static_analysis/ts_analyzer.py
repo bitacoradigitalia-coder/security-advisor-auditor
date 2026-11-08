@@ -51,8 +51,7 @@ TS_RULES: List[Rule] = [
     ),
     Rule(
         rule_id="TS004",
-        title="Asercion doble cast 'as 
-unknown as'",
+        title="Asercion doble cast 'as unknown as'",
         category="unsafe_cast",
         severity="medium",
         confidence="medium",
@@ -100,8 +99,7 @@ class TypeScriptAnalyzer(JavaScriptAnalyzer):
             target=str(root),
             tool=self.TOOL_NAME,
             language=self.LANGUAGE,
-            findings=all_finding
-s,
+            findings=all_findings,
             statistics={"by_severity": self._count_by_severity(all_findings)},
             errors=errors,
             success=True,

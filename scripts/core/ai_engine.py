@@ -55,7 +55,6 @@ class AIEngine:
     """
     Motor de interpretacion contextual y priorizacion automatica.
 
-
     Metodologia (determinista y auditable):
     1. Interpretar el contexto: evidencias, verificacion, explotabilidad,
        correlacion con otros hallazgos del mismo tipo y objetivo.
@@ -98,8 +97,7 @@ class AIEngine:
         signals["verification_status"] = finding.verification_status.value
         signals["evidence_count"] = len(finding.evidences)
         signals["has_reproduction_steps"] = bool(finding.reproduction_steps)
-        signals["has_payload"] = bool(find
-ing.payload)
+        signals["has_payload"] = bool(finding.payload)
         signals["has_cvss"] = finding.cvss is not None
         signals["vulnerability_type"] = finding.vulnerability_type or "unknown"
         if finding.cvss is not None:
@@ -138,8 +136,7 @@ ing.payload)
         rationale.append("Severidad '" + finding.severity + "' -> base " + str(base))
 
         conf_mult = self.CONFIDENCE_MULT.get(finding.confidence, 0.7)
-     
-   rationale.append("Confianza " + finding.confidence.value + " -> x" + str(conf_mult))
+        rationale.append("Confianza " + finding.confidence.value + " -> x" + str(conf_mult))
 
         ver_mult = self.VERIFICATION_MULT.get(finding.verification_status, 0.9)
         rationale.append("Verificacion " + finding.verification_status.value + " -> x" + str(ver_mult))
@@ -184,16 +181,15 @@ ing.payload)
             priority=priority,
             rationale=rationale,
             context_signals=signals,
-            correlated_with=correlate
-d_ids,
+            correlated_with=correlated_ids,
             recommended_action=self._recommend(priority, finding),
         )
 
     def prioritize_findings(self, findings: List[Finding]) -> List[PriorityAssessment]:
         """Priorizar todos los hallazgos y devolverlos ordenados por riesgo descendente."""
         assessments = [self.prioritize_finding(f, findings) for f in findings]
-        rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "P4": 4}
-        assessments.sort(key=lambda a: (rank.get(a.priority.value, 9), -a.risk_score))
+        _rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "P4": 4}
+        assessments.sort(key=lambda a: (_rank.get(a.priority.value, 9), -a.risk_score))
         return assessments
 
     def get_top(self, findings: List[Finding], n: int = 5) -> List[PriorityAssessment]:
@@ -222,7 +218,6 @@ d_ids,
             return "Programar remediacion en la iteracion actual; validar explotabilidad de '" + finding.name + "'"
         if priority == PriorityLevel.P2:
             return "Planificar remediacion; recopilar mas evidencias si la confianza es baja"
-
         if priority == PriorityLevel.P3:
             return "Aniadir al backlog de endurecimiento"
         return "Revisar si procede cerrarlo como informativo"

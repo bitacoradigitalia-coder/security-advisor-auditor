@@ -60,8 +60,7 @@ class AuthorizationError(Exception):
         self.operation_type = operation_type
         self.reason = reason
         super().__init__(
-            f"{message} | engagement={engagement_id} | 
-target={target} | "
+            f"{message} | engagement={engagement_id} | target={target} | "
             f"operation={operation_type} | reason={reason}"
         )
 
@@ -116,14 +115,13 @@ class Engagement:
     rate_limits: Dict[str, Any] = field(default_factory=dict)
     restrictions: List[str] = field(default_factory=list)
     evidence: str = ""
-    evidence_has
-h: Optional[str] = None
+    evidence_hash: Optional[str] = None
     notes: str = ""
     created_at: datetime = field(default_factory=datetime.now)
     updated_at: datetime = field(default_factory=datetime.now)
     is_active: bool = True
     
-    def __post_init__(self) -> None:
+    def __post_init__(self):
         # Ensure timezone-aware datetimes
         if self.start_time.tzinfo is None:
             self.start_time = self.start_time.replace(tzinfo=timezone.utc)
@@ -168,8 +166,7 @@ h: Optional[str] = None
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
- 
-           "engagement_id": self.engagement_id,
+            "engagement_id": self.engagement_id,
             "name": self.name,
             "owner": self.owner,
             "owner_email": self.owner_email,
@@ -209,8 +206,7 @@ h: Optional[str] = None
             blocked_targets=data.get("blocked_targets", []),
             blocked_types=set(data.get("blocked_types", [])),
             start_time=datetime.fromisoformat(data.get("start_time", datetime.now(timezone.utc).isoformat())),
-            end_time=datetime.fromisoformat(data.get("end_time", (datetime.now(
-timezone.utc) + timedelta(hours=24)).isoformat())),
+            end_time=datetime.fromisoformat(data.get("end_time", (datetime.now(timezone.utc) + timedelta(hours=24)).isoformat())),
             timezone=data.get("timezone", "UTC"),
             rate_limits=data.get("rate_limits", {}),
             restrictions=data.get("restrictions", []),
@@ -256,7 +252,7 @@ class EngagementManager:
         )
     """
     
-    def __init__(self, storage_path: Optional[Union[str, Path]] = None) -> None:
+    def __init__(self, storage_path: Optional[Union[str, Path]] = None):
         """
         Initialize EngagementManager.
         
@@ -264,7 +260,6 @@ class EngagementManager:
             storage_path: Path to store engagements (JSON file)
         """
         self.storage_path = Path(storage_path) if storage_path else None
-
         self._engagements: Dict[str, Engagement] = {}
         self._scope_manager: Optional[ScopeManager] = None
         
@@ -316,8 +311,7 @@ class EngagementManager:
             targets: List of authorized targets (domains/IPs)
             allowed_types: Set of allowed operation types
             start_time: Start time (default: now)
-            end
-_time: End time (default: now + 24 hours)
+            end_time: End time (default: now + 24 hours)
             evidence: Proof of authorization
             name: Engagement name
             owner_email: Owner email
@@ -369,14 +363,13 @@ _time: End time (default: now + 24 hours)
     
     def get_engagement(self, engagement_id: str) -> Optional[Engagement]:
         """Get an engagement by ID."""
-        return self._engagement
-s.get(engagement_id)
+        return self._engagements.get(engagement_id)
     
     def list_engagements(self) -> List[Engagement]:
         """List all engagements."""
         return list(self._engagements.values())
     
-    def update_engagement(self, engagement_id: str, **kwargs: Any) -> Optional[Engagement]:
+    def update_engagement(self, engagement_id: str, **kwargs) -> Optional[Engagement]:
         """Update an engagement."""
         engagement = self._engagements.get(engagement_id)
         if not engagement:
@@ -430,8 +423,7 @@ s.get(engagement_id)
         self,
         engagement_id: str,
         target: str,
-        operation_
-type: str = "scan",
+        operation_type: str = "scan",
         method: str = "GET",
         validate_scope: bool = True,
     ) -> Engagement:
@@ -487,8 +479,7 @@ type: str = "scan",
                 reason=f"expired_at: {engagement.end_time.isoformat()}"
             )
         
-       
- # Check operation type
+        # Check operation type
         if operation_type not in engagement.allowed_types:
             raise AuthorizationError(
                 "Operation type not allowed",
@@ -540,8 +531,7 @@ type: str = "scan",
         if target_port not in engagement.allowed_ports:
             raise AuthorizationError(
                 "Port not allowed",
-            
-    engagement_id=engagement_id,
+                engagement_id=engagement_id,
                 target=target,
                 operation_type=operation_type,
                 reason=f"port_not_allowed: {target_port}"
@@ -604,8 +594,7 @@ type: str = "scan",
         pattern: str,
     ) -> bool:
         """
-        Check if a target matches a patte
-rn.
+        Check if a target matches a pattern.
         
         Supports:
         - Full URL: "https://example.com:8080/path"
@@ -668,8 +657,7 @@ rn.
         domain = domain.lower().rstrip(".")
         pattern = pattern.lower().rstrip(".")
         
- 
-       # Exact match
+        # Exact match
         if domain == pattern:
             return True
         
@@ -724,8 +712,7 @@ rn.
                     engagement = Engagement.from_dict(engagement_data)
                     self._engagements[engagement.engagement_id] = engagement
         except (json.JSONDecodeError, IOError, OSError):
-            # If file d
-oesn't exist or is invalid, start with empty engagements
+            # If file doesn't exist or is invalid, start with empty engagements
             pass
     
     def _save_engagements(self) -> None:
@@ -782,7 +769,6 @@ def set_engagement_manager(engagement_manager: EngagementManager) -> None:
 
 
 def reset_engagement_manager() -> None:
-
     """Reset the global engagement manager instance."""
     global _global_engagement_manager
     _global_engagement_manager = None

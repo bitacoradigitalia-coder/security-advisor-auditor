@@ -59,8 +59,7 @@ class VerificationRule:
     verification_method: VerificationMethod = VerificationMethod.AUTOMATIC
     verification_function: Optional[Callable] = None
     
-    # Vul
-nerabilidades específicas
+    # Vulnerabilidades específicas
     applicable_types: Set[str] = field(default_factory=set)  # Ej: {'sqli', 'xss'}
     
     def can_apply(self, finding: Finding) -> bool:
@@ -112,8 +111,7 @@ nerabilidades específicas
 
 class VerificationEngine:
     """
-    Motor de verificación para validar hallazg
-os.
+    Motor de verificación para validar hallazgos.
     
     Funcionalidades:
     - Definir reglas de verificación
@@ -123,7 +121,7 @@ os.
     - Calcular confianza
     """
     
-    def __init__(self, evidence_engine: Optional[EvidenceEngine] = None) -> None:
+    def __init__(self, evidence_engine: Optional[EvidenceEngine] = None):
         """
         Inicializar VerificationEngine.
         
@@ -163,8 +161,7 @@ os.
         
         # Regla 3: CANDIDATE -> FALSE_POSITIVE (error genérico 500 solo)
         self.add_rule(VerificationRule(
-            name="ca
-ndidate_to_false_positive_generic_error",
+            name="candidate_to_false_positive_generic_error",
             description="Transición a FALSE_POSITIVE si solo hay error 500 genérico",
             from_status=VerificationStatus.CANDIDATE,
             to_status=VerificationStatus.FALSE_POSITIVE,
@@ -205,8 +202,7 @@ ndidate_to_false_positive_generic_error",
             from_status=VerificationStatus.CANDIDATE,
             to_status=VerificationStatus.CONFIRMED,
             min_evidences=2,
-            min_confidence=Confidenc
-eLevel.HIGH,
+            min_confidence=ConfidenceLevel.HIGH,
             verification_method=VerificationMethod.AUTOMATIC
         ))
     
@@ -257,8 +253,7 @@ eLevel.HIGH,
                         break
         
         return current_status, current_confidence
-  
-  
+    
     def verify_all_findings(self) -> Dict[str, Tuple[VerificationStatus, ConfidenceLevel]]:
         """
         Verificar todos los hallazgos.
@@ -323,8 +318,7 @@ eLevel.HIGH,
         
         Una prueba de control:
         - Positiva: Confirma que la vulnerabilidad existe
-        - Negativa: Confirma que el sistema se comporta normalmente si
-n el payload
+        - Negativa: Confirma que el sistema se comporta normalmente sin el payload
         """
         # Buscar evidencia de control positiva y negativa
         has_positive = False
@@ -375,8 +369,7 @@ n el payload
         """
         Verificar que hay evidencia de error de SQL Injection.
         """
-     
-   sqli_patterns = [
+        sqli_patterns = [
             r'sql syntax.*error',
             r'mysql.*error',
             r'postgresql.*error',
@@ -438,8 +431,7 @@ n el payload
         """
         evidence = Evidence(
             evidence_type=EvidenceType.REQUEST,
-            requ
-est=request,
+            request=request,
             response=response,
             verification_method=f'control_test:{control_type}'
         )
@@ -492,8 +484,7 @@ est=request,
             'new_status': new_status.value,
             'new_confidence': new_confidence.value,
             'changed': new_status != original_status or new_confidence != original_confidence,
-            'rules_applied': [rule.name for rule in self.get_applicable_rules(
-finding)]
+            'rules_applied': [rule.name for rule in self.get_applicable_rules(finding)]
         }
     
     def get_false_positive_candidates(self) -> List[Finding]:
@@ -548,8 +539,7 @@ finding)]
         
         # Si es CANDIDATE
         if finding.verification_status == VerificationStatus.CANDIDATE:
-            actions.append("🔍 Añadir más evidencias p
-ara pasar a PROBABLE")
+            actions.append("🔍 Añadir más evidencias para pasar a PROBABLE")
             actions.append("🎯 Realizar prueba de control positiva")
             actions.append("🎯 Realizar prueba de control negativa")
         
