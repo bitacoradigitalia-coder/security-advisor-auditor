@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -20,23 +17,6 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt pytest mypy
       - name: Tests
-        run: |
-          python -m pytest tests/ -q 2>&1 | tee pytest.log
-          status=${PIPESTATUS[0]}
-          echo "PYTEST_EXIT=$status" >> pytest.log
-          exit $status
-      - name: "Diagnostico: subir pytest.log via API a rama ci-diag"
-        if: failure()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          if [ ! -f pytest.log ]; then echo "sin pytest.log"; exit 0; fi
-          B64=$(base64 -w0 pytest.log)
-          printf '{"message":"diag: log pytest run %s","content":"%s","branch":"ci-diag"}' "$RUN_ID" "$B64" > payload.json
-          curl -s -X PUT -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/contents/logs/pytest-run-$RUN_ID.txt" -d @payload.json > curl-out.json
-          cat curl-out.json
+        run: python -m pytest tests/ -q
       - name: Mypy (advisory, no bloqueante)
-        if: always()
         run: mypy --config-file mypy.ini || true
