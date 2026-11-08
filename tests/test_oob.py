@@ -4,6 +4,8 @@ Tests del modulo OOB y del OOBScanner (mejora M11).
 Cubre: registro y aislamiento de callbacks en OOBServer, OOBClient con
 fetch inyectado, y E2E de SSRF ciego contra el laboratorio autorizado
 (127.0.0.1), incluyendo el caso negativo sin callback.
+
+Los tests son independientes del orden de ejecucion.
 """
 import sys
 import unittest
@@ -95,6 +97,7 @@ class TestOOBScannerE2E(unittest.TestCase):
         cls.app.stop()
 
     def test_ssrf_blind_confirmado_con_callback(self):
+        before = len(self.scanner.get_findings())
         results = self.scanner.probe_parameter(
             self.base_url + "/fetch", "url", vuln_types=["ssrf_blind"],
         )
@@ -106,21 +109,22 @@ class TestOOBScannerE2E(unittest.TestCase):
         self.assertEqual(result.callback.interaction_id, result.interaction_id)
         # Finding CONFIRMADO con evidencias
         findings = self.scanner.get_findings()
-        self.assertTrue(findings)
+        self.assertEqual(len(findings), before + 1)
         finding = findings[-1]
         self.assertEqual(finding.vulnerability_type, "ssrf_blind")
         self.assertEqual(finding.verification_status, VerificationStatus.CONFIRMED)
         self.assertGreaterEqual(len(finding.evidences), 2)
 
     def test_sin_callback_no_confirma(self):
+        # Sonda negativa: el numero de findings no crece sin callback
+        before = len(self.scanner.get_findings())
         results = self.scanner.probe_parameter(
             self.base_url + "/private/", "url", vuln_types=["ssrf_blind"],
         )
         self.assertEqual(len(results), 1)
         self.assertFalse(results[0].is_confirmed)
         self.assertIsNone(results[0].callback)
-        # El numero de findings no crece con la sonda negativa
-        self.assertEqual(len(self.scanner.get_findings()), 1)
+        self.assertEqual(len(self.scanner.get_findings()), before)
 
 
 if __name__ == "__main__":
