@@ -15,6 +15,7 @@ import ipaddress
 import re
 import socket
 import threading
+import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
@@ -546,17 +547,18 @@ class ScopeManager:
                 )
             
             # Check if redirect is to a private network
-            try:
-                ip = ipaddress.ip_address(redirect_host)
-                for network in BLOCKED_NETWORKS:
-                    if ip in network:
-                        raise ScopeValidationError(
-                            f"Redirect to blocked network",
-                            target=redirect_url,
-                            reason=f"redirect_blocked_network: {redirect_host}"
-                        )
-            except ValueError:
-                pass
+            if redirect_host:
+                try:
+                    ip = ipaddress.ip_address(redirect_host)
+                    for network in BLOCKED_NETWORKS:
+                        if ip in network:
+                            raise ScopeValidationError(
+                                f"Redirect to blocked network",
+                                target=redirect_url,
+                                reason=f"redirect_blocked_network: {redirect_host}"
+                            )
+                except ValueError:
+                    pass
         
         return validated_url
     
@@ -606,7 +608,7 @@ class ScopeManager:
         try:
             # Resolve DNS
             ip_addresses = socket.getaddrinfo(hostname, None)
-            resolved_ips = list({ip[4][0] for ip in ip_addresses})
+            resolved_ips = list({str(ip[4][0]) for ip in ip_addresses})
             
             # Validate each resolved IP
             for ip in resolved_ips:
