@@ -1,0 +1,18 @@
+..........................................................F......... [ 33%]
+..................................................................................s.......... [ 78%]
+......................................s.....            [100%]
+=================================== FAILURES ===================================
+____________ TestLaboratorioIntegracion.test_detecta_debug_expuesto ____________
+
+self = <tests.test_integration_lab.TestLaboratorioIntegracion testMethod=test_detecta_debug_expuesto>
+
+    def test_detecta_debug_expuesto(self):
+        vuln_types = {v["type"] for v in self.results["vulnerabilities"]}
+>       self.assertIn("debug_information_exposed", vuln_types)
+E       AssertionError: 'debug_information_exposed' not found in {'missing_security_headers', 'sensitive_cookies'}
+
+tests/test_integration_lab.py:59: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_integration_lab.py::TestLaboratorioIntegracion::test_detecta_debug_expuesto - AssertionError: 'debug_information_exposed' not found in {'missing_security_headers', 'sensitive_cookies'}
+1 failed, 202 passed, 2 skipped, 72 subtests passed in 33.03s
+PYTEST_EXIT=1
