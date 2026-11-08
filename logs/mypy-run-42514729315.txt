@@ -1,0 +1,6 @@
+scripts/core/scope_manager.py:550: error: Argument 1 to "ip_address" has incompatible type "str | None"; expected "int | str | bytes | IPv4Address | IPv6Address"  [arg-type]
+scripts/core/scope_manager.py:613: error: Argument 1 to "_validate_ip" of "ScopeManager" has incompatible type "str | int"; expected "str"  [arg-type]
+scripts/core/scope_manager.py:615: error: Incompatible return value type (got "list[str | int]", expected "list[str]")  [return-value]
+scripts/core/scope_manager.py:674: error: Name "time" is not defined  [name-defined]
+scripts/core/engagement_manager.py:709: error: Argument 1 to "open" has incompatible type "Path | None"; expected "int | str | bytes | PathLike[str] | PathLike[bytes]"  [arg-type]
+Found 5 errors in 2 files (checked 6 source files)
