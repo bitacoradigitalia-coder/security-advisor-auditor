@@ -6,10 +6,10 @@ Se reescribe usando escapes hexadecimales para que sea identico pero valido.
 """
 from pathlib import Path
 
-NEW_LINE = ("        pattern=r" + chr(34) + "(SELECT|INSERT|UPDATE|DELETE)"
-          + chr(92) + "[^" + chr(92) + "x22" + chr(92) + "x27]*[" + chr(92) + "x22" + chr(92) + "x27]?"
-          + chr(92) + "s*" + chr(92) + "+|" + chr(92) + "+s*" + chr(92) + "s*[" + chr(92) + "x22" + chr(92) + "x27]" + chr(92) + "s*"
-          + chr(34) + ',")'
+NEW_LINE = "        pattern=r" + chr(34) + "(SELECT|INSERT|UPDATE|DELETE)"
+NEW_LINE += chr(92) + "[^" + chr(92) + "x22" + chr(92) + "x27]*[" + chr(92) + "x22" + chr(92) + "x27]?"
+NEW_LINE += chr(92) + "s*" + chr(92) + "+|" + chr(92) + "+s*" + chr(92) + "s*[" + chr(92) + "x22" + chr(92) + "x27]" + chr(92) + "s*"
+NEW_LINE += chr(34) + ","
 
 p = Path("scripts/static_analysis/js_analyzer.py")
 src = p.read_text()
