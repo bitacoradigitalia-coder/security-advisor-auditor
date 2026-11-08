@@ -28,8 +28,5 @@ jobs:
         run: |
           B64=$(base64 -w0 pytest.log)
           RUNID=${{ github.run_id }}
-          SHA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/bitacoradigitalia-coder/security-advisor-auditor/contents/logs/pytest-run-$RUNID.txt?ref=ci-diag | jq -r '.sha // empty')
-          cat > payload.json <<EOF
-          {"message":"diag run $RUNID","content":"$B64","branch":"ci-diag","sha":"$SHA"}
-          EOF
-          curl -s -X PUT -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -d @payload.json https://api.github.com/repos/bitacoradigitalia-coder/security-advisor-auditor/contents/logs/pytest-run-$RUNID.txt
+          printf '{"message":"diag run %s","content":"%s","branch":"ci-diag"}' "$RUNID" "$B64" > payload.json
+          curl -s -X PUT -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github+json" -d @payload.json https://api.github.com/repos/bitacoradigitalia-coder/security-advisor-auditor/contents/logs/pytest-run-$RUNID.txt
