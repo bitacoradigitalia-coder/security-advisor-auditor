@@ -66,11 +66,12 @@ jobs:
       continue-on-error: true
     
     - name: Upload static analysis results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: static-analysis-results
-        path: reports/static-analysis/
+   
+     path: reports/static-analysis/
         retention-days: 30
     
     - name: Display summary
@@ -130,7 +131,8 @@ jobs:
         
         # Run active scan
         python scripts/audit.py scan "$TARGET" \
-          --output reports/active-scan \
+          --output reports/activ
+e-scan \
           --active \
           --nuclei \
           --mode ${{ inputs.mode || 'STANDARD' }} \
@@ -139,7 +141,7 @@ jobs:
       continue-on-error: true
     
     - name: Upload active scan results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: always()
       with:
         name: active-scan-results
@@ -178,14 +180,14 @@ jobs:
         pip install -r requirements.txt
     
     - name: Download static analysis results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       if: always()
       with:
         name: static-analysis-results
         path: reports/static-analysis/
     
     - name: Download active scan results
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       if: always()
       with:
         name: active-scan-results
@@ -198,7 +200,8 @@ jobs:
         # Generate Markdown report
         python scripts/audit.py report reports/static-analysis/audit.json \
           --output reports/final/report.md \
-          --format markdown
+          --for
+mat markdown
         
         # Generate HTML report
         python scripts/audit.py report reports/static-analysis/audit.json \
@@ -211,7 +214,7 @@ jobs:
           --format json
     
     - name: Upload final report
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: final-report
         path: reports/final/
@@ -231,7 +234,7 @@ jobs:
       uses: actions/checkout@v4
     
     - name: Download final report
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: final-report
         path: reports/final/
@@ -258,7 +261,8 @@ jobs:
       run: |
         TOTAL="${{ steps.stats.outputs.total }}"
         CRITICAL="${{ steps.stats.outputs.critical }}"
-        HIGH="${{ steps.stats.outputs.high }}"
+        HIGH="$
+{{ steps.stats.outputs.high }}"
         
         if [ "$CRITICAL" -gt 0 ]; then
           STATUS="🔴 CRITICAL"
@@ -319,7 +323,8 @@ jobs:
   # Cleanup Job (optional)
   # ========================================================================
   cleanup:
-    name: Cleanup
+    name: Cl
+eanup
     needs: [static-analysis, active-scanning, generate-report, notify]
     runs-on: ubuntu-latest
     if: always()
