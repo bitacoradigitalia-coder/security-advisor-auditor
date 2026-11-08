@@ -96,7 +96,7 @@ TERRAFORM_RULES: List[Rule] = [
     Rule(
         rule_id="TF003", title="Recurso expuesto publicamente",
         category="network_exposure", severity="high", confidence="medium",
-        pattern=r"(acl|public)\s*=\s*"?(public|true)",
+        pattern=r'(acl|public)\s*=\s*"(public|true)',
         message="Recurso marcado como publico (acl public / public = true)",
         remediation="Desactivar el acceso publico; usar politica de acceso explicita",
         tags=["owasp:a01"], case_insensitive=True,
