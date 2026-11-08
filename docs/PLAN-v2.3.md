@@ -2,13 +2,13 @@
 
 > **Documento de continuidad.** Cualquier IA o desarrollador puede retomar la construcción desde aquí.
 > Regla: al completar cada PASO, marcar su checkbox (`- [x]`), actualizar el campo **Estado** de la mejora
-> y hacer commit ("plan: M## paso N completado"). Al completar una MEJORA entera, cerrar su issue
-> (si existe), actualizar CHANGELOG y guardar checkpoint en el conocimiento persistente (ver Protocolo).
+> y hacer commit ("plan: M## paso N completado"). Al completar una MEJORA entera, cerrar su issue,
+> actualizar CHANGELOG y guardar checkpoint en el conocimiento persistente (ver Protocolo).
 
 ## Estado global
 - CI: pytest BLOQUEANTE + mypy BLOQUEANTE (0 errores) en `ci-tests.yml`. Los dos deben seguir en verde tras cada paso.
 - Base actual: v2.2.0-alpha (tag d1e7ffd). Fases 1-5 + mejoras 1-10 completadas.
-- Mejoras: M11 ⏳ | M12 ⏳ | M13 ⏳ | M14 ⏳ | M15 ⏳ | M16 ⏳ | M17 ⏳ | M18 ⏳ | M19 ⏳ | M20 ⏳
+- Mejoras e issues: M11 ⏳ (#5) | M12 ⏳ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
 
 ---
 
@@ -22,7 +22,7 @@
 
 ### Técnicas validadas en este repo (leer antes de tocar código)
 - `get_file_contents` (github_app) NO devuelve texto usable in-script: el texto EXACTO llega en el MSLResource adjunto al tool result (~32.8k máx).
-- `push_files` es SEGURO para archivos completos, incluidos backslashes de regex, SI el contenido se construye con template literal `String.raw` en run_typescript (un template normal CORROMPE \\s → \\s mal). Si el archivo contiene backticks, usar template normal con backtick escapado (y entonces no puede contener backslashes).
+- `push_files` es SEGURO para archivos completos, incluidos backslashes de regex, SI el contenido se construye con template literal `String.raw` en run_typescript (un template normal CORROMPE los escapes de regex). Si el archivo contiene backticks, usar template normal con backtick escapado (y entonces no puede contener backslashes).
 - Verificación de transcripción: usar números de línea conocidos como anclas (content.split con nueva línea, línea n-1 recortada debe coincidir con la línea esperada) ANTES de pushear.
 - `open_url` sobre raw.githubusercontent ENVUELVE líneas y trunca a ~32.8k: NUNCA re-subir contenido leído así.
 - `create_or_update_file` corrompe contenido: no usar.
@@ -33,7 +33,7 @@
 ---
 
 ## M11 — Servidor OOB para vulnerabilidades ciegas (SSRF/XXE/RCE blind)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: ALTA (hueco funcional mayor)**
+**Estado: ⏳ pendiente | Issue: #5 | Prioridad: ALTA (hueco funcional mayor)**
 
 Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interactsh), integrado con el modelo de confianza (evidencia de callback → CONFIRMED).
 
@@ -45,7 +45,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 11.6 CI verde + CHANGELOG + checkpoint. Estado M11 → ✅.
 
 ## M12 — SCA / SBOM con advisory matching (OSV)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: ALTA**
+**Estado: ⏳ pendiente | Issue: #6 | Prioridad: ALTA**
 
 - [ ] 12.1 `scripts/sca/sbom.py`: generar SBOM CycloneDX 1.5 (JSON) desde `requirements.txt` + imports reales del código (reutilizar el inventario de dependencias de FASE 3).
 - [ ] 12.2 `scripts/sca/osv_client.py`: consulta a OSV.dev (API pública, sin key); modo OFFLINE por defecto con caché local `scripts/sca/advisories.json` versionado (la red solo con opt-in explícito, respetando el modelo sin-red del proyecto).
@@ -55,7 +55,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 12.6 CI verde + CHANGELOG + checkpoint. Estado M12 → ✅.
 
 ## M13 — Escaneo IaC y CI/CD (Dockerfile, compose, K8s, Terraform, GitHub Actions)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: ALTA (el propio repo tiene workflows)**
+**Estado: ⏳ pendiente | Issue: #7 | Prioridad: ALTA (el propio repo tiene workflows)**
 
 - [ ] 13.1 `scripts/static_analysis/iac_analyzer.py` (`IaCAnalyzer`, TOOL_NAME="iac_native") reutilizando `RuleEngine`. Reglas:
   - Dockerfile: DOCK001 root USER, DOCK002 secrets en ENV/RUN, DOCK003 ADD de URL, DOCK004 tag :latest
@@ -68,7 +68,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 13.5 CI verde + CHANGELOG + checkpoint. Estado M13 → ✅.
 
 ## M14 — Verificación de XSS en DOM con navegador headless (Playwright opcional)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: MEDIA**
+**Estado: ⏳ pendiente | Issue: #8 | Prioridad: MEDIA**
 
 - [ ] 14.1 `scripts/pentesting/dom_verify.py`: `DOMVerifier` que usa Playwright SOLO si está instalado (patrón Nuclei: verify con playwright_path None); sin Playwright → devuelve estado PROBABLE actual sin romper nada.
 - [ ] 14.2 Verificación real: inyectar payload canónico con ID único, navegar, escuchar el evento → CONFIRMED + EvidenceType.SCREENSHOT (tipo ya definido y sin usar en EvidenceEngine).
@@ -77,7 +77,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 14.5 CI verde (tests deben pasar sin Playwright instalado) + CHANGELOG + checkpoint. Estado M14 → ✅.
 
 ## M15 — Diferencial IDOR / BOLA multi-sesión
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: ALTA (rentabilidad pentest)**
+**Estado: ⏳ pendiente | Issue: #9 | Prioridad: ALTA (rentabilidad pentest)**
 
 - [ ] 15.1 `scripts/pentesting/differential.py`: `DifferentialTester` que re-ejecuta una petición con 2 sesiones del `AuthManager` (admin vs usuario normal) y compara: status, content-length, JSON structural diff (claves añadidas/eliminadas), campos sensibles.
 - [ ] 15.2 Heurística de hallazgo: mismo endpoint devuelve datos de otro usuario o divergencia 200-vs-403 → finding IDOR con evidencia par (las dos respuestas, secretos redactados por EvidenceEngine).
@@ -87,7 +87,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 15.6 CI verde + CHANGELOG + checkpoint. Estado M15 → ✅.
 
 ## M16 — Exportación SARIF + calculadora CVSS 3.1
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: MEDIA**
+**Estado: ⏳ pendiente | Issue: #10 | Prioridad: MEDIA**
 
 - [ ] 16.1 `scripts/reporting/sarif.py`: exporter SARIF 2.1.0 (results con ruleId, level, location, cwe en properties) desde los hallazgos del análisis estático.
 - [ ] 16.2 Workflow: upload del SARIF con la action oficial de GitHub (upload-sarif) con permiso security-events write, tolerante (el SARIF se genera también como artifact).
@@ -96,7 +96,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 16.5 CI verde + CHANGELOG + checkpoint. Estado M16 → ✅.
 
 ## M17 — Mapeo OWASP Top 10 (2021) + ASVS 4.0 por hallazgo
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: MEDIA**
+**Estado: ⏳ pendiente | Issue: #11 | Prioridad: MEDIA**
 
 - [ ] 17.1 `references/owasp-mapping.json`: mapa CWE → OWASP Top 10 2021 (A01-A10) → puntos ASVS 4.0 relevantes (versionado, auditable, con fuente).
 - [ ] 17.2 Enriquecer Finding con campos `owasp_category` y `asvs_references` (dataclass retrocompatible con from_dict/to_dict).
@@ -105,7 +105,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 17.5 CI verde + CHANGELOG + checkpoint. Estado M17 → ✅.
 
 ## M18 — Descubrimiento de endpoints desde bundles JS
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: MEDIA**
+**Estado: ⏳ pendiente | Issue: #12 | Prioridad: MEDIA**
 
 - [ ] 18.1 `scripts/pentesting/js_harvest.py`: extraer rutas de archivos .js y .js.map (regex de rutas, source maps: parsear sources y sourcesContent), deduplicar, normalizar contra el host del scope.
 - [ ] 18.2 Alimentar `ActiveScanner` (nuevos candidate paths) y `Fuzzer` (endpoints con parámetros detectados por nombres en el bundle).
@@ -114,7 +114,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 18.5 CI verde + CHANGELOG + checkpoint. Estado M18 → ✅.
 
 ## M19 — Sello de evidencias con hash encadenado (defensabilidad)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: BAJA (diferencial de producto)**
+**Estado: ⏳ pendiente | Issue: #13 | Prioridad: BAJA (diferencial de producto)**
 
 - [ ] 19.1 `scripts/core/evidence_chain.py`: al persistir cada evidencia, calcular sha256(prev_hash + evidence_json canónico) y guardar `chain_hash`; génesis documentada.
 - [ ] 19.2 `verify_chain()`: recorre el storage y reporta evidencias alteradas o fuera de orden.
@@ -123,7 +123,7 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [ ] 19.5 CI verde + CHANGELOG + checkpoint. Estado M19 → ✅.
 
 ## M20 — Threat modeling ligero (STRIDE)
-**Estado: ⏳ pendiente | Issue: crear | Prioridad: BAJA**
+**Estado: ⏳ pendiente | Issue: #14 | Prioridad: BAJA**
 
 - [ ] 20.1 `scripts/threat_model/stride.py`: inventario de componentes del objetivo (manifiestos/infra: BD, cola, storage, API, frontend) y generación de candidatos STRIDE por tipo de componente (tabla de heurísticas versionada).
 - [ ] 20.2 Cada amenaza candidata → check concreto: mapear a reglas del static analyzer y a módulos del escáner activo (loop cerrado "qué debería preocuparme" → "qué he testeado").
@@ -142,4 +142,4 @@ M11/M12/M13/M15 son las de mayor impacto con la arquitectura actual. M14 requier
 2. Este plan actualizado (checkboxes + Estado) y commit.
 3. CHANGELOG con la mejora.
 4. Checkpoint guardado en el conocimiento persistente (archivo de progreso), con commits, runs de CI y cualquier técnica nueva aprendida.
-5. Issue de la mejora cerrado (si se creó).
+5. Issue de la mejora cerrado.
