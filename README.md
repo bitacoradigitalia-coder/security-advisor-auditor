@@ -14,10 +14,10 @@ escritorio, CLI, bibliotecas, automatizaciones, CI/CD e infraestructura. Licenci
 
 - ✅ FASE 1 (Seguridad del auditor): ScopeManager y EngagementManager integrados
 - ✅ FASE 2 (Fiabilidad): Evidence Engine y Verification Engine integrados en scanner, fuzzer y exploit
-- ✅ Todos los tests pasan (156/156, 2 skipped)
+- ✅ Todos los tests pasan (203 passed, 2 skipped)
 - ✅ FASE 3 (Calidad): dependencias auditadas (solo `requests`), tipado estricto en `scripts/core` y CI con mypy + pytest
-- ✅ FASE 4 (Multilenguaje): analizadores nativos JavaScript y TypeScript con motor de reglas compartido (offline, sin dependencias)
-- ✅ FASE 5 (IA): interpretación contextual y priorización automática de hallazgos (`ai_engine`)
+- ✅ FASE 4 (Multilenguaje): analizadores nativos JavaScript, TypeScript y PHP con motor de reglas compartido (offline, sin dependencias)
+- ✅ FASE 5 (IA): interpretación contextual, deduplicación, ponderación de endpoints sensibles y priorización automática de hallazgos (`ai_engine`)
 
 **v2.2 es feature-complete**: las 5 fases del plan están completadas.
 
@@ -37,11 +37,8 @@ escritorio, CLI, bibliotecas, automatizaciones, CI/CD e infraestructura. Licenci
 ### 🎯 Gestión de Bug Bounty
 - **Gestión de Programas**: Creación y seguimiento de programas de Bug Bounty
 - **Gestión de Findings**: Registro detallado de vulnerabilidades con severidad, impacto, CVSS
-- **Priorización Inteligente**: Sistema de puntuación basado en severidad, impacto, e
-xplotabilidad, scope y confianza
-- **Integración con Plataformas**: HackerOne, Bugcrowd, Intigriti, YesWeH
-
-ack
+- **Priorización Inteligente**: Sistema de puntuación basado en severidad, impacto, explotabilidad, scope y confianza
+- **Integración con Plataformas**: HackerOne, Bugcrowd, Intigriti, YesWeHack
 
 ### 📊 Reportes Profesionales
 - **Generación Multi-formato**: Markdown, HTML, JSON
@@ -81,15 +78,12 @@ ack
 
 ---
 
-##
- 🏗️ Arquitectura
+## 🏗️ Arquitectura
 
 ```text
 security-advisor-auditor/
 ├── SKILL.md, README.md, LICENSE, CHANGELOG.md
-├── agen
-t
-s/openai.yaml
+├── agents/openai.yaml
 ├── assets/icon.svg
 ├── references/                 # Metodología, políticas, fuentes y compatibilidad
 ├── modules/*.md                # Guías enfocadas; no motores ficticios
@@ -126,11 +120,8 @@ s/openai.yaml
 │   └── bugbounty.md           # Documentación de bug bounty (NUEVO)
 ├── .github/workflows/          # CI/CD
 │   ├── security-audit.yml
-│   ├── pentes
-ting.yml         # Workflow de pentesting (NUEVO)
-│   └── bugbounty.yml           # Workflow de bug bounty (
-NU
-EVO)
+│   ├── pentesting.yml         # Workflow de pentesting (NUEVO)
+│   └── bugbounty.yml           # Workflow de bug bounty (NUEVO)
 └── install.py
 ```
 
@@ -149,7 +140,7 @@ EVO)
   - FASE 1: ScopeManager, EngagementManager, validación DNS segura, kill switch
   - FASE 2: EvidenceEngine y VerificationEngine, hallazgos con evidencia trazable
   - FASE 3: dependencias auditadas, mypy estricto en scripts/core, CI con mypy + pytest
-  - FASE 4: analizadores nativos JavaScript/TypeScript (`js_native`, `ts_native`) con motor de reglas compartido
+  - FASE 4: analizadores nativos JavaScript/TypeScript (`js_native`, `ts_native`) y PHP (`php_native`) con motor de reglas compartido
   - FASE 5: AIEngine, priorización automática P0-P4 con justificación auditable
 
 - **v2.1.1** (2026-11-02): Correcciones de bugs y tests
@@ -164,9 +155,6 @@ EVO)
   - Modos QUICK/STANDARD/DEEP
 
 - **v2.0.0** (2026-10-10): Versión base con metodología de 21 fases
-
----
-
 
 ---
 
@@ -189,14 +177,11 @@ markdown>=3.4.0
 ```
 
 #### Herramientas Externas (Opcionales)
-- **Nuclei**: Para escaneo de vul
-nerabilidades conocido
+- **Nuclei**: Para escaneo de vulnerabilidades conocidas
 - **FFuF**: Para fuzzing de directorios
 - **Gobuster**: Para descubrimiento de directorios
 - **Burp Suite**: Para análisis manual (integración futura)
-- **Metasploit**: Para explotación avanzada (int
-egr
-ación futura)
+- **Metasploit**: Para explotación avanzada (integración futura)
 
 ---
 
@@ -250,8 +235,7 @@ python scripts/audit.py --help
 | `poc` | Generación de PoCs | `python scripts/audit.py poc generate --finding audit.json --output ./poc.py` |
 | `report` | Generación de reportes | `python scripts/audit.py report audit.json --output ./final-report --format html` |
 | `tools` | Herramientas disponibles | `python scripts/audit.py tools` |
-| `validate-skill` | Validaci
-ón de skill | `python scripts/audit.py validate-skill .` |
+| `validate-skill` | Validación de skill | `python scripts/audit.py validate-skill .` |
 
 ---
 
@@ -261,9 +245,7 @@ python scripts/audit.py --help
 
 ```bash
 # Análisis rápido
-python scripts/audit.py scan /ruta/repo --output ./informe --mode
- QUI
-CK
+python scripts/audit.py scan /ruta/repo --output ./informe --mode QUICK
 
 # Análisis profundo
 python scripts/audit.py scan /ruta/repo --output ./informe-deep --mode DEEP
@@ -314,17 +296,14 @@ python scripts/audit.py fuzz https://example.com/api --param id --output ./fuzz-
 
 ```bash
 # Explotación de SQLi (requiere archivo de permisos)
-python scripts/audit.py exploit https://example.com
-/api?id=1 --vuln sqli \
+python scripts/audit.py exploit https://example.com/api?id=1 --vuln sqli \
   --permission-file permissions.json --output ./exploits
 
 # Explotación de XSS
 python scripts/audit.py exploit https://example.com/search?q=test --vuln xss \
   --permission-file permissions.json
 
-# Cr
-ear a
-rchivo de permisos
+# Crear archivo de permisos
 python scripts/audit.py exploit --create-permission --target https://example.com --vuln-type sqli --output permissions.json
 ```
 
@@ -379,18 +358,15 @@ python scripts/audit.py bugbounty stats --program "Example Inc"
 python scripts/audit.py poc generate --finding audit.json --language python --output ./poc.py
 
 # Generar PoC en Bash
-python scripts/audi
-t.py poc generate --finding audit.json --language bash --output ./poc.sh
+python scripts/audit.py poc generate --finding audit.json --language bash --output ./poc.sh
 
 # Generar PoC en curl
 python scripts/audit.py poc generate --finding audit.json --language curl --output ./poc_curl.sh
 ```
 
-#### 8. Generación de Repor
-tes
+#### 8. Generación de Reportes
 
-`
-``bash
+```bash
 # Reporte en Markdown
 python scripts/audit.py report audit.json --output ./report --format markdown
 
@@ -452,15 +428,12 @@ python scripts/audit.py exploit --create-permission \
   --output permissions.json
 ```
 
-### Buenas Práctica
-s
+### Buenas Prácticas
 
 1. **Siempre obtener permiso escrito** antes de realizar pruebas de explotación
 2. **Definir scope claramente** y no excederlo
 3. **Usar rate limiting** para evitar DoS
-4. **No realizar pruebas en producción** sin autorizac
-ión exp
-lícita
+4. **No realizar pruebas en producción** sin autorización explícita
 5. **Documentar todas las acciones** para auditoría
 
 ---
@@ -523,8 +496,7 @@ Puedes cambiar la ubicación:
 
 ```bash
 # Configurar directorio de almacenamiento
-python scripts/audit.py scan https://example.com --output ./report --storage-path /c
-ustom/path
+python scripts/audit.py scan https://example.com --output ./report --storage-path /custom/path
 ```
 
 ---
@@ -536,10 +508,8 @@ ustom/path
 El proyecto incluye tres workflows principales:
 
 1. **security-audit.yml**: Análisis de seguridad automático
-2. **pentesting.yml**: Ejecución de pruebas de pente
-sting
-3.
- **bugbounty.yml**: Gestión de Bug Bounty
+2. **pentesting.yml**: Ejecución de pruebas de pentesting
+3. **bugbounty.yml**: Gestión de Bug Bounty
 
 ### Ejecutar Workflows Manualmente
 
@@ -596,8 +566,7 @@ Para reportar bugs o solicitar características:
 
 ---
 
-**Security Advisor Auditor v2.2 - Análisis de Seguridad Profesional para Ha
-ckers y Desarrolladores Senior** 🚀
+**Security Advisor Auditor v2.2 - Análisis de Seguridad Profesional para Hackers y Desarrolladores Senior** 🚀
 
 ## Arquitectura
 
@@ -606,9 +575,7 @@ security-advisor-auditor/
 ├── SKILL.md, README.md, LICENSE, CHANGELOG.md
 ├── agents/openai.yaml
 ├── assets/icon.svg
-├── references/                 # Metodología, polí
-ticas, fu
-entes y compatibilidad
+├── references/                 # Metodología, políticas, fuentes y compatibilidad
 ├── modules/*.md                # Guías enfocadas; no motores ficticios
 ├── adapters/profiles.json      # Diferencias de rutas
 ├── schemas/audit-report.schema.json
@@ -652,8 +619,7 @@ Tras revisar el origen y contenido del ZIP, desde la carpeta extraída:
 
 ```text
 python install.py --agent hermes --dry-run
-python scrip
-ts/audit.py validate-skill .
+python scripts/audit.py validate-skill .
 python install.py --agent hermes
 ```
 
@@ -661,9 +627,7 @@ Desde su directorio padre:
 
 ```text
 python security-advisor-auditor-main/install.py --agent hermes --dry-run
-python security-advisor-auditor-main/scripts/audit.py
- validate-
-skill .
+python security-advisor-auditor-main/scripts/audit.py validate-skill .
 python security-advisor-auditor-main/install.py --agent hermes
 ```
 
@@ -680,8 +644,8 @@ python scripts/audit.py validate-skill /ruta/security-advisor-auditor-main.zip
 La extracción es temporal y conserva los controles ZIP. Incluso `--dry-run`
 puede extraer una fuente ZIP en un temporal que se limpia; no escribe en el destino.
 Se rechazan cero o varias raíces, identidad incorrecta, metodología alterada,
-enlaces/reparse, traversal y límites excedidos. No importa ni ejecuta código de
-la fuente indicada por `--source`; copiar código no acredita su autenticidad.
+enlaces/reparse, traversal y límites excedidos. No importa ni ejecuta código de la
+fuente indicada por `--source`; copiar código no acredita su autenticidad.
 No mezclar copias válidas bajo un mismo padre para la autodetección.
 
 La integridad documental compara el **texto completo** original mediante SHA256
@@ -695,15 +659,12 @@ El resultado muestra OS, destino, número de archivos e integridad real.
 | Agente | Padre global por defecto | Invocación |
 | --- | --- | --- |
 | Hermes | `~/.hermes/skills` | Nombre de skill; skills_list/skill_view |
-| OpenClaw | `~/.openclaw/skills` | Nombre de skill; skills lis
-t |
+| OpenClaw | `~/.openclaw/skills` | Nombre de skill; skills list |
 | OpenCode | `~/.config/opencode/skills` | Herramienta skill por nombre |
 | Codex | `~/.agents/skills` | `$security-advisor-auditor` |
 | Claude Code | `~/.claude/skills` | `/security-advisor-auditor` |
 
-Fuentes y restricciones
-: [compatib
-ilidad](references/platform-compatibility.md).
+Fuentes y restricciones: [compatibilidad](references/platform-compatibility.md).
 El ciclo de archivos se prueba en temporales Windows para los cinco perfiles;
 **activación en clientes reales pendiente**, indicado por `runtime_verified=false`.
 Linux/macOS no probados nativamente. Otros agentes Agent Skills pueden consumir
@@ -745,13 +706,10 @@ Los permisos permanecen bajo el control del usuario/anfitrión.
 ```text
 python scripts/audit.py --help
 python scripts/audit.py validate-skill .
-pytho
-n scripts/audit.py tools
+python scripts/audit.py tools
 python scripts/audit.py scan /ruta/objetivo --output /ruta/externa/informe-nuevo
 python scripts/audit.py report /ruta/audit-revisado.json --output /ruta/informe-revisado
-python scripts/audit.py extract-zip 
-/ruta/entrad
-a.zip --output /ruta/objetivo-nuevo
+python scripts/audit.py extract-zip /ruta/entrada.zip --output /ruta/objetivo-nuevo
 python -B -m unittest discover -s tests -v
 ```
 
@@ -783,14 +741,11 @@ Scanners: revisar versión, reglas, privacidad, permisos y red por separado.
 No hay ejecutor/sandbox. Pruebas de terceros requieren aislamiento externo
 autorizado con límites CPU/memoria/tiempo y red restringida. Usar copia inmutable:
 la comprobación de enlaces no elimina carreras con cambios concurrentes hostiles.
-Ver [controles](references/ethical-security.md) y [evidencia](references
-/evidence-policy.md).
+Ver [controles](references/ethical-security.md) y [evidencia](references/evidence-policy.md).
 
 - **Verificado localmente:** CLI, formato portable, reportes, redacción sintética,
   rutas y ciclo de archivos de los cinco perfiles. Resultados originales en
-  [entrega v2.0](docs/delivery.md) y actuales en [
-correcciones 
-v2.0.1](docs/corrections-2.0.1.md).
+  [entrega v2.0](docs/delivery.md) y actuales en [correcciones v2.0.1](docs/corrections-2.0.1.md).
 - **Experimental:** AST/regex e inferencia de frameworks/superficies; sin análisis
   semántico/interprocedural completo ni advisories transitivos.
 - **No probado:** activación real de clientes, Linux/macOS, scanners ejecutados,
@@ -821,15 +776,12 @@ y limitaciones. Los fixtures inseguros son entradas estáticas; nunca ejecutarlo
 ```text
 python scripts/audit.py scan /ruta/repo --output /ruta/informe --mode STANDARD
 python scripts/audit.py scan /ruta/repo --output /ruta/informe-deep --mode DEEP --max-seconds 30 --max-memory-bytes 128000000 --max-findings 1000 --max-depth 32
-python scripts/audit.py scan /ru
-ta/repo --output /ruta/informe-legacy --mode STANDARD --legacy-report
+python scripts/audit.py scan /ruta/repo --output /ruta/informe-legacy --mode STANDARD --legacy-report
 python -B tests/evaluate_precision.py --output /ruta/evaluacion-nueva.json
 python -B -m unittest discover -s tests -v
 ```
 
-QUICK es el predeterminado para conserva
-r el flujo ant
-erior. STANDARD usa AST,
+QUICK es el predeterminado para conservar el flujo anterior. STANDARD usa AST,
 propagación intraprocedimental y modelos de consultas Flask. DEEP añade funciones
 locales directas sin decoradores/variádicos, con profundidad limitada. No es
 análisis interprocedimental completo. El parser corre en subproceso confiable
@@ -865,16 +817,13 @@ La precisión del conjunto sintético no representa la precisión general.
 - [ ] Escaneo automatizado de APIs GraphQL
 - [ ] Detección de WebSockets vulnerables
 - [ ] Pruebas de autenticación (brute force, credential stuffing)
-- [ ] Integración con B
-urp Suite API
+- [ ] Integración con Burp Suite API
 - [ ] Soporte para pruebas de DoS controladas
 - [ ] Generación automática de informes de pentest
 
 #### Módulo de Bug Bounty
 - [ ] Integración con más plataformas (Intigriti, YesWeHack, etc.)
-- [ ] Sistema de notificacion
-es automáticas
-
+- [ ] Sistema de notificaciones automáticas
 - [ ] Dashboard de métricas de programas
 - [ ] Generación de reportes para plataformas externas
 - [ ] Seguimiento de recompensas y pagos
@@ -939,4 +888,4 @@ Las contribuciones son bienvenidas. Por favor:
 
 **Security Advisor Auditor - Análisis de Seguridad Profesional para Hackers y Desarrolladores Senior** 🚀
 
-*Versión actual: v2.2 (feature-complete: Fases 1-5 completadas) | Tests: 156/156 + CI ✅*
+*Versión actual: v2.2 (feature-complete: Fases 1-5 completadas) | Tests: 203 passed, 2 skipped + CI ✅*
