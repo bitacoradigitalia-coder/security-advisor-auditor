@@ -25,19 +25,18 @@ jobs:
           status=${PIPESTATUS[0]}
           echo "PYTEST_EXIT=$status" >> pytest.log
           exit $status
-      - name: "Diagnostico: subir pytest.log a rama ci-diag"
+      - name: "Diagnostico: subir pytest.log via API a rama ci-diag"
         if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
-          git fetch origin ci-diag || true
-          git checkout -B ci-diag origin/ci-diag || git checkout -B ci-diag
-          mkdir -p logs
-          cp pytest.log "logs/pytest-run-${{ github.run_id }}.txt" || true
-          git add -A
-          git commit -m "diag: log pytest run ${{ github.run_id }}" || true
-          git push origin ci-diag || true
+          if [ ! -f pytest.log ]; then echo "sin pytest.log"; exit 0; fi
+          B64=$(base64 -w0 pytest.log)
+          printf '{"message":"diag: log pytest run %s","content":"%s","branch":"ci-diag"}' "$RUN_ID" "$B64" > payload.json
+          curl -s -X PUT -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/contents/logs/pytest-run-$RUN_ID.txt" -d @payload.json > curl-out.json
+          cat curl-out.json
       - name: Mypy (advisory, no bloqueante)
         if: always()
         run: mypy --config-file mypy.ini || true
