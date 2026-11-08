@@ -44,14 +44,15 @@ TS_RULES: List[Rule] = [
         category="unsafe_cast",
         severity="low",
         confidence="low",
-        pattern=r"[\w\)\]]+!\s*[.,;=)]",
+        pattern=r"[\w\)\]]+!\s*[.,;)]",
         message="Asercion de no-nulo: si el valor es undefined en ejecucion causara fallo o comportamiento inesperado",
         remediation="Comprobar el valor con una type guard o encadenado opcional (?.)",
         tags=["typescript"],
     ),
     Rule(
         rule_id="TS004",
-        title="Asercion doble cast 'as unknown as'",
+        title="Asercion doble cast 'as 
+unknown as'",
         category="unsafe_cast",
         severity="medium",
         confidence="medium",
@@ -99,7 +100,8 @@ class TypeScriptAnalyzer(JavaScriptAnalyzer):
             target=str(root),
             tool=self.TOOL_NAME,
             language=self.LANGUAGE,
-            findings=all_findings,
+            findings=all_finding
+s,
             statistics={"by_severity": self._count_by_severity(all_findings)},
             errors=errors,
             success=True,
