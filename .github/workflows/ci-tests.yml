@@ -1,11 +1,13 @@
 name: CI Tests
 
-# FASE 3 (issue #1): verifica tipado estricto (mypy) y la suite de tests en cada push/PR
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
   quality:
@@ -16,8 +18,33 @@ jobs:
         with:
           python-version: "3.10"
       - name: Instalar dependencias
-        run: pip install requests mypy pytest
-      - name: Tests
-        run: python -m pytest tests/ -q
-      - name: Mypy (scripts/core)
-        run: mypy --config-file mypy.ini
+        run: |
+          pip install requests mypy pytest > install.log 2>&1
+          echo "PIP_EXIT=$?" >> install.log
+          tail -5 install.log
+      - name: Tests y Mypy (diagnostico temporal)
+        run: |
+          set +e
+          python --version > diag.log 2>&1
+          pip freeze >> diag.log 2>&1
+          python -m pytest tests/ -q > pytest.log 2>&1
+          pcode=$?
+          mypy --config-file mypy.ini > mypy.log 2>&1
+          mcode=$?
+          echo "PYTEST_EXIT=$pcode" >> diag.log
+          echo "MYPY_EXIT=$mcode" >> diag.log
+          echo "---- pytest.log (ultimas 80 lineas) ----" >> diag.log
+          tail -80 pytest.log >> diag.log
+          echo "---- mypy.log (ultimas 40 lineas) ----" >> diag.log
+          tail -40 mypy.log >> diag.log
+          tail -60 diag.log
+          test $pcode -eq 0 -a $mcode -eq 0
+      - name: Subir logs a rama ci-diag
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B ci-diag
+          git add -f diag.log pytest.log mypy.log install.log 2>/dev/null || true
+          git commit -m "diag: logs CI" || true
+          git push -f origin ci-diag
