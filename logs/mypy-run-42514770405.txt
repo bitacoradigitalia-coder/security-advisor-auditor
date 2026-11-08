@@ -1,0 +1,2 @@
+scripts/core/engagement_manager.py:709: error: Argument 1 to "open" has incompatible type "Path | None"; expected "int | str | bytes | PathLike[str] | PathLike[bytes]"  [arg-type]
+Found 1 error in 1 file (checked 6 source files)
