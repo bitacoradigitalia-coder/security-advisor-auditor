@@ -21,13 +21,18 @@ jobs:
           python-version: "3.10"
       - name: Parche JS006 (js_analyzer.py)
         run: |
-          set -e
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          python .github/fix_js006.py
-          git add -A
-          git diff --cached --quiet || git commit -m "reparar: escapar comillas del patron JS006 (SyntaxError en js_analyzer)"
-          git push origin main || true
+          set +e
+          python .github/fix_js006.py > patch.log 2>&1
+          pcode=$?
+          echo "PATCH_EXIT=$pcode"
+          cat patch.log
+          if [ $pcode -eq 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git diff --cached --quiet || git commit -m "reparar: escapar comillas del patron JS006 (SyntaxError en js_analyzer)"
+            git push origin main 2>> patch.log || echo "push fallido" >> patch.log
+          fi
       - name: Instalar dependencias
         run: pip install requests mypy pytest pyyaml
       - name: Tests
@@ -39,6 +44,7 @@ jobs:
           mcode=$?
           echo "PYTEST_EXIT=$pcode MYPY_EXIT=$mcode"
           tail -60 pytest.log
+          tail -15 mypy.log
           test $pcode -eq 0
       - name: Subir logs a rama ci-diag
         if: always()
@@ -46,6 +52,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B ci-diag
-          git add -f pytest.log mypy.log 2>/dev/null || true
+          git add -f pytest.log mypy.log patch.log 2>/dev/null || true
           git commit -m "diag: logs CI" || true
-          git push -f origin ci-diag
+          git push -f origin ci-diag || true
