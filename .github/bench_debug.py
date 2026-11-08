@@ -14,4 +14,4 @@ for p in sorted(root.rglob("*")):
         analyzer = js if p.suffix == ".js" else ts
         result = analyzer.analyze_file(str(p))
         for f in result.findings:
-            print("FP?", p.name, f.rule_id, f.category, "line", f.line, "|", p.read_text().splitlines()[f.line - 1].strip() if f.line else "")
+            print("FP?", p.name, repr(f))
