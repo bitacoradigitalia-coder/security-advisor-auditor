@@ -50,7 +50,7 @@ DOCKERFILE_RULES: List[Rule] = [
     Rule(
         rule_id="DOCK004", title="Imagen flotante (:latest o sin tag)",
         category="container_misconfiguration", severity="medium", confidence="high",
-        pattern=r"FROM\s+\S+:latest\b|^FROM\s+\S+\s*$",
+        pattern=r"FROM\s+\S+:latest\b|^FROM\s+[^\s:]+\s*$",
         message="FROM :latest (o sin tag): builds no reproducibles y actualizaciones no controladas",
         remediation="Fijar la imagen por digest o version exacta (FROM python:3.10.13)",
         tags=["supply-chain"],
