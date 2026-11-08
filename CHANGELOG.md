@@ -4,6 +4,15 @@
 
 Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan completadas.
 
+### Mejoras 1-6 post-feature-complete (2026-11-08, CI verde tras cada una)
+
+1. **CI verde**: workflow final limpio (pytest bloqueante, mypy advisory).
+2. **Benchmark de falsos positivos**: `tests/test_fp_benchmark.py` mide FP/(FP+TP) < 10% (criterio FASE 2) sobre corpus versionado `tests/fixtures/benchmark/` (6 limpios + 8 vulnerables). Métrica actual: 0%.
+3. **Laboratorio vulnerable autorizado**: app deliberadamente insegura con `http.server` en 127.0.0.1 (`tests/lab/vulnerable_app.py`) + test de integración E2E del ActiveScanner: descubrimiento de endpoints (robots.txt), detección de vulnerabilidades (cabeceras, cookies, debug) y findings con evidencia.
+4. **Reglas JS afinadas**: JS006 (SQLi) sin falsos positivos en concatenaciones normales, JS009 excluye hosts de especificaciones, JS013 pasa a info; nuevas JS016 (open redirect) y JS017 (setTimeout/setInterval con string).
+5. **Analizador nativo PHP**: `PHPAnalyzer` con 8 reglas PHP001-PHP008, registrado en `static_analysis` como `php_native`, con `analyze_directory` limitado a `.php`/`.phtml`.
+6. **IA**: deduplicación automática de hallazgos idénticos (clave conservadora: nombre, tipo, objetivo, endpoint, parámetro, payload y estado de verificación) y bono +10 de riesgo en endpoints sensibles (/login, /admin, /api/auth, etc.) con signal `sensitive_endpoint`.
+
 ### Reparación de estabilidad (2026-11-08, CI verde)
 
 - CI Tests verde: 182 pasados, 2 saltados (run #19).
