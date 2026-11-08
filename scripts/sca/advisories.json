@@ -1,0 +1,15 @@
+{
+  "$comment": "Cache offline de advisories (mejora M12). Fuentes: OSV.dev / GitHub Advisories. Mantener versionada y actualizada.",
+  "advisories": [
+    {
+      "id": "GHSA-jpzg-p363-qq3p",
+      "package": "requests",
+      "summary": "Fuga de credenciales Proxy-Authorization en redirecciones (CVE-2023-32681).",
+      "severity": "medium",
+      "cwe": "CWE-200",
+      "introduced": "2.0.0",
+      "fixed": "2.31.0",
+      "url": "https://osv.dev/vulnerability/GHSA-jpzg-p363-qq3p"
+    }
+  ]
+}
