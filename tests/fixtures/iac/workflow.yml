@@ -1,0 +1,17 @@
+name: CI
+on:
+  pull_request_target:
+    branches: [main]
+permissions: write-all
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Build
+        run: |
+          echo "Building ${{ github.head_ref }}"
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}

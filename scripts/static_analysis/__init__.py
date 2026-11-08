@@ -7,6 +7,7 @@ Supported Languages:
 - JavaScript (native regex analyzer + ESLint Security + Semgrep)
 - TypeScript (native regex analyzer + ESLint Security + Semgrep)
 - PHP (native regex analyzer + PHPStan Security + Semgrep)
+- IaC/CI-CD: Dockerfile, K8s, Terraform, GitHub Actions (v2.3, mejora M13)
 - Java, Go, Ruby, C/C++ and 20+ more via Semgrep
 """
 
@@ -16,6 +17,7 @@ from .regex_rules import Rule, RuleEngine
 from .js_analyzer import JavaScriptAnalyzer
 from .ts_analyzer import TypeScriptAnalyzer
 from .php_analyzer import PHPAnalyzer
+from .iac_analyzer import IaCAnalyzer
 
 # Import external analyzers (require the external CLI tool installed)
 from .external import (
@@ -36,6 +38,7 @@ __all__ = [
     'JavaScriptAnalyzer',
     'TypeScriptAnalyzer',
     'PHPAnalyzer',
+    'IaCAnalyzer',
     'SemgrepAnalyzer',
     'NucleiAnalyzer',
     'BanditAnalyzer',
@@ -49,8 +52,8 @@ def get_analyzer(language: str = None, tool: str = None):
     Get the appropriate analyzer based on language or tool.
 
     Args:
-        language: Target language (python, javascript, typescript, php, etc.)
-        tool: Specific tool to use (js_native, ts_native, php_native, semgrep, bandit, eslint, etc.)
+        language: Target language (python, javascript, typescript, php, docker, yaml, terraform, etc.)
+        tool: Specific tool to use (js_native, ts_native, php_native, iac_native, semgrep, bandit, eslint, etc.)
 
     Returns:
         Analyzer instance
@@ -60,6 +63,7 @@ def get_analyzer(language: str = None, tool: str = None):
             'js_native': JavaScriptAnalyzer,
             'ts_native': TypeScriptAnalyzer,
             'php_native': PHPAnalyzer,
+            'iac_native': IaCAnalyzer,
             'semgrep': SemgrepAnalyzer,
             'nuclei': NucleiAnalyzer,
             'bandit': BanditAnalyzer,
@@ -79,6 +83,14 @@ def get_analyzer(language: str = None, tool: str = None):
             'ts': TypeScriptAnalyzer,
             'tsx': TypeScriptAnalyzer,
             'php': PHPAnalyzer,
+            'docker': IaCAnalyzer,
+            'dockerfile': IaCAnalyzer,
+            'yaml': IaCAnalyzer,
+            'yml': IaCAnalyzer,
+            'terraform': IaCAnalyzer,
+            'hcl': IaCAnalyzer,
+            'k8s': IaCAnalyzer,
+            'iac': IaCAnalyzer,
         }
         if language in native_map:
             return native_map[language]()
