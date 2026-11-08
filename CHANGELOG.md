@@ -13,6 +13,13 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan compl
 5. **Analizador nativo PHP**: `PHPAnalyzer` con 8 reglas PHP001-PHP008, registrado en `static_analysis` como `php_native`, con `analyze_directory` limitado a `.php`/`.phtml`.
 6. **IA**: deduplicación automática de hallazgos idénticos (clave conservadora: nombre, tipo, objetivo, endpoint, parámetro, payload y estado de verificación) y bono +10 de riesgo en endpoints sensibles (/login, /admin, /api/auth, etc.) con signal `sensitive_endpoint`.
 
+### Mejoras 7-10 post-feature-complete (2026-11-08)
+
+7. **Workflows reparados**: `security-audit.yml` reescrito (YAML válido, escaneo activo solo manual con opt-in, steps tolerantes a fallos); `bugbounty.yml` reescrito (inputs de schema correctos, artifact v4, helper `scripts/bugbounty/ci_actions.py`); fix del test E2E del laboratorio (robots.txt revela `/debug`).
+8. **Deuda mypy eliminada**: corregidos los 8 errores heredados en `evidence_engine.py`, `scope_manager.py` (incl. `import time`) y `engagement_manager.py`; mypy pasa a ser bloqueante en CI con 0 errores.
+9. **README pulido**: reparados los saltos de línea a mitad de palabra heredados de la corrupción de commits; contador de tests y descripciones de fases actualizados (PHP nativo, IA con deduplicación).
+10. **Release**: pendiente tag manual `v2.2.0-alpha` + GitHub Release (issue #4).
+
 ### Reparación de estabilidad (2026-11-08, CI verde)
 
 - CI Tests verde: 182 pasados, 2 saltados (run #19).
