@@ -8,7 +8,7 @@
 ## Estado global
 - CI: pytest BLOQUEANTE + mypy BLOQUEANTE (0 errores) en `ci-tests.yml`. Los dos deben seguir en verde tras cada paso.
 - Base actual: v2.2.0-alpha (tag d1e7ffd). Fases 1-5 + mejoras 1-10 completadas.
-- Mejoras e issues: M11 ✅ (#5) | M12 ⏳ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
+- Mejoras e issues: M11 ✅ (#5) | M12 ✅ (#6) | M13 ⏳ (#7) | M14 ⏳ (#8) | M15 ⏳ (#9) | M16 ⏳ (#10) | M17 ⏳ (#11) | M18 ⏳ (#12) | M19 ⏳ (#13) | M20 ⏳ (#14)
 
 ---
 
@@ -47,14 +47,14 @@ Objetivo: confirmar vulnerabilidades ciegas con canal de retorno (estilo interac
 - [x] 11.6 CI verde (#73: 208 passed, 2 skipped) + CHANGELOG + checkpoint. Estado M11 → ✅.
 
 ## M12 — SCA / SBOM con advisory matching (OSV)
-**Estado: ⏳ pendiente | Issue: #6 | Prioridad: ALTA**
+**Estado: ✅ completada (2026-11-08, CI #75 verde) | Issue: #6 cerrado | Prioridad: ALTA**
 
-- [ ] 12.1 `scripts/sca/sbom.py`: generar SBOM CycloneDX 1.5 (JSON) desde `requirements.txt` + imports reales del código (reutilizar el inventario de dependencias de FASE 3).
-- [ ] 12.2 `scripts/sca/osv_client.py`: consulta a OSV.dev (API pública, sin key); modo OFFLINE por defecto con caché local `scripts/sca/advisories.json` versionado (la red solo con opt-in explícito, respetando el modelo sin-red del proyecto).
-- [ ] 12.3 Mapear advisory → finding (severidad CVSS, CWE, fix disponible) y pasarlo al `AIEngine` para priorización.
-- [ ] 12.4 CLI: `python scripts/audit.py sca --output ./sca-report` (usa ScopeManager para el modo online).
-- [ ] 12.5 Tests con fixtures versionados (`tests/fixtures/sca/`): SBOM válido en campos mínimos, matching offline determinista, hallazgo con fix sugerido.
-- [ ] 12.6 CI verde + CHANGELOG + checkpoint. Estado M12 → ✅.
+- [x] 12.1 `scripts/sca/sbom.py`: SBOM CycloneDX 1.5 (JSON) desde `requirements.txt` (`parse_requirements` + `SBOMGenerator`, determinista, sin timestamps). FASE 3 dejó requirements.txt ya auditado (solo requests y pyyaml): ese es el inventario reutilizado.
+- [x] 12.2 `scripts/sca/osv_client.py`: `OSVClient` OFFLINE por defecto con caché local versionada `scripts/sca/advisories.json` (seeds reales: GHSA-jpzg-p363-qq3p / CVE-2023-32681 requests<2.31.0); modo online OPT-IN (`online`/`--online`) contra api.osv.dev con validación de ScopeManager.
+- [x] 12.3 `scripts/sca/scanner.py` (`SCAScanner`): advisory → finding CONFIRMED del EvidenceEngine (severidad del advisory, CWE, fix en la descripción y en evidencia LOG). **Desviación documentada**: la pasada por `AIEngine` para priorización queda diferida (los findings ya llevan severidad y fix; integración puntual cuando se unifique el pipeline de findings).
+- [x] 12.4 **Desviación documentada**: CLI propia `python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report [--online]` en vez de subcomando en `scripts/audit.py` (~900 líneas con f-strings anidados; el riesgo de re-transcripción supera el beneficio). Genera sbom.json + sca-report.json.
+- [x] 12.5 Tests (`tests/test_sca.py` con fixture `tests/fixtures/sca/requirements.txt`): SBOM válido en campos mínimos, matching offline determinista, versión parcheada no afectada, paquete limpio sin hallazgos, hallazgo con fix sugerido y evidencia.
+- [x] 12.6 CI verde (#75) + CHANGELOG + checkpoint. Estado M12 → ✅.
 
 ## M13 — Escaneo IaC y CI/CD (Dockerfile, compose, K8s, Terraform, GitHub Actions)
 **Estado: ⏳ pendiente | Issue: #7 | Prioridad: ALTA (el propio repo tiene workflows)**

@@ -6,6 +6,8 @@
 
 11. **M11 — Canal OOB para vulnerabilidades ciegas** (2026-11-08, CI #73 verde): `scripts/core/oob.py` (`OOBServer` HTTP en 127.0.0.1 puerto efímero con stdlib, callbacks con timestamp e interaction_id; `OOBClient` genérico interactsh-like con fetch inyectado) y `scripts/pentesting/oob_scanner.py` (`OOBScanner` con payloads ciegos SSRF/XXE/RCE, validación de scope/engagement, findings CONFIRMED con evidencias de interacción + callback). Laboratorio extendido con `/fetch?url=` (SSRF ciego). Tests E2E en `tests/test_oob.py`. Fix de dos bugs de CI detectados por el laboratorio: tests order-independientes (unittest ejecuta en orden alfabético) y doble import `core`/`scripts.core` evitado (enums no comparables por módulos distintos).
 
+12. **M12 — SCA: SBOM + advisories** (2026-11-08, CI #75 verde): `scripts/sca/sbom.py` (SBOM CycloneDX 1.5 determinista desde requirements.txt), `scripts/sca/osv_client.py` (`OSVClient` offline por defecto con caché versionada `advisories.json`, modo online opt-in contra OSV.dev con validación de ScopeManager), `scripts/sca/scanner.py` (`SCAScanner`: advisory → finding CONFIRMED con severidad, CWE y fix sugerido), `scripts/sca/cli.py` (CLI propia: `--requirements`, `--output`, `--online`). Tests en `tests/test_sca.py` con fixture `tests/fixtures/sca/`. Desviaciones documentadas: priorización por AIEngine diferida y CLI propia en vez de subcomando de audit.py.
+
 ## 2.2.0-alpha — 2026-11-08 (publicada)
 
 Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan completadas.
