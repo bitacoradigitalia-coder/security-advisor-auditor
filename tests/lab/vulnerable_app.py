@@ -9,8 +9,9 @@ ActiveScanner contra un objetivo real sin tocar ningun sistema externo.
 Vulnerabilidades intencionales:
 - Cabeceras de seguridad ausentes en todas las respuestas.
 - Cookie de sesion sensible sin HttpOnly ni Secure.
-- Endpoint /debug que expone informacion de depuracion (debug=true).
-- /robots.txt que revela la ruta privada /private/.
+- Endpoint /debug que expone informacion de depuracion (debug=true),
+  revelado por robots.txt (information disclosure).
+- /robots.txt que revela rutas privadas (/private/).
 """
 
 import http.server
@@ -23,7 +24,11 @@ HOME_HTML = """<!DOCTYPE html>
 
 DEBUG_BODY = "config: debug=true, display_errors=On, env=dev"
 
-ROBOTS_BODY = "User-agent: *" + chr(10) + "Disallow: /private/" + chr(10)
+ROBOTS_BODY = (
+    "User-agent: *" + chr(10)
+    + "Disallow: /private/" + chr(10)
+    + "Disallow: /debug" + chr(10)
+)
 
 
 class VulnerableHandler(http.server.BaseHTTPRequestHandler):
