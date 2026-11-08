@@ -10,7 +10,10 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 y 2 del plan compl
 
 - FASE 3 (Calidad): `requirements.txt` auditado (de 27 dependencias declaradas a solo `requests`), anotaciones de tipo estricto completadas en `scripts/core` (`mypy.ini` con `strict = True`), añadido workflow CI (`.github/workflows/ci-tests.yml`) que ejecuta mypy + pytest en cada push
 
-Pendiente para v2.2: FASE 4 (Multilenguaje: JS/TS, issue #2), FASE 5 (IA, issue #3).
+- FASE 4 (Multilenguaje): analizadores nativos offline JavaScriptAnalyzer (15 reglas) y TypeScriptAnalyzer (4 reglas TS), motor de reglas compartido (`regex_rules.py`), integrados en `get_analyzer()` (issue #2)
+- FASE 5 (IA): `AIEngine` heurístico offline con interpretación contextual, priorización automática P0-P4, riesgo 0-100 con justificación auditable, correlación de hallazgos e informe resumen (issue #3)
+
+**v2.2 es feature-complete.** Pendiente únicamente: tag v2.2.0-alpha + GitHub Release (issue #4).
 
 ## 2.1.1 — 2026-11-02
 ## 2.1.1 — 2026-11-02
@@ -28,7 +31,8 @@ Pendiente para v2.2: FASE 4 (Multilenguaje: JS/TS, issue #2), FASE 5 (IA, issue 
 - Estados comprobables, trazas y distinción debilidad/explotación confirmada.
 - Autorización Flask/Flask-Login y formas de consulta propietario/tenant; JWT acotado.
 - QUICK/STANDARD/DEEP, parser en subproceso con límites de tiempo/memoria.
-- Esquema con extensiones opcionales y exportación --legacy-report.
+- Esquema con extensio
+nes opcionales y exportación --legacy-report.
 - Fixtures, baseline v2.0.1 congelado, evaluación por categoría y regresiones.
 - Metodología íntegra, instalador, cinco perfiles y controles previos preservados.
 - Límites y evidencias reales en docs
@@ -61,7 +65,8 @@ Pendiente para v2.2: FASE 4 (Multilenguaje: JS/TS, issue #2), FASE 5 (IA, issue 
 - Añadidos motor de triaje estático offline, AST Python y señales de secretos/HTML,
   cobertura explícita, informes Markdown/JSON y prompt de remediación.
 - Añadidos límites, rechazo de enlaces/reparse, extracción ZIP portable,
-  redacción y validación semántica de hallazgos. Sin ejecución del objetivo.
+  redac
+ción y validación semántica de hallazgos. Sin ejecución del objetivo.
 - Instalador por cinco perfiles documentados, dry-run, integridad SHA256,
   update explícito y desinstalación conservadora con protección de cambios.
 - Referencias modulares, g
