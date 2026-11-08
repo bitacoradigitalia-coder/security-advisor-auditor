@@ -51,7 +51,8 @@ class VerificationStatus(Enum):
     CANDIDATE = "CANDIDATE"       # Candidato (sin verificar)
     PROBABLE = "PROBABLE"         # Probable (evidencia débil)
     CONFIRMED = "CONFIRMED"       # Confirmado (evidencia fuerte)
-    FALSE_POSITIVE = "FALSE_POSITIVE"  # Falso positivo
+    FALSE_POSITIVE = "FALSE_POSI
+TIVE"  # Falso positivo
     NOT_VERIFIED = "NOT_VERIFIED"    # No verificado
 
 
@@ -107,7 +108,8 @@ class Evidence:
             'response': self._redact_dict(self.response) if self.response else None,
             'payload': self._redact_str(self.payload) if self.payload else None,
             'parameter': self.parameter,
-            'location': self.location,
+     
+       'location': self.location,
             'timestamp': self.timestamp.isoformat(),
             'source': self.source,
             'tool': self.tool,
@@ -149,7 +151,8 @@ class Evidence:
         )
     
     def _redact_str(self, text: Optional[str]) -> Optional[str]:
-        """Redactar secretos en texto."""
+        """Redactar secretos en texto.
+"""
         if not text or not self.is_redacted:
             return text
         
@@ -192,7 +195,8 @@ class Evidence:
             elif isinstance(value, str):
                 redacted[key] = self._redact_str(value)
             else:
-                redacted[key] = value
+                
+redacted[key] = value
         
         return redacted
 
@@ -261,7 +265,8 @@ class Finding:
             'finding_id': self.finding_id,
             'name': self.name,
             'description': self.description,
-            'severity': self.severity,
+         
+   'severity': self.severity,
             'confidence': self.confidence.value,
             'verification_status': self.verification_status.value,
             'target': self.target,
@@ -304,7 +309,8 @@ class Finding:
             vulnerability_type=data.get('vulnerability_type'),
             cwe=data.get('cwe'),
             cvss=data.get('cvss'),
-            reproduction_steps=data.get('reproduction_steps', []),
+            reproduction_steps=data.get('reproduction_steps', [])
+,
             payload=data.get('payload'),
             impact=data.get('impact', ''),
             recommendation=data.get('recommendation', ''),
@@ -361,7 +367,8 @@ class EvidenceEngine:
     # Patrones para detectar vulnerabilidades
     VULNERABILITY_PATTERNS = {
         'sqli': {
-            'error_patterns': [
+            'error_pattern
+s': [
                 r'sql syntax.*error',
                 r'mysql.*error',
                 r'postgresql.*error',
@@ -428,13 +435,14 @@ class EvidenceEngine:
         r'token["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
         r'api[_-]?key["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
         r'secret["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
-        r'auth["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
+        r'auth["\']?\s*[:=]
+\s*["\']?[^"\'&\s]+',
         r'session["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
         r'jwt["\']?\s*[:=]\s*["\']?[^"\'&\s]+',
         r'Bearer\s+[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+',
     ]
     
-    def __init__(self, storage_path: Optional[str] = None):
+    def __init__(self, storage_path: Optional[str] = None) -> None:
         """
         Inicializar EvidenceEngine.
         
@@ -452,7 +460,7 @@ class EvidenceEngine:
         severity: str = "medium",
         vulnerability_type: Optional[str] = None,
         target: str = "",
-        **kwargs
+        **kwargs: Any
     ) -> Finding:
         """
         Crear un nuevo hallazgo.
@@ -474,7 +482,7 @@ class EvidenceEngine:
             severity=severity,
             vulnerability_type=vulnerability_type,
             target=target,
-            **kwargs
+            **kwargs: Any
         )
         
         self._findings[finding.finding_id] = finding
@@ -488,7 +496,7 @@ class EvidenceEngine:
         self,
         finding_id: str,
         evidence_type: EvidenceType,
-        **kwargs
+        **kwargs: Any
     ) -> Optional[Evidence]:
         """
         Añadir evidencia a un hallazgo.
@@ -499,7 +507,8 @@ class EvidenceEngine:
             **kwargs: Argumentos de la evidencia
         
         Returns:
-            Evidence: Evidencia creada o None si no se encontró el hallazgo
+ 
+           Evidence: Evidencia creada o None si no se encontró el hallazgo
         """
         finding = self._findings.get(finding_id)
         if not finding:
@@ -507,7 +516,7 @@ class EvidenceEngine:
         
         evidence = Evidence(
             evidence_type=evidence_type,
-            **kwargs
+            **kwargs: Any
         )
         
         finding.add_evidence(evidence)
@@ -560,6 +569,7 @@ class EvidenceEngine:
         finding = self._findings.get(finding_id)
         if finding:
             finding.add_evidence(evidence)
+
             self._evidences[evidence.evidence_id] = evidence
             
             if self.storage_path:
@@ -619,7 +629,8 @@ class EvidenceEngine:
             finding_id: ID del hallazgo
             status: Estado de verificación
             confidence: Nivel de confianza
-            verified_by: Quien verificó
+          
+  verified_by: Quien verificó
             notes: Notas de verificación
         
         Returns:
@@ -681,7 +692,8 @@ class EvidenceEngine:
         Returns:
             Tuple: (nuevo estado, nuevo nivel de confianza)
         """
-        # Regla 1: Si hay evidencia de control positiva y negativa
+        
+# Regla 1: Si hay evidencia de control positiva y negativa
         if verification_data.get('has_positive_control') and verification_data.get('has_negative_control'):
             return VerificationStatus.CONFIRMED, ConfidenceLevel.HIGH
         
@@ -723,7 +735,8 @@ class EvidenceEngine:
     def clear(self) -> None:
         """Limpiar todos los hallazgos y evidencias."""
         self._findings.clear()
-        self._evidences.clear()
+     
+   self._evidences.clear()
     
     def _save_finding(self, finding: Finding) -> None:
         """Guardar un hallazgo en almacenamiento."""
@@ -771,7 +784,8 @@ class EvidenceEngine:
         try:
             with open(self.storage_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
-            
+   
+         
             for finding_data in data.get('findings', []):
                 finding = Finding.from_dict(finding_data)
                 self._findings[finding.finding_id] = finding

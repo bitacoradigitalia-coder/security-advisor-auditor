@@ -18,7 +18,7 @@ import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, List, Optional, Set, Tuple, Union
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse, urljoin
 import requests
 
@@ -29,7 +29,7 @@ import requests
 
 class ScopeValidationError(Exception):
     """Raised when a target fails scope validation."""
-    def __init__(self, message: str, target: str = "", reason: str = ""):
+    def __init__(self, message: str, target: str = "", reason: str = "") -> None:
         self.message = message
         self.target = target
         self.reason = reason
@@ -65,7 +65,8 @@ BLOCKED_NETWORKS = [
     ipaddress.ip_network("172.16.0.0/12"),
     ipaddress.ip_network("192.168.0.0/16"),
     # Link-local
-    ipaddress.ip_network("169.254.0.0/16"),
+    ipaddress.ip_network("169.25
+4.0.0/16"),
     # IPv6 link-local
     ipaddress.ip_network("fe80::/10"),
     # IPv6 unique local
@@ -121,7 +122,8 @@ class ScopeConfig:
     requests_per_second: int = DEFAULT_RATE_LIMITS["requests_per_second"]
     max_concurrent_requests: int = DEFAULT_RATE_LIMITS["max_concurrent_requests"]
     timeout: int = DEFAULT_RATE_LIMITS["timeout"]
-    max_response_size: int = DEFAULT_RATE_LIMITS["max_response_size"]
+    max_response_size: int = DEFAULT_RATE_LIMITS["max_r
+esponse_size"]
     
     # DNS settings
     allow_dns_resolution: bool = True
@@ -168,7 +170,8 @@ class ScopeConfig:
             allowed_ports=set(data.get("allowed_ports", [80, 443])),
             allowed_protocols=set(data.get("allowed_protocols", list(ALLOWED_PROTOCOLS))),
             allowed_methods=set(data.get("allowed_methods", list(ALLOWED_METHODS))),
-            blocked_domains=set(data.get("blocked_domains", list(BLOCKED_DOMAINS))),
+            blocked_domains=set(data.get("block
+ed_domains", list(BLOCKED_DOMAINS))),
             blocked_ips=data.get("blocked_ips", []),
             blocked_ports=set(data.get("blocked_ports", [])),
             blocked_protocols=set(data.get("blocked_protocols", [])),
@@ -197,7 +200,7 @@ class RequestContext:
     allow_redirects: bool = True
     max_redirects: int = 5
     
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         if self.timeout is None:
             self.timeout = DEFAULT_RATE_LIMITS["timeout"]
 
@@ -215,7 +218,8 @@ class ScopeManager:
     - Domain/IP/port/protocol validation
     - Blocking of private/local/cloud networks
     - Redirect validation
-    - Rate limiting
+    - Rate limit
+ing
     - Kill switch functionality
     
     Usage:
@@ -232,7 +236,7 @@ class ScopeManager:
             response = scope_manager.request("GET", "https://example.com")
     """
     
-    def __init__(self, config: Optional[ScopeConfig] = None):
+    def __init__(self, config: Optional[ScopeConfig] = None) -> None:
         """
         Initialize ScopeManager.
         
@@ -254,11 +258,11 @@ class ScopeManager:
         self._rate_limit_tokens = self.config.max_concurrent_requests
         self._rate_limit_last_refill = datetime.now()
     
-    def __enter__(self):
+    def __enter__(self) -> "ScopeManager":
         """Context manager entry."""
         return self
     
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: Optional[type], exc_val: Optional[BaseException], exc_tb: Optional[Any]) -> None:
         """Context manager exit."""
         self._session.close()
     
@@ -276,7 +280,8 @@ class ScopeManager:
         with self._lock:
             self._kill_switch = False
     
-    def is_kill_switch_enabled(self) -> bool:
+    def is_k
+ill_switch_enabled(self) -> bool:
         """Check if kill switch is enabled."""
         with self._lock:
             return self._kill_switch or self.config.kill_switch_enabled
@@ -336,7 +341,8 @@ class ScopeManager:
             )
         
         # Validate port
-        port = parsed.port if parsed.port else (443 if protocol == "https" else 80)
+        port = par
+sed.port if parsed.port else (443 if protocol == "https" else 80)
         if port not in self.config.allowed_ports:
             raise ScopeValidationError(
                 f"Port not allowed",
@@ -394,7 +400,8 @@ class ScopeManager:
         # Check if domain is in allowed list (if specified)
         if self.config.allowed_domains:
             allowed = False
-            for allowed_domain in self.config.allowed_domains:
+            for allowed_dom
+ain in self.config.allowed_domains:
                 if self._domain_matches(domain_lower, allowed_domain.lower()):
                     allowed = True
                     break
@@ -443,7 +450,8 @@ class ScopeManager:
                 allowed = False
                 for allowed_ip in self.config.allowed_ips:
                     try:
-                        allowed_network = ipaddress.ip_network(allowed_ip, strict=False)
+                        allowed_network = ipaddress.ip_network(allowed_i
+p, strict=False)
                         if ip in allowed_network:
                             allowed = True
                             break
@@ -509,7 +517,8 @@ class ScopeManager:
             Validated redirect URL
             
         Raises:
-            ScopeValidationError: If redirect is not allowed
+            Scop
+eValidationError: If redirect is not allowed
         """
         self.check_kill_switch()
         
@@ -560,7 +569,8 @@ class ScopeManager:
         
         return validated_url
     
-    def validate_method(self, method: str) -> None:
+    def validate_method(sel
+f, method: str) -> None:
         """Validate HTTP method."""
         method_upper = method.upper()
         if method_upper not in self.config.allowed_methods:
@@ -620,7 +630,8 @@ class ScopeManager:
                 target=hostname,
                 reason=f"dns_error: {e}"
             )
-        except socket.timeout:
+        exce
+pt socket.timeout:
             raise ScopeTimeoutError(
                 f"DNS resolution timed out",
                 target=hostname,
@@ -675,13 +686,14 @@ class ScopeManager:
     
     # =========================================================================
     # REQUEST METHODS
-    # =========================================================================
+    # =====================================
+====================================
     
     def request(
         self,
         method: str,
         url: str,
-        **kwargs
+        **kwargs: Any
     ) -> requests.Response:
         """
         Make a network request through the scope manager.
@@ -730,7 +742,7 @@ class ScopeManager:
                 validated_url,
                 timeout=timeout,
                 allow_redirects=allow_redirects,
-                **kwargs
+                **kwargs: Any
             )
             
             # Validate redirects if needed
@@ -739,7 +751,8 @@ class ScopeManager:
                     self.validate_redirect(redirect.url, response.url)
             
             # Check response size
-            if len(response.content) > self.config.max_response_size:
+    
+        if len(response.content) > self.config.max_response_size:
                 raise ScopeValidationError(
                     f"Response too large",
                     target=validated_url,
@@ -752,31 +765,31 @@ class ScopeManager:
             with self._lock:
                 self._active_requests -= 1
     
-    def get(self, url: str, **kwargs) -> requests.Response:
+    def get(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP GET request."""
         return self.request("GET", url, **kwargs)
     
-    def post(self, url: str, **kwargs) -> requests.Response:
+    def post(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP POST request."""
         return self.request("POST", url, **kwargs)
     
-    def put(self, url: str, **kwargs) -> requests.Response:
+    def put(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP PUT request."""
         return self.request("PUT", url, **kwargs)
     
-    def delete(self, url: str, **kwargs) -> requests.Response:
+    def delete(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP DELETE request."""
         return self.request("DELETE", url, **kwargs)
     
-    def head(self, url: str, **kwargs) -> requests.Response:
+    def head(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP HEAD request."""
         return self.request("HEAD", url, **kwargs)
     
-    def options(self, url: str, **kwargs) -> requests.Response:
+    def options(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP OPTIONS request."""
         return self.request("OPTIONS", url, **kwargs)
     
-    def patch(self, url: str, **kwargs) -> requests.Response:
+    def patch(self, url: str, **kwargs: Any) -> requests.Response:
         """HTTP PATCH request."""
         return self.request("PATCH", url, **kwargs)
     
@@ -789,7 +802,8 @@ class ScopeManager:
         try:
             network = ipaddress.ip_network(ip_or_network, strict=False)
             for blocked in BLOCKED_NETWORKS:
-                if network.overlaps(blocked):
+                if network.over
+laps(blocked):
                     return True
             return False
         except ValueError:
@@ -848,7 +862,8 @@ def set_scope_manager(scope_manager: ScopeManager) -> None:
     _global_scope_manager = scope_manager
 
 
-def reset_scope_manager() -> None:
+def reset_scope_manager
+() -> None:
     """Reset the global scope manager instance."""
     global _global_scope_manager
     if _global_scope_manager is not None:

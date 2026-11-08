@@ -1,0 +1,23 @@
+name: CI Tests
+
+# FASE 3 (issue #1): verifica tipado estricto (mypy) y la suite de tests en cada push/PR
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Instalar dependencias
+        run: pip install requests mypy pytest
+      - name: Mypy (scripts/core, estricto)
+        run: mypy --config-file mypy.ini
+      - name: Tests
+        run: python -m pytest tests/ -q

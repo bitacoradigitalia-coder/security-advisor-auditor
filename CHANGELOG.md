@@ -8,7 +8,9 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 y 2 del plan compl
 - FASE 2 (Fiabilidad): `EvidenceEngine` (evidencias con redacción de secretos, IDs únicos, persistencia) y `VerificationEngine` (estados CANDIDATE/PROBABLE/CONFIRMED, detección de falsos positivos), integrados en scanner, fuzzer y exploit
 - Todos los tests pasan (156/156, 2 skipped)
 
-Pendiente para v2.2: FASE 3 (Calidad: dependencias y tipado estricto), FASE 4 (Multilenguaje: JS/TS), FASE 5 (IA). Ver issues.
+- FASE 3 (Calidad): `requirements.txt` auditado (de 27 dependencias declaradas a solo `requests`), anotaciones de tipo estricto completadas en `scripts/core` (`mypy.ini` con `strict = True`), añadido workflow CI (`.github/workflows/ci-tests.yml`) que ejecuta mypy + pytest en cada push
+
+Pendiente para v2.2: FASE 4 (Multilenguaje: JS/TS, issue #2), FASE 5 (IA, issue #3).
 
 ## 2.1.1 — 2026-11-02
 ## 2.1.1 — 2026-11-02
@@ -29,7 +31,8 @@ Pendiente para v2.2: FASE 3 (Calidad: dependencias y tipado estricto), FASE 4 (M
 - Esquema con extensiones opcionales y exportación --legacy-report.
 - Fixtures, baseline v2.0.1 congelado, evaluación por categoría y regresiones.
 - Metodología íntegra, instalador, cinco perfiles y controles previos preservados.
-- Límites y evidencias reales en docs/architecture.md, coverage.md y evaluation.md.
+- Límites y evidencias reales en docs
+/architecture.md, coverage.md y evaluation.md.
 
 ## 2.0.1 — 2026-10-10
 
@@ -61,7 +64,8 @@ Pendiente para v2.2: FASE 3 (Calidad: dependencias y tipado estricto), FASE 4 (M
   redacción y validación semántica de hallazgos. Sin ejecución del objetivo.
 - Instalador por cinco perfiles documentados, dry-run, integridad SHA256,
   update explícito y desinstalación conservadora con protección de cambios.
-- Referencias modulares, guías por dominio y fuentes primarias ampliables.
+- Referencias modulares, g
+uías por dominio y fuentes primarias ampliables.
 - Pruebas automatizadas con entradas sintéticas y negativas; no hay credenciales
   reales en fixtures. Integraciones scanner limitadas a descubrimiento/planes.
 - Clientes reales y Linux/macOS pendientes de validación; no se promete pentest,
