@@ -134,7 +134,7 @@ class Evidence:
             payload=data.get('payload'),
             parameter=data.get('parameter'),
             location=data.get('location'),
-            timestamp=datetime.fromisoformat(data.get('timestamp')) if data.get('timestamp') else datetime.now(timezone.utc),
+            timestamp=datetime.fromisoformat(data['timestamp']) if data.get('timestamp') else datetime.now(timezone.utc),
             source=data.get('source', ''),
             tool=data.get('tool', ''),
             is_redacted=data.get('is_redacted', True),
@@ -176,7 +176,7 @@ class Evidence:
         if not data or not self.is_redacted:
             return data
         
-        redacted = {}
+        redacted: Dict[str, Any] = {}
         sensitive_keys = {'password', 'token', 'api_key', 'apikey', 'secret', 
                          'auth', 'session', 'jwt', 'access_token', 'refresh_token',
                          'cookie', 'authorization', 'proxy-authorization'}
