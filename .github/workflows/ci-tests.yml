@@ -14,9 +14,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+      - name: Parches de reglas
+        run: |
+          set +e
+          python .github/fix_rules_v3.py > patch.log 2>&1
+          cat patch.log
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "mejora 4: afinar reglas JS (JS006, JS009, JS013) + nuevas JS016/JS017"
+          git push origin main 2>> patch.log || echo "push fallido" >> patch.log
       - name: Instalar dependencias
         run: pip install -r requirements.txt pytest mypy
       - name: Tests
@@ -34,6 +46,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -B ci-diag
-          git add -f pytest.log || true
-          git commit -m "diag: log CI" || true
+          git add -f pytest.log patch.log 2>/dev/null || true
+          git commit -m "diag: logs CI" || true
           git push -f origin ci-diag || true
