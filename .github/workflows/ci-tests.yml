@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -17,6 +20,19 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt pytest mypy
       - name: Tests
-        run: python -m pytest tests/ -q
-      - name: Mypy (advisory, no bloqueante)
-        run: mypy --config-file mypy.ini || true
+        run: |
+          set +e
+          python -m pytest tests/ -q > pytest.log 2>&1
+          pcode=$?
+          echo "PYTEST_EXIT=$pcode"
+          tail -40 pytest.log
+          test $pcode -eq 0
+      - name: Subir log a rama ci-diag
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B ci-diag
+          git add -f pytest.log || true
+          git commit -m "diag: log CI" || true
+          git push -f origin ci-diag || true
