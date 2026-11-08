@@ -1,0 +1,19 @@
+..............................................................F..... [ 29%]
+.........................................................................................................s................................................s [ 97%]
+.....                                                             [100%]
+=================================== FAILURES ===================================
+___________________________ TestIaCAnalyzer.test_k8s ___________________________
+
+self = <tests.test_iac_analyzer.TestIaCAnalyzer testMethod=test_k8s>
+
+    def test_k8s(self):
+        ids = self._ids(FIXTURES_DIR / "deployment.yaml")
+        for expected in ("K8S001", "K8S002", "K8S004"):
+>           self.assertIn(expected, ids)
+E           AssertionError: 'K8S001' not found in ['K8S002', 'K8S004', 'K8S002', 'K8S003']
+
+tests/test_iac_analyzer.py:48: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_iac_analyzer.py::TestIaCAnalyzer::test_k8s - AssertionError: 'K8S001' not found in ['K8S002', 'K8S004', 'K8S002', 'K8S003']
+1 failed, 225 passed, 2 skipped, 72 subtests passed in 57.41s
+Success: no issues found in 7 source files
