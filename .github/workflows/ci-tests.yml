@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -21,18 +18,5 @@ jobs:
         run: pip install -r requirements.txt pytest mypy
       - name: Tests
         run: python -m pytest tests/ -q
-      - name: Mypy (advisory, no bloqueante)
-        if: always()
-        run: mypy --config-file mypy.ini 2>&1 | tee mypy.log || true
-      - name: "Diagnostico: subir mypy.log via API a rama ci-diag"
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          if [ ! -f mypy.log ]; then echo "sin mypy.log"; exit 0; fi
-          B64=$(base64 -w0 mypy.log)
-          printf '{"message":"diag: mypy log run %s","content":"%s","branch":"ci-diag"}' "$RUN_ID" "$B64" > payload.json
-          curl -s -X PUT -H "Authorization: token $GH_TOKEN" -H "Accept: application/vnd.github+json" "https://api.github.com/repos/$REPO/contents/logs/mypy-run-$RUN_ID.txt" -d @payload.json > curl-out.json
-          cat curl-out.json
+      - name: Mypy
+        run: mypy --config-file mypy.ini
