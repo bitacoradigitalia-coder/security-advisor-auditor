@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-permissions:
-  contents: write
-
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -20,16 +17,6 @@ jobs:
       - name: Instalar dependencias
         run: pip install -r requirements.txt pytest mypy
       - name: Tests
-        run: python -m pytest tests/ -q 2>&1 | tee pytest.log
+        run: python -m pytest tests/ -q
       - name: Mypy
-        run: mypy --config-file mypy.ini 2>&1 | tee -a pytest.log
-      - name: Diagnostico
-        if: always()
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REPO: bitacoradigitalia-coder/security-advisor-auditor
-          RUN_ID: ${{ github.run_id }}
-        run: |
-          B64=$(base64 -w0 pytest.log)
-          printf '{"message":"diag","content":"%s","branch":"ci-diag"}' "$B64" > payload.json
-          curl -s -X PUT -H "Authorization: token $GH_TOKEN" https://api.github.com/repos/$REPO/contents/logs/pytest-run-$RUN_ID.txt -d @payload.json
+        run: mypy --config-file mypy.ini
