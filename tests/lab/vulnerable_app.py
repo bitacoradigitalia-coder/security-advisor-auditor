@@ -1,5 +1,5 @@
 """
-Laboratorio vulnerable AUTORIZADO (mejora 3).
+Laboratorio vulnerable AUTORIZADO (mejora 3, extendido en M11).
 
 Mini aplicacion web deliberadamente insegura, construida SOLO con la
 libreria estandar (http.server), que se levanta en 127.0.0.1 en un puerto
@@ -12,10 +12,14 @@ Vulnerabilidades intencionales:
 - Endpoint /debug que expone informacion de depuracion (debug=true),
   revelado por robots.txt (information disclosure).
 - /robots.txt que revela rutas privadas (/private/).
+- Endpoint /fetch?url= que realiza peticiones a URLs arbitrarias
+  (SSRF ciego, para el canal OOB de la mejora M11).
 """
 
 import http.server
 import threading
+import urllib.parse
+import urllib.request
 
 HOME_HTML = """<!DOCTYPE html>
 <html><head><title>Laboratorio Vulnerable</title></head>
@@ -47,6 +51,21 @@ class VulnerableHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _fetch(self):
+        """VULNERABLE (M11): SSRF ciego, pide cualquier URL del parametro url."""
+        query = self.path.split("?", 1)[1] if "?" in self.path else ""
+        params = urllib.parse.parse_qs(query)
+        target = (params.get("url") or [""])[0]
+        if not target:
+            self._send(400, "falta el parametro url", "text/plain; charset=utf-8")
+            return
+        try:
+            with urllib.request.urlopen(target, timeout=5) as response:
+                body = response.read(200).decode("utf-8", "replace")
+            self._send(200, "fetch ok: " + body, "text/plain; charset=utf-8")
+        except Exception:
+            self._send(502, "fetch fallo", "text/plain; charset=utf-8")
+
     def route(self, method):
         path = self.path.split("?")[0]
         if path == "/":
@@ -57,6 +76,8 @@ class VulnerableHandler(http.server.BaseHTTPRequestHandler):
             self._send(200, ROBOTS_BODY, "text/plain; charset=utf-8")
         elif path == "/private/":
             self._send(200, "zona privada expuesta por robots.txt")
+        elif path == "/fetch":
+            self._fetch()
         else:
             self._send(404, "no encontrado")
 
