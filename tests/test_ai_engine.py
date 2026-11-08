@@ -1,5 +1,5 @@
 """
-Unit tests for the AI Engine (FASE 5, issue #3)
+Unit tests for the AI Engine (FASE 5, issue #3) + mejora 6 (dedup, endpoints)
 """
 import sys
 import unittest
@@ -109,6 +109,66 @@ class TestAIEngine(unittest.TestCase):
             f = make_finding()
             action = self.engine._recommend(priority, f)
             self.assertIn(expected.lower(), action.lower())
+
+
+class TestMejora6Deduplicacion(unittest.TestCase):
+    """Mejora 6: deduplicacion de hallazgos identicos."""
+
+    def setUp(self):
+        self.engine = AIEngine()
+
+    def test_dedup_merges_identical_findings(self):
+        original = make_finding(name="SQLi en login", payload="' OR 1=1--")
+        duplicate = make_finding(name="SQLi en login", payload="' OR 1=1--")
+        other = make_finding(name="SQLi en perfil", payload="' OR 1=1--")
+        assessments = self.engine.prioritize_findings([original, duplicate, other])
+        self.assertEqual(len(assessments), 2)
+        by_id = {a.finding_id: a for a in assessments}
+        self.assertIn(duplicate.finding_id, by_id[original.finding_id].duplicates_merged)
+        self.assertEqual(by_id[other.finding_id].duplicates_merged, [])
+
+    def test_dedup_never_merges_false_positive_with_live(self):
+        live = make_finding(name="SQLi en login")
+        fp = make_finding(name="SQLi en login", verification_status=VerificationStatus.FALSE_POSITIVE, confidence=ConfidenceLevel.FALSE)
+        assessments = self.engine.prioritize_findings([live, fp])
+        self.assertEqual(len(assessments), 2)
+        self.assertEqual(assessments[-1].priority, PriorityLevel.P4)
+
+    def test_dedup_respects_different_payload(self):
+        f1 = make_finding(name="XSS", payload="<script>1</script>")
+        f2 = make_finding(name="XSS", payload="<img src=x onerror=alert(1)>")
+        assessments = self.engine.prioritize_findings([f1, f2])
+        self.assertEqual(len(assessments), 2)
+
+    def test_summary_reports_duplicates_removed(self):
+        f1 = make_finding(name="RCE", severity="critical", confidence=ConfidenceLevel.CONFIRMED, verification_status=VerificationStatus.CONFIRMED)
+        f2 = make_finding(name="RCE", severity="critical", confidence=ConfidenceLevel.CONFIRMED, verification_status=VerificationStatus.CONFIRMED)
+        report = self.engine.summary_report([f1, f2])
+        self.assertEqual(report["total"], 2)
+        self.assertEqual(report["unique"], 1)
+        self.assertEqual(report["duplicates_removed"], 1)
+
+
+class TestMejora6EndpointSensible(unittest.TestCase):
+    """Mejora 6: bono de riesgo por contexto del endpoint."""
+
+    def setUp(self):
+        self.engine = AIEngine()
+
+    def test_sensitive_endpoint_bonus(self):
+        login = make_finding(target="https://example.com/login")
+        search = make_finding(target="https://example.com/search")
+        a_login = self.engine.prioritize_finding(login)
+        a_search = self.engine.prioritize_finding(search)
+        self.assertAlmostEqual(a_login.risk_score, a_search.risk_score + 10.0)
+        self.assertEqual(a_login.context_signals.get("sensitive_endpoint"), "/login")
+        joined = " ".join(a_login.rationale)
+        self.assertIn("endpoint sensible", joined.lower())
+
+    def test_admin_endpoint_detected(self):
+        f = make_finding(target="https://example.com/admin/users")
+        signals = self.engine.interpret_context(f)
+        self.assertEqual(signals.get("sensitive_endpoint"), "/admin")
 
 
 if __name__ == "__main__":

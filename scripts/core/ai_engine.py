@@ -5,8 +5,13 @@ FASE 5 (IA): interpretacion contextual y priorizacion automatica de hallazgos.
 "IA" aqui significa un motor heuristico determinista y offline (sin modelos
 externos, sin llamadas a APIs): interpreta el contexto de cada hallazgo
 (evidencias, estado de verificacion, explotabilidad, correlaciones entre
-hallazgos del mismo tipo/objetivo) y calcula una puntuacion de riesgo que
-ordena automaticamente la cola de trabajo del auditor.
+hallazgos del mismo tipo/objetivo, contexto del endpoint) y calcula una
+puntuacion de riesgo que ordena automaticamente la cola de trabajo del auditor.
+
+Mejora 6: deduplicacion automatica de hallazgos identicos (mismo nombre,
+tipo, objetivo, endpoint, parametro, payload y estado de verificacion) y
+ponderacion por contexto del endpoint (bono en endpoints de autenticacion
+o administracion).
 
 Integra con los Engines de FASE 2: consume Findings de EvidenceEngine y
 respeta los estados de VerificationEngine.
@@ -14,9 +19,22 @@ respeta los estados de VerificationEngine.
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from .evidence_engine import ConfidenceLevel, Finding, VerificationStatus
+
+# Endpoints cuyo contexto eleva el riesgo (autenticacion / administracion)
+SENSITIVE_ENDPOINT_MARKERS: Tuple[str, ...] = (
+    "/login",
+    "/signin",
+    "/auth",
+    "/admin",
+    "/session",
+    "/password",
+    "/token",
+    "/upload",
+    "/api/auth",
+)
 
 
 class PriorityLevel(Enum):
@@ -38,6 +56,7 @@ class PriorityAssessment:
     context_signals: Dict[str, Any] = field(default_factory=dict)
     correlated_with: List[str] = field(default_factory=list)
     recommended_action: str = ""
+    duplicates_merged: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -48,6 +67,7 @@ class PriorityAssessment:
             "context_signals": self.context_signals,
             "correlated_with": self.correlated_with,
             "recommended_action": self.recommended_action,
+            "duplicates_merged": self.duplicates_merged,
         }
 
 
@@ -57,9 +77,10 @@ class AIEngine:
 
     Metodologia (determinista y auditable):
     1. Interpretar el contexto: evidencias, verificacion, explotabilidad,
-       correlacion con otros hallazgos del mismo tipo y objetivo.
+       correlacion con otros hallazgos del mismo tipo y objetivo y contexto
+       del endpoint (autenticacion/administracion eleva el riesgo).
     2. Calcular riesgo: severidad base ponderada por confianza, estado de
-       verificacion y bonos de evidencia/explotabilidad/correlacion.
+       verificacion y bonos de evidencia/explotabilidad/correlacion/endpoint.
     3. Emitir una evaluacion con justificacion (rationale) accionable.
     """
 
@@ -81,9 +102,51 @@ class AIEngine:
         VerificationStatus.FALSE_POSITIVE: 0.0,
     }
     PRIORITY_BANDS = [(75.0, PriorityLevel.P0), (55.0, PriorityLevel.P1), (35.0, PriorityLevel.P2), (20.0, PriorityLevel.P3)]
+    SENSITIVE_ENDPOINT_BONUS = 10.0
 
     def __init__(self, evidence_engine: Optional[Any] = None) -> None:
         self.evidence_engine = evidence_engine
+
+    # ------------------------------------------------------------------
+    # Deduplicacion (mejora 6)
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _dedup_key(finding: Finding) -> Tuple[str, str, str, str, str, str, str]:
+        """Clave conservadora de deduplicacion.
+
+        Incluye nombre y estado de verificacion para NO fusionar jamas un
+        hallazgo vivo con un falso positivo ni hallazgos con distinta
+        descripcion (misma categoria en el mismo sitio puede ser legitimo).
+        """
+        return (
+            str(finding.name or ""),
+            str(finding.vulnerability_type or ""),
+            str(finding.target or ""),
+            str(getattr(finding, "endpoint", "") or ""),
+            str(getattr(finding, "parameter", "") or ""),
+            str(getattr(finding, "payload", "") or ""),
+            finding.verification_status.value,
+        )
+
+    def deduplicate_findings(self, findings: List[Finding]) -> Tuple[List[Finding], Dict[str, List[str]]]:
+        """Fusionar hallazgos identicos segun _dedup_key.
+
+        Devuelve (hallazgos unicos, mapa id_canonico -> [ids_fusionados]).
+        Se conserva la primera aparicion; los duplicados quedan registrados.
+        """
+        kept: List[Finding] = []
+        duplicates: Dict[str, List[str]] = {}
+        seen: Dict[Tuple[str, str, str, str, str, str, str], str] = {}
+        for finding in findings:
+            key = self._dedup_key(finding)
+            if key in seen:
+                duplicates.setdefault(seen[key], []).append(finding.finding_id)
+                continue
+            seen[key] = finding.finding_id
+            kept.append(finding)
+            duplicates[finding.finding_id] = []
+        return kept, duplicates
 
     # ------------------------------------------------------------------
     # Interpretacion contextual
@@ -102,6 +165,11 @@ class AIEngine:
         signals["vulnerability_type"] = finding.vulnerability_type or "unknown"
         if finding.cvss is not None:
             signals["cvss"] = finding.cvss
+        # Contexto del endpoint (mejora 6)
+        endpoint_context = (str(getattr(finding, "endpoint", "") or "") + " " + str(finding.target or "")).lower()
+        sensitive_hits = [m for m in SENSITIVE_ENDPOINT_MARKERS if m in endpoint_context]
+        if sensitive_hits:
+            signals["sensitive_endpoint"] = sensitive_hits[0]
         # Correlacion: mismo tipo de vulnerabilidad en el mismo objetivo
         correlated: List[str] = []
         if all_findings:
@@ -155,6 +223,11 @@ class AIEngine:
             score += 3.0
             rationale.append("Tiene payload explotable registrado -> +3")
 
+        # Bono por contexto del endpoint (mejora 6)
+        if signals.get("sensitive_endpoint"):
+            score += self.SENSITIVE_ENDPOINT_BONUS
+            rationale.append("Endpoint sensible '" + str(signals["sensitive_endpoint"]) + "' -> +" + str(self.SENSITIVE_ENDPOINT_BONUS))
+
         correlated_ids: List[str] = []
         if all_findings:
             for other in all_findings:
@@ -185,25 +258,38 @@ class AIEngine:
             recommended_action=self._recommend(priority, finding),
         )
 
-    def prioritize_findings(self, findings: List[Finding]) -> List[PriorityAssessment]:
-        """Priorizar todos los hallazgos y devolverlos ordenados por riesgo descendente."""
-        assessments = [self.prioritize_finding(f, findings) for f in findings]
+    def prioritize_findings(self, findings: List[Finding], deduplicate: bool = True) -> List[PriorityAssessment]:
+        """Priorizar todos los hallazgos y devolverlos ordenados por riesgo descendente.
+
+        Con deduplicate=True (por defecto) fusiona primero los hallazgos
+        identicos y registra los IDs duplicados en cada evaluacion.
+        """
+        if deduplicate:
+            unique, duplicates = self.deduplicate_findings(findings)
+        else:
+            unique, duplicates = findings, {f.finding_id: [] for f in findings}
+        assessments = [self.prioritize_finding(f, unique) for f in unique]
+        for a in assessments:
+            a.duplicates_merged = duplicates.get(a.finding_id, [])
         _rank = {"P0": 0, "P1": 1, "P2": 2, "P3": 3, "P4": 4}
         assessments.sort(key=lambda a: (_rank.get(a.priority.value, 9), -a.risk_score))
         return assessments
 
-    def get_top(self, findings: List[Finding], n: int = 5) -> List[PriorityAssessment]:
+    def get_top(self, findings: List[Finding], n: int = 5, deduplicate: bool = True) -> List[PriorityAssessment]:
         """Obtener los N hallazgos mas urgentes."""
-        return self.prioritize_findings(findings)[: max(0, n)]
+        return self.prioritize_findings(findings, deduplicate=deduplicate)[: max(0, n)]
 
-    def summary_report(self, findings: List[Finding]) -> Dict[str, Any]:
+    def summary_report(self, findings: List[Finding], deduplicate: bool = True) -> Dict[str, Any]:
         """Informe resumen de priorizacion para el auditor."""
-        assessments = self.prioritize_findings(findings)
+        assessments = self.prioritize_findings(findings, deduplicate=deduplicate)
         by_priority: Dict[str, int] = {}
         for a in assessments:
             by_priority[a.priority.value] = by_priority.get(a.priority.value, 0) + 1
+        duplicates_removed = len(findings) - len(assessments)
         return {
             "total": len(findings),
+            "unique": len(assessments),
+            "duplicates_removed": duplicates_removed,
             "by_priority": by_priority,
             "average_risk": round(sum(a.risk_score for a in assessments) / len(assessments), 1) if assessments else 0.0,
             "p0_ids": [a.finding_id for a in assessments if a.priority == PriorityLevel.P0],
