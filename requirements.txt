@@ -1,12 +1,11 @@
 # Security Advisor Auditor v2.2 - Requirements
 # ============================================
-# Auditoría de dependencias completada (FASE 3, issue #1):
-# solo se declaran las dependencias realmente importadas por el código
-# (verificado en scripts/, tests/ e install.py, 2026-11-08).
+# Auditoría de dependencias (FASE 3, issue #1, actualizada 2026-11-08):
+# solo se declaran las dependencias realmente importadas por el código.
 
-# Única dependencia directa usada en código
-# (scripts/pentesting/poc_generator.py, tests/test_pentesting.py)
-requests>=2.31.0
+# Dependencias directas usadas en código
+requests>=2.31.0   # scripts/pentesting/poc_generator.py, tests/test_pentesting.py
+pyyaml>=6.0        # scripts/static_analysis/external/nuclei_analyzer.py (import yaml)
 
 # ============================================
 # Herramientas OPCIONALES (no importadas por el código, invocadas vía subprocess)
@@ -29,7 +28,7 @@ requests>=2.31.0
 
 # ============================================
 # Eliminadas por no usarse (issue #1):
-# pyyaml, beautifulsoup4, colorama, jinja2, markdown, session, cookies,
+# beautifulsoup4, colorama, jinja2, markdown, session, cookies,
 # fuzzywuzzy, python-Levenshtein, pwntools, capstone, keystone-engine,
 # python-nmap, scapy, selenium, webdriver-manager, pytest-requests,
 # responses, hackerone, bugcrowd, semgrep, bandit (movidas a opcionales)
