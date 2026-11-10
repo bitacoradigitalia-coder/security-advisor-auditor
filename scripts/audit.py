@@ -232,6 +232,27 @@ Examples:
     cvss.add_argument('--json', action='store_true', help='Salida en formato JSON')
     
     # ========================================================================
+    # AI-DEFENSE COMMAND - Detección de ataques de IA adversaria
+    # ========================================================================
+    ai_defense = commands.add_parser('ai-defense', help='Detección de ataques de IA adversaria')
+    ai_defense.add_argument('text', type=str, nargs='?', default='',
+                          help='Texto a analizar para detectar patrones de IA adversaria')
+    ai_defense.add_argument('--input-file', type=str, help='Archivo de entrada con texto a analizar')
+    ai_defense.add_argument('--monitor', action='store_true',
+                          help='Modo monitor: analizar múltiples requests (para integración con APIs)')
+    ai_defense.add_argument('--block-severity', type=str, default='HIGH',
+                          choices=['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO'],
+                          help='Severidad mínima para bloquear (CRITICAL, HIGH, MEDIUM, LOW, INFO)')
+    ai_defense.add_argument('--list-patterns', action='store_true',
+                          help='Listar todos los patrones de detección')
+    ai_defense.add_argument('--pattern-type', type=str,
+                          choices=['PROMPT_INJECTION', 'JAILBREAK', 'DATA_EXFILTRATION', 'CODE_INJECTION', 'MODEL_MANIPULATION', 'DENIAL_OF_SERVICE'],
+                          help='Filtrar patrones por tipo de amenaza')
+    ai_defense.add_argument('--output', type=str, default='./ai-defense-results',
+                          help='Directorio de salida para reportes')
+    ai_defense.add_argument('--json', action='store_true', help='Salida en formato JSON')
+    
+    # ========================================================================
     # AUTH COMMAND - Gestión de autenticación
     # ========================================================================
     auth = commands.add_parser('auth', help='Gestión de autenticación')
@@ -365,6 +386,9 @@ Examples:
         
         elif args.command == 'cvss':
             _handle_cvss(args)
+        
+        elif args.command == 'ai-defense':
+            _handle_ai_defense(args)
         
         elif args.command == 'validate-skill':
             with project_source(args.skill) as root:
@@ -1093,6 +1117,170 @@ def _handle_cvss(args):
         print(f"Exploitability Score: {score.exploitability_score}")
         print(f"Severity: {score.severity}")
         print("=" * 40)
+
+
+def _handle_ai_defense(args):
+    """Handle AI defense command - Detect adversarial AI attack patterns."""
+    from scripts.ai_defense.ai_detection import (
+        AIDetectionEngine, 
+        AIThreatType, 
+        AIThreatSeverity,
+        detect_ai_threats
+    )
+    from scripts.ai_defense.ai_monitor import AIRequestMonitor, create_ai_monitor
+    import json
+    import os
+    
+    # Create output directory
+    output_dir = Path(args.output)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Map string severity to enum
+    severity_map = {
+        'CRITICAL': AIThreatSeverity.CRITICAL,
+        'HIGH': AIThreatSeverity.HIGH,
+        'MEDIUM': AIThreatSeverity.MEDIUM,
+        'LOW': AIThreatSeverity.LOW,
+        'INFO': AIThreatSeverity.INFO
+    }
+    block_severity = severity_map.get(args.block_severity, AIThreatSeverity.HIGH)
+    
+    # List patterns mode
+    if args.list_patterns:
+        engine = AIDetectionEngine()
+        
+        # Filter by type if specified
+        if args.pattern_type:
+            pattern_type = getattr(AIThreatType, args.pattern_type, None)
+            if pattern_type:
+                patterns = engine.get_patterns_by_type(pattern_type)
+            else:
+                patterns = []
+                print(f"[-] Tipo de patrón desconocido: {args.pattern_type}")
+        else:
+            patterns = engine.patterns
+        
+        if args.json:
+            output = [p.to_dict() for p in patterns]
+            print(json.dumps(output, indent=2))
+        else:
+            print("=" * 80)
+            print("PATRONES DE DETECCIÓN DE IA ADVERSARIA")
+            print("=" * 80)
+            for pattern in patterns:
+                print(f"\n[ID: {pattern.pattern_id}] {pattern.name}")
+                print(f"  Tipo: {pattern.threat_type.value}")
+                print(f"  Severidad: {pattern.severity.value}")
+                print(f"  Descripción: {pattern.description}")
+                if pattern.examples:
+                    print(f"  Ejemplos: {', '.join(pattern.examples[:2])}")
+        return
+    
+    # Single text analysis mode
+    if args.text:
+        results = detect_ai_threats(args.text)
+        
+        if args.json:
+            output = [r.to_dict() for r in results]
+            print(json.dumps(output, indent=2))
+        else:
+            if not results:
+                print("[+] No se detectaron amenazas de IA en el texto")
+            else:
+                print("=" * 80)
+                print("DETECCIÓN DE ATAQUES DE IA ADVERSARIA")
+                print("=" * 80)
+                for result in results:
+                    print(f"\n[!] Amenaza detectada: {result.pattern.name}")
+                    print(f"  ID: {result.pattern.pattern_id}")
+                    print(f"  Tipo: {result.pattern.threat_type.value}")
+                    print(f"  Severidad: {result.pattern.severity.value}")
+                    print(f"  Confianza: {result.confidence * 100:.1f}%")
+                    print(f"  Texto coincidente: {result.matched_text[:100]}...")
+        return
+    
+    # Input file mode
+    if args.input_file:
+        try:
+            with open(args.input_file, 'r', encoding='utf-8') as f:
+                text = f.read()
+            
+            results = detect_ai_threats(text)
+            
+            # Save results to file
+            output_file = output_dir / f"ai-defense-{Path(args.input_file).stem}.json"
+            with open(output_file, 'w', encoding='utf-8') as f:
+                json.dump([r.to_dict() for r in results], f, indent=2, ensure_ascii=False)
+            
+            print(f"[+] Análisis completado: {len(results)} amenazas detectadas")
+            print(f"[+] Resultados guardados en: {output_file}")
+            
+            if results:
+                print("\nAmenazas detectadas:")
+                for result in results:
+                    print(f"  - {result.pattern.name} ({result.pattern.severity.value})")
+        except Exception as e:
+            print(f"[-] Error al leer el archivo: {e}")
+        return
+    
+    # Monitor mode (for API integration)
+    if args.monitor:
+        print("[+] Modo monitor activado (Ctrl+C para salir)")
+        print("[+] Ingrese texto para analizar (línea vacía para salir):")
+        
+        monitor = create_ai_monitor(block_severity=block_severity)
+        
+        # Register alert callback
+        def alert_callback(alert):
+            print(f"\n[!] ALERTA: {alert.detection.pattern.name}")
+            print(f"  Severidad: {alert.severity.value}")
+            print(f"  Acción: {alert.action}")
+        
+        monitor.on_alert(alert_callback)
+        
+        try:
+            while True:
+                try:
+                    text = input("\n> ")
+                    if not text.strip():
+                        break
+                    
+                    log_entry = monitor.check_request(
+                        input_text=text,
+                        model="user-input",
+                        user_id="console"
+                    )
+                    
+                    if log_entry.is_blocked:
+                        print(f"[BLOCKED] Texto bloqueado: {len(log_entry.detections)} amenazas")
+                    elif log_entry.detections:
+                        print(f"[WARNING] Amenazas detectadas: {len(log_entry.detections)}")
+                    else:
+                        print("[OK] No se detectaron amenazas")
+                        
+                except KeyboardInterrupt:
+                    break
+        except Exception as e:
+            print(f"\n[-] Error: {e}")
+        
+        # Print stats
+        stats = monitor.get_stats()
+        print(f"\n[+] Estadísticas: {stats['total_requests']} requests, "
+              f"{stats['blocked_requests']} bloqueados, "
+              f"{stats['threats_detected']} amenazas detectadas")
+        return
+    
+    # Default: show help
+    print("Uso: python scripts/audit.py ai-defense [OPCIONES]")
+    print("\nOpciones:")
+    print("  --text TEXT              Analizar texto directamente")
+    print("  --input-file FILE        Analizar archivo de texto")
+    print("  --list-patterns          Listar todos los patrones de detección")
+    print("  --pattern-type TYPE      Filtrar patrones por tipo")
+    print("  --monitor                Modo monitor interactivo")
+    print("  --block-severity LEVEL   Severidad mínima para bloquear (CRITICAL, HIGH, MEDIUM, LOW, INFO)")
+    print("  --json                   Salida en formato JSON")
+    print("  --output DIR             Directorio de salida")
 
 
 def _generate_poc(finding, output_path, language='python', target_override=None):
