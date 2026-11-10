@@ -192,6 +192,46 @@ Examples:
     submit.add_argument('--dry-run', action='store_true', help='Simular envío sin enviar')
     
     # ========================================================================
+    # IDOR COMMAND - Detección Diferencial IDOR/BOLA (M15)
+    # ========================================================================
+    idor = commands.add_parser('idor', help='Detección de IDOR/BOLA mediante testing diferencial')
+    idor.add_argument('target', type=str, help='URL base del objetivo')
+    idor.add_argument('--session1', type=str, required=True, help='Nombre de la primera sesión (ej: admin)')
+    idor.add_argument('--session2', type=str, required=True, help='Nombre de la segunda sesión (ej: user)')
+    idor.add_argument('--endpoints', type=str, help='Lista de endpoints a probar (separados por comas)')
+    idor.add_argument('--methods', type=str, default='GET,POST,PUT,DELETE',
+                      help='Métodos HTTP a probar (ej: GET,POST)')
+    idor.add_argument('--output', type=Path, required=True, help='Directorio de salida')
+    idor.add_argument('--timeout', type=int, default=30, help='Timeout en segundos')
+    idor.add_argument('--delay', type=float, default=0.5, help='Retraso entre requests (segundos)')
+    idor.add_argument('--max-endpoints', type=int, default=50, help='Máximo número de endpoints a probar')
+    
+    # ========================================================================
+    # CVSS COMMAND - Calculadora CVSS 3.1 (M16)
+    # ========================================================================
+    cvss = commands.add_parser('cvss', help='Calculadora CVSS 3.1')
+    cvss.add_argument('vector', type=str, nargs='?', default='',
+                       help='Vector CVSS (ej: "AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H")')
+    cvss.add_argument('--av', type=str, default='N', choices=['N', 'A', 'L', 'P'],
+                      help='Attack Vector (N, A, L, P)')
+    cvss.add_argument('--ac', type=str, default='L', choices=['L', 'H'],
+                      help='Attack Complexity (L, H)')
+    cvss.add_argument('--pr', type=str, default='N', choices=['N', 'L', 'H'],
+                      help='Privileges Required (N, L, H)')
+    cvss.add_argument('--ui', type=str, default='N', choices=['N', 'R'],
+                      help='User Interaction (N, R)')
+    cvss.add_argument('--s', type=str, default='U', choices=['U', 'C'],
+                      help='Scope (U, C)')
+    cvss.add_argument('--c', type=str, default='N', choices=['N', 'L', 'H'],
+                      help='Confidentiality (N, L, H)')
+    cvss.add_argument('--i', type=str, default='N', choices=['N', 'L', 'H'],
+                      help='Integrity (N, L, H)')
+    cvss.add_argument('--a', type=str, default='N', choices=['N', 'L', 'H'],
+                      help='Availability (N, L, H)')
+    cvss.add_argument('--vuln-type', type=str, help='Tipo de vulnerabilidad (sqli, xss, idor, etc.)')
+    cvss.add_argument('--json', action='store_true', help='Salida en formato JSON')
+    
+    # ========================================================================
     # AUTH COMMAND - Gestión de autenticación
     # ========================================================================
     auth = commands.add_parser('auth', help='Gestión de autenticación')
@@ -233,7 +273,7 @@ Examples:
     report.add_argument('input', type=Path, help='Archivo audit.json de entrada')
     report.add_argument('--output', type=Path, required=True, help='Directorio o archivo de salida')
     report.add_argument('--format', type=str, default='json',
-                        choices=['markdown', 'html', 'pdf', 'json'],
+                        choices=['markdown', 'html', 'pdf', 'json', 'sarif'],
                         help='Formato del reporte')
     report.add_argument('--template', type=str, help='Plantilla personalizada')
     report.add_argument('--include-false-positives', action='store_true', help='Incluir falsos positivos')
@@ -319,6 +359,12 @@ Examples:
         
         elif args.command == 'poc':
             _handle_poc(args)
+        
+        elif args.command == 'idor':
+            _handle_idor(args, scope_manager, engagement_manager, args.engagement_id)
+        
+        elif args.command == 'cvss':
+            _handle_cvss(args)
         
         elif args.command == 'validate-skill':
             with project_source(args.skill) as root:
@@ -892,6 +938,161 @@ def _handle_poc(args):
     # Generate PoC
     _generate_poc(finding, output_path, language=args.language, target_override=args.target)
     print(f"[+] PoC generado en {output_path}")
+
+
+
+def _handle_idor(args, scope_manager=None, engagement_manager=None, engagement_id=None):
+    """Handle IDOR differential testing command (M15)."""
+    from pentesting.differential import DifferentialTester, DifferentialConfig
+    from pentesting.auth import get_auth_manager
+    import json
+    import os
+    
+    # Create output directory
+    args.output.mkdir(parents=True, exist_ok=True)
+    
+    # Initialize auth manager
+    auth_manager = get_auth_manager()
+    
+    # Create differential tester
+    tester = DifferentialTester(
+        auth_manager=auth_manager,
+        scope_manager=scope_manager,
+        engagement_manager=engagement_manager,
+        engagement_id=engagement_id,
+        storage_path=str(args.output / 'idor-sessions.json')
+    )
+    
+    # Parse endpoints
+    endpoints = []
+    if args.endpoints:
+        endpoints = [e.strip() for e in args.endpoints.split(',') if e.strip()]
+    
+    # Parse methods
+    methods = [m.strip() for m in args.methods.split(',') if m.strip()]
+    
+    # Create config
+    config = DifferentialConfig(
+        session1_name=args.session1,
+        session2_name=args.session2,
+        target=args.target,
+        endpoints=endpoints if endpoints else None,
+        methods=methods,
+        max_concurrent=args.max_endpoints,
+        timeout=args.timeout,
+        delay_between_requests=args.delay
+    )
+    
+    # Run differential test
+    print(f"[*] Iniciando prueba diferencial IDOR/BOLA")
+    print(f"[*] Sesión 1: {args.session1}")
+    print(f"[*] Sesión 2: {args.session2}")
+    print(f"[*] Target: {args.target}")
+    
+    findings = tester.run_differential_test(config)
+    
+    # Save results
+    results = {
+        'target': args.target,
+        'session1': args.session1,
+        'session2': args.session2,
+        'findings': [f.to_dict() for f in findings],
+        'statistics': {
+            'total_findings': len(findings),
+            'idor_vulnerabilities': len([f for f in findings if f.vulnerability_type == 'idor']),
+            'bola_vulnerabilities': len([f for f in findings if f.vulnerability_type == 'bola'])
+        }
+    }
+    
+    # Save JSON
+    json_path = args.output / 'idor-results.json'
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+    
+    # Save SARIF
+    if findings:
+        from reporting.sarif import SarifExporter
+        exporter = SarifExporter()
+        sarif_log = exporter.export_findings(findings)
+        sarif_path = args.output / 'idor-results.sarif.json'
+        with open(sarif_path, 'w', encoding='utf-8') as f:
+            f.write(sarif_log.to_json())
+        print(f"[+] SARIF exportado a {sarif_path}")
+    
+    # Print summary
+    print(f"[+] Prueba diferencial completada")
+    print(f"[+] Hallazgos: {len(findings)}")
+    print(f"[+] IDOR: {len([f for f in findings if f.vulnerability_type == 'idor'])}")
+    print(f"[+] BOLA: {len([f for f in findings if f.vulnerability_type == 'bola'])}")
+    print(f"[+] Resultados guardados en {json_path}")
+    
+    if findings:
+        print("\n[!] Vulnerabilidades detectadas:")
+        print("\n[!] Vulnerabilidades detectadas:")
+        for finding in findings:
+            print(f"  - [{finding.severity.upper()}] {finding.name} en {finding.endpoint}")
+
+
+def _handle_cvss(args):
+    """Handle CVSS calculation command (M16)."""
+    from scripts.core.cvss import (
+        CVSSCalculator, CVSSVector, CVSSScore,
+        AttackVector, AttackComplexity, PrivilegesRequired,
+        UserInteraction, Scope, ImpactMetric,
+        get_cvss_vector, calculate_cvss, calculate_cvss_from_metrics
+    )
+    import json
+    
+    calculator = CVSSCalculator()
+    
+    # Check if vector string is provided
+    if args.vector:
+        score = calculate_cvss(args.vector)
+        
+    # Check if vulnerability type is provided
+    elif args.vuln_type:
+        vector = get_cvss_vector(args.vuln_type)
+        if vector:
+            score = calculator.calculate(vector)
+        else:
+            print(f"[-] Tipo de vulnerabilidad desconocido: {args.vuln_type}")
+            print("Tipos soportados: sqli, xss, idor, bola, ssrf, rce, lfi, command_injection, xxe")
+            return
+    
+    # Otherwise, use individual metrics
+    else:
+        score = calculate_cvss_from_metrics(
+            av=args.av,
+            ac=args.ac,
+            pr=args.pr,
+            ui=args.ui,
+            s=args.s,
+            c=args.c,
+            i=args.i,
+            a=args.a
+        )
+    
+    # Output result
+    if args.json:
+        # Output as JSON
+        result = {
+            'vector': score.vector.to_vector_string(),
+            'base_score': score.base_score,
+            'impact_score': score.impact_score,
+            'exploitability_score': score.exploitability_score,
+            'severity': score.severity
+        }
+        print(json.dumps(result, indent=2))
+    else:
+        # Output as text
+        print("CVSS v3.1 Calculator")
+        print("=" * 40)
+        print(f"Vector: {score.vector.to_vector_string()}")
+        print(f"Base Score: {score.base_score}")
+        print(f"Impact Score: {score.impact_score}")
+        print(f"Exploitability Score: {score.exploitability_score}")
+        print(f"Severity: {score.severity}")
+        print("=" * 40)
 
 
 def _generate_poc(finding, output_path, language='python', target_override=None):

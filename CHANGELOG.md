@@ -4,6 +4,16 @@
 
 ### Mejoras v2.3
 
+14. **M15 - Detección Diferencial IDOR/BOLA Multi-Sesión** (2026-11-09): `scripts/pentesting/differential.py` (`DifferentialTester` con comparación de respuestas entre sesiones, detección de divergencias de status code, longitud de contenido y estructura JSON, generación automática de Findings con evidencia). CLI: `python scripts/audit.py idor https://example.com --session1 admin --session2 user --output ./results`. Tests en `tests/test_differential.py`.
+
+15. **M16 - Exportación SARIF + Calculadora CVSS 3.1** (2026-11-09): `scripts/core/cvss.py` (`CVSSCalculator` con soporte completo para CVSS v3.1, vectores predefinidos para vulnerabilidades comunes, cálculo de base/impact/exploitability scores) y `scripts/reporting/sarif.py` (`SarifExporter` con exportación a SARIF 2.1.0, mapeo de severidad, inclusión de CWE/CVSS en propiedades). CLI: `python scripts/audit.py cvss --vuln-type sqli --json` y `python scripts/audit.py report audit.json --output report.sarif.json --format sarif`. Tests en `tests/test_cvss.py` y `tests/test_sarif.py`.
+
+# Changelog
+
+## 2.3.0 (en desarrollo)
+
+### Mejoras v2.3
+
 11. **M11 — Canal OOB para vulnerabilidades ciegas** (2026-11-08, CI #73 verde): `scripts/core/oob.py` (`OOBServer` HTTP en 127.0.0.1 puerto efímero con stdlib, callbacks con timestamp e interaction_id; `OOBClient` genérico interactsh-like con fetch inyectado) y `scripts/pentesting/oob_scanner.py` (`OOBScanner` con payloads ciegos SSRF/XXE/RCE, validación de scope/engagement, findings CONFIRMED con evidencias de interacción + callback). Laboratorio extendido con `/fetch?url=` (SSRF ciego). Tests E2E en `tests/test_oob.py`. Fix de dos bugs de CI detectados por el laboratorio: tests order-independientes (unittest ejecuta en orden alfabético) y doble import `core`/`scripts.core` evitado (enums no comparables por módulos distintos).
 
 12. **M12 — SCA: SBOM + advisories** (2026-11-08, CI #75 verde): `scripts/sca/sbom.py` (SBOM CycloneDX 1.5 determinista desde requirements.txt), `scripts/sca/osv_client.py` (`OSVClient` offline por defecto con caché versionada `advisories.json`, modo online opt-in contra OSV.dev con validación de ScopeManager), `scripts/sca/scanner.py` (`SCAScanner`: advisory → finding CONFIRMED con severidad, CWE y fix sugerido), `scripts/sca/cli.py` (CLI propia: `--requirements`, `--output`, `--online`). Tests en `tests/test_sca.py` con fixture `tests/fixtures/sca/`. Desviaciones documentadas: priorización por AIEngine diferida y CLI propia en vez de subcomando de audit.py.
