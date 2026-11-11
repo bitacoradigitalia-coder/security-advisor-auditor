@@ -4,7 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Tests: 203 passed, 2 skipped](https://img.shields.io/badge/tests-203%20passed%2C%202%20skipped-green.svg)](#)
+[![CI Tests](https://github.com/bitacoradigitalia-coder/security-advisor-auditor/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/bitacoradigitalia-coder/security-advisor-auditor/actions/workflows/ci-tests.yml)
 [![Code Style: PEP 8](https://img.shields.io/badge/code%20style-PEP%208-blue.svg)](https://peps.python.org/pep-0008/)
 [![Maintenance: Yes](https://img.shields.io/badge/maintenance-yes-green.svg)](#)
 [![Open Source: Yes](https://img.shields.io/badge/open%20source-yes-brightgreen.svg)](#)
@@ -18,8 +18,8 @@
 
 - **Versión actual**: v2.2 (feature-complete: Fases 1-5 completadas)
 - **Licencia**: MIT
-- **Requisitos**: Python 3.10+, biblioteca estándar
-- **Tests**: 203 passed, 2 skipped
+- **Requisitos**: Python 3.10+ y dependencias de `requirements.txt`
+- **Tests**: consulta [la CI del commit](https://github.com/bitacoradigitalia-coder/security-advisor-auditor/actions/workflows/ci-tests.yml)
 
 ---
 
@@ -40,7 +40,7 @@
 ## 🚀 Instalación
 
 ### Requisitos
-- Python **3.10+** (biblioteca estándar)
+- Python **3.10+**
 - Git (opcional, para HEAD)
 
 ### Dependencias Python
@@ -70,151 +70,28 @@ go install github.com/OJ/gobuster/v3@latest
 
 ## 💻 Uso Rápido
 
-El CLI principal es `python scripts/audit.py`:
+El CLI principal es `python scripts/audit.py`. Desde la raíz del proyecto:
 
 ```bash
-# Ver ayuda completa
 python scripts/audit.py --help
-
-# Ver herramientas disponibles
-python scripts/audit.py tools
-
-# Validar skill
-python scripts/audit.py validate-skill .
+python scripts/audit.py scan /ruta/repositorio --output ./informe
+python scripts/audit.py scan /ruta/repositorio --output ./informe-profundo --mode DEEP
+python scripts/audit.py extract-zip programa.zip --output ./extraido
+python scripts/audit.py scan ./extraido --output ./informe-zip
 ```
 
-### Análisis Estático
-```bash
-# Análisis rápido (modo por defecto)
-python scripts/audit.py scan /ruta/repo --output ./informe
+Usa un directorio nuevo para cada informe, fuera de la carpeta analizada. El escaneo estático lee código sin ejecutar el programa. No es un antivirus de ejecutables ni garantiza que un repositorio sea seguro.
 
-# Análisis profundo
-python scripts/audit.py scan /ruta/repo --output ./informe --mode DEEP
+**Estado de la aplicación:** actualmente se utiliza por CLI. El dashboard, el botón para seleccionar archivos o repositorios, las integraciones Hermes/WAF y la monetización siguen pendientes. No hay una implementación de detección zero-day acreditada en este checkout.
 
-# Con límites personalizados
-python scripts/audit.py scan /ruta/repo --output ./informe \
-  --max-file-bytes 500000 --max-files 2000 --max-total-bytes 5000000
-```
-
-### Escaneo Activo (requiere permisos explícitos)
-```bash
-# Escaneo básico
-python scripts/audit.py scan https://example.com --output ./report --active
-
-# Con Nuclei
-python scripts/audit.py scan https://example.com --output ./report --active --nuclei
-
-# Con autenticación
-python scripts/audit.py scan https://example.com --output ./report --active --session admin
-
-# Completo con todas las opciones
-python scripts/audit.py scan https://example.com --output ./report --active \
-  --nuclei --fuzz --scan-js --scan-forms --scan-headers --scan-cookies
-```
-
-### Fuzzing
-```bash
-# Fuzzing básico de parámetros
-python scripts/audit.py fuzz https://example.com/api --param id --output ./results
-
-# Con múltiples parámetros
-python scripts/audit.py fuzz https://example.com/api --param id --param user --output ./results
-
-# Con wordlist personalizada
-python scripts/audit.py fuzz https://example.com/api --param id --wordlist custom.txt --output ./results
-```
-
-### Explotación Controlada
-```bash
-# Requiere archivo de permisos válido
-python scripts/audit.py exploit https://example.com/api?id=1 --vuln sqli \
-  --permission-file permissions.json --output ./exploits
-
-# Crear archivo de permisos
-python scripts/audit.py exploit --create-permission \
-  --target https://example.com --vuln-type sqli,xss,rce \
-  --expires 2024-12-31 --output permissions.json
-```
-
-### Gestión de Autenticación
-```bash
-# Añadir sesión con cookies
-python scripts/audit.py auth add-session --name admin --cookie session_id=12345
-
-# Añadir sesión con bearer token
-python scripts/audit.py auth add-session --name api_user --auth-type bearer --token abc123
-
-# Listar sesiones
-python scripts/audit.py auth list-sessions
-```
-
-### Gestión de Bug Bounty
-```bash
-# Añadir programa
-python scripts/audit.py bugbounty add-program --name "Example Inc" \
-  --scope example.com,api.example.com --platform hackerone
-
-# Añadir finding
-python scripts/audit.py bugbounty add-finding --program "Example Inc" \
-  --title "SQL Injection in API" --severity critical --vuln-type sqli \
-  --target https://api.example.com/users
-
-# Priorizar findings
-python scripts/audit.py bugbounty prioritize --program "Example Inc" --output prioritized.json
-```
-
-### Generación de PoCs
-```bash
-# Generar PoC en Python
-python scripts/audit.py poc generate --finding audit.json --language python --output ./poc.py
-
-# Generar PoC en Bash
-python scripts/audit.py poc generate --finding audit.json --language bash --output ./poc.sh
-
-# Generar PoC en curl
-python scripts/audit.py poc generate --finding audit.json --language curl --output ./poc_curl.sh
-```
-
-### Generación de Reportes
-```bash
-# Reporte en Markdown
-python scripts/audit.py report audit.json --output ./report --format markdown
-
-# Reporte en HTML
-python scripts/audit.py report audit.json --output ./report --format html
-
-# Reporte en JSON
-python scripts/audit.py report audit.json --output ./report --format json
-
-# Reporte en SARIF 2.1.0
-python scripts/audit.py report audit.json --output ./report --format sarif
-
-# Con filtros
-python scripts/audit.py report audit.json --output ./report --format html \
-  --severity-filter critical,high --type-filter vulnerability
-```
-
-### SCA (Software Composition Analysis)
-**Nota:** El módulo SCA tiene su propio CLI independiente (no integrado en audit.py).
+El comando `scan` usa el motor de `scripts/security_auditor/`. Los analizadores de `scripts/static_analysis/` y SCA se utilizan de forma independiente; tener esos módulos en el repositorio no implica que `scan` los ejecute.
 
 ```bash
-# Generar SBOM (CycloneDX 1.5)
 python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report
-
-# Escanear vulnerabilidades (offline con cache)
-python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report
-
-# Escanear con modo online (opt-in)
-python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report --online
+python -c "import json; from scripts.static_analysis.iac_analyzer import IaCAnalyzer; print(json.dumps(IaCAnalyzer().analyze_directory('/ruta/iac').to_dict(), indent=2))"
 ```
 
-### Escaneo IaC
-**Nota:** El módulo IaC tiene su propio analizador (no integrado en audit.py).
-
-```bash
-# Analizar archivos de infraestructura (usar el analizador directamente)
-python -c "from scripts.static_analysis.iac_analyzer import IaCAnalyzer; IaCAnalyzer().analyze_directory('/ruta/iac/')"
-```
+Consulta la [guía de uso](docs/usage.md) para alcance autorizado, sesiones, pruebas activas, SCA, IaC y reportes. La [referencia CLI](docs/cli.md) enumera los argumentos implementados.
 
 ---
 
@@ -228,19 +105,9 @@ La explotación de vulnerabilidades **requiere permiso explícito**:
 3. **Rate limiting**: 10 requests/segundo por defecto (configurable)
 4. **User Agent Rotation**: Para evitar detección
 
-### Archivo de Permisos (permissions.json)
-```json
-{
-  "https://example.com": {
-    "target": "https://example.com",
-    "vulnerability_types": ["SQLi", "XSS", "RCE"],
-    "allowed": true,
-    "expires": "2024-12-31",
-    "scope": "*.example.com",
-    "notes": "Permission granted for authorized testing"
-  }
-}
-```
+### Configuración del alcance y permisos
+
+Consulta la [guía de uso](docs/usage.md#alcance-de-pruebas-activas) para configurar destinos permitidos. `exploit` exige un archivo de permisos válido; el formato se define en [el módulo de explotación](scripts/pentesting/exploit.py). No existe una opción CLI `--create-permission`.
 
 ### Buenas Prácticas
 1. ✅ **Siempre obtener permiso escrito** antes de pruebas de explotación
@@ -262,7 +129,7 @@ La explotación de vulnerabilidades **requiere permiso explícito**:
 ### Módulos
 - [🐞 Bug Bounty](docs/bugbounty.md) - Gestión completa de programas
 - [🔍 Pentesting](docs/pentesting.md) - Guía del módulo de pentesting
-- [📦 SCA](docs/sca.md) - Análisis de composiciones de software
+- [📦 SCA](docs/usage.md#sca) - Análisis de composiciones de software
 - [☁️ IaC](docs/iac.md) - Análisis de infraestructura como código
 
 ### Desarrollo

@@ -177,6 +177,8 @@ class SystemTests(unittest.TestCase):
                 self.assertTrue((installed / 'SKILL.md').exists())
                 self.assertTrue((installed / 'examples/safe/app.py').exists())
                 self.assertTrue((installed / 'tests/test_system.py').exists())
+                self.assertTrue((installed / 'internal/implementation-plan.md').exists())
+                self.assertTrue((installed / 'docs/history/changelog.md').exists())
                 self.assertFalse((installed / '.git').exists())
                 self.assertNotEqual(self.installer('--agent', agent, '--skills-dir', skills).returncode, 0)
                 self.assertEqual(self.installer('--agent', agent, '--skills-dir', skills, '--update').returncode, 0)

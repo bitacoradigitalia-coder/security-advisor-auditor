@@ -7,6 +7,8 @@ import sys
 import zipfile
 
 sys.dont_write_bytecode = True
+# Keep package-qualified imports available when invoked as a file from any cwd.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from security_auditor.engine import analyze
 from security_auditor.reporting import write_outputs, legacy_report
 from security_auditor.safeio import extract_zip, read_bounded
@@ -332,26 +334,36 @@ Examples:
     # Initialize security components
     scope_manager = None
     engagement_manager = None
+    network_scan = args.command in ('fuzz', 'exploit', 'idor') or (
+        args.command == 'scan' and args.target.startswith(('http://', 'https://'))
+    )
+    if not SCOPE_AVAILABLE and (args.engagement_id or args.engagement_file or
+                                (network_scan and not args.no_scope_validation)):
+        print('Security controls unavailable; install requirements.txt.', file=sys.stderr)
+        return 2
     if not args.no_scope_validation:
         if SCOPE_AVAILABLE:
             try:
                 if args.scope_config:
-                    scope_config = ScopeConfig.from_json_file(args.scope_config)
+                    with open(args.scope_config, encoding='utf-8') as scope_file:
+                        scope_config = ScopeConfig.from_dict(json.load(scope_file))
                     scope_manager = ScopeManager(scope_config)
                 else:
                     # Create default scope manager with basic protections
                     scope_manager = ScopeManager(ScopeConfig())
             except Exception as e:
-                print(f"Warning: Could not initialize ScopeManager: {e}", file=sys.stderr)
-            
-            try:
-                if args.engagement_file:
-                    engagement_manager = EngagementManager(args.engagement_file)
-                elif args.engagement_id:
-                    # Create engagement manager with default storage
-                    engagement_manager = EngagementManager()
-            except Exception as e:
-                print(f"Warning: Could not initialize EngagementManager: {e}", file=sys.stderr)
+                print('Could not initialize ScopeManager (' + type(e).__name__ + ').', file=sys.stderr)
+                return 2
+
+    # Explicit authorization remains enforced even if scope checks are disabled.
+    try:
+        if args.engagement_file:
+            engagement_manager = EngagementManager(args.engagement_file)
+        elif args.engagement_id:
+            engagement_manager = EngagementManager()
+    except Exception as e:
+        print('Could not initialize EngagementManager (' + type(e).__name__ + ').', file=sys.stderr)
+        return 2
     
     try:
         if args.command == 'scan':
@@ -475,7 +487,10 @@ def _handle_active_scan(args, scope_manager=None, engagement_manager=None, engag
             scan_cookies=args.scan_cookies
         )
         
-        scanner = ActiveScanner(scan_config)
+        scanner = ActiveScanner(
+            scan_config, scope_manager=scope_manager,
+            engagement_manager=engagement_manager, engagement_id=engagement_id
+        )
         scan_results = scanner.scan()
         results['scan_results'] = scan_results
         
@@ -486,32 +501,20 @@ def _handle_active_scan(args, scope_manager=None, engagement_manager=None, engag
         print(f"[*] Iniciando fuzzing de {args.target}")
         
         # Parse parameters
-        params = []
-        if args.param:
-            params.extend(args.param)
-        if args.params:
-            params.extend(args.params.split(','))
-        
-        # Parse vulnerability types
-        vuln_types = args.vuln_types.split(',') if args.vuln_types else []
+        params = [value.strip() for value in (args.fuzz_params or '').split(',')
+                  if value.strip()]
         
         fuzz_config = FuzzConfig(
             target=args.target,
             parameters=params,
             session_name=args.session,
-            detect_sqli='sqli' in vuln_types,
-            detect_xss='xss' in vuln_types,
-            detect_ssrf='ssrf' in vuln_types,
-            detect_rce='rce' in vuln_types,
-            detect_lfi='lfi' in vuln_types,
-            detect_idor='idor' in vuln_types,
-            detect_xxe='xxe' in vuln_types,
-            max_threads=args.threads,
-            timeout=args.timeout,
-            delay=args.delay
+            detect_xxe=False
         )
         
-        fuzzer = Fuzzer(fuzz_config)
+        fuzzer = Fuzzer(
+            fuzz_config, scope_manager=scope_manager,
+            engagement_manager=engagement_manager, engagement_id=engagement_id
+        )
         fuzz_results = fuzzer.fuzz()
         results['fuzz_results'] = [r.to_dict() for r in fuzz_results]
         

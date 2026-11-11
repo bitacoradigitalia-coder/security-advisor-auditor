@@ -1,534 +1,271 @@
-# 💻 CLI - Interfaz de Línea de Comandos
-
-El CLI principal de **Security Advisor Auditor** es `python scripts/audit.py`.
-
----
-
-## 📋 Tabla de Contenidos
-
-- [🎯 Comandos Principales](#-comandos-principales)
-- [📖 Descripción de Comandos](#-descripción-de-comandos)
-- [🔧 Opciones Globales](#-opciones-globales)
-- [📝 Ejemplos Prácticos](#-ejemplos-prácticos)
-- [🎨 Personalización](#-personalización)
-
----
-
-## 🎯 Comandos Principales
-
-| Comando | Descripción | Ejemplo |
-|---------|-------------|---------|
-| `scan` | Análisis completo (estático + activo) | `python scripts/audit.py scan /ruta --output ./report` |
-| `fuzz` | Fuzzing de parámetros | `python scripts/audit.py fuzz https://api.example.com --param id` |
-| `exploit` | Explotación controlada | `python scripts/audit.py exploit URL --vuln sqli --permission-file perm.json` |
-| `bugbounty` | Gestión de Bug Bounty | `python scripts/audit.py bugbounty add-program --name "Programa"` |
-| `auth` | Gestión de autenticación | `python scripts/audit.py auth add-session --name admin` |
-| `poc` | Generación de PoCs | `python scripts/audit.py poc generate --finding audit.json` |
-| `report` | Generación de reportes | `python scripts/audit.py report audit.json --format html` |
-| `tools` | Listar herramientas disponibles | `python scripts/audit.py tools` |
-| `validate-skill` | Validar skill | `python scripts/audit.py validate-skill .` |
-| `extract-zip` | Extraer ZIP de forma segura | `python scripts/audit.py extract-zip archivo.zip --output ./salida` |
-| `idor` | Detección IDOR/BOLA | `python scripts/audit.py idor URL --session1 admin --session2 user` |
-| `cvss` | Calculadora CVSS 3.1 | `python scripts/audit.py cvss --vuln-type sqli --json` |
-
----
-
-## 📖 Descripción de Comandos
-
-### 🔍 `scan` - Análisis Completo
-
-Realiza análisis estático y/o activo de un objetivo.
-
-**Opciones principales:**
-```
---target, -t          URL o ruta al objetivo
---output, -o         Directorio de salida (obligatorio)
---mode               Modo de análisis: QUICK, STANDARD, DEEP (default: QUICK)
---active             Habilitar escaneo activo
---session            Nombre de sesión para autenticación
---nuclei             Usar Nuclei para escaneo de vulnerabilidades
---fuzz               Habilitar fuzzing
---scan-js            Escanear archivos JavaScript
---scan-forms         Escanear formularios HTML
---scan-headers       Verificar headers de seguridad
---scan-cookies       Analizar cookies
---max-file-bytes     Límite de bytes por archivo (default: 1000000)
---max-files          Límite de archivos a analizar (default: 10000)
---max-total-bytes    Límite total de bytes leídos (default: 20000000)
---legacy-report      Generar reporte en formato legacy
-```
-
-**Ejemplo completo:**
-```bash
-python scripts/audit.py scan https://example.com --output ./report \
-  --active --nuclei --fuzz --session admin \
-  --max-file-bytes 500000 --max-files 2000
-```
-
-### 🎯 `fuzz` - Fuzzing de Parámetros
-
-Pruebas de fuzzing en parámetros de URLs.
-
-**Opciones principales:**
-```
---target, -t          URL base para fuzzing
---param, -p          Parámetro(s) a fuzzar (puede repetirse)
---wordlist, -w       Archivo wordlist personalizado
---threads            Número de hilos (default: 5)
---timeout            Timeout por request en segundos (default: 10)
---delay              Delay entre requests en segundos (default: 0.1)
---output, -o         Directorio de salida
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py fuzz https://example.com/api --param id --param user \
-  --wordlist custom.txt --threads 10 --output ./fuzz-results
-```
-
-### ⚡ `exploit` - Explotación Controlada
-
-Ejecución controlada de exploits con permisos explícitos.
-
-**⚠️ ADVERTENCIA**: Requiere archivo de permisos válido. La explotación sin permiso es **ilegal y antiética**.
-
-**Opciones principales:**
-```
---target, -t          URL objetivo
---vuln, -v           Tipo de vulnerabilidad: sqli, xss, rce, lfi, ssrf, idor, xxe
---permission-file    Archivo de permisos (obligatorio)
---output, -o         Directorio de salida
---create-permission  Crear archivo de permisos en lugar de explotar
---expires            Fecha de expiración de permisos
---vuln-type          Tipos de vulnerabilidades permitidos
---scope              Scope de permisos (ej: *.example.com)
---notes              Notas para el archivo de permisos
-```
-
-**Ejemplo - Crear permisos:**
-```bash
-python scripts/audit.py exploit --create-permission \
-  --target https://example.com \
-  --vuln-type sqli,xss,rce \
-  --expires 2024-12-31 \
-  --scope "*.example.com" \
-  --notes "Pruebas autorizadas" \
-  --output permissions.json
-```
-
-**Ejemplo - Explotar:**
-```bash
-python scripts/audit.py exploit https://example.com/api?id=1 \
-  --vuln sqli \
-  --permission-file permissions.json \
-  --output ./exploits
-```
-
-### 🐞 `bugbounty` - Gestión de Bug Bounty
-
-Gestión completa de programas y findings de Bug Bounty.
-
-**Subcomandos:**
-```
-add-program      Añadir un nuevo programa
-list-programs    Listar programas existentes
-add-finding      Añadir un finding a un programa
-delete-finding    Eliminar un finding
-list-findings    Listar findings de un programa
-prioritize       Priorizar findings
-stats            Mostrar estadísticas de un programa
-```
-
-**Ejemplo - Añadir programa:**
-```bash
-python scripts/audit.py bugbounty add-program \
-  --name "Example Inc" \
-  --scope example.com,api.example.com \
-  --platform hackerone \
-  --reward-range "$100-$1000"
-```
-
-**Ejemplo - Añadir finding:**
-```bash
-python scripts/audit.py bugbounty add-finding \
-  --program "Example Inc" \
-  --title "SQL Injection in /api/users" \
-  --severity critical \
-  --vuln-type sqli \
-  --target https://api.example.com/users?id=1 \
-  --description "Inyección SQL en parámetro id" \
-  --cvss 9.8 \
-  --cwe 89
-```
-
-**Ejemplo - Priorizar findings:**
-```bash
-python scripts/audit.py bugbounty prioritize \
-  --program "Example Inc" \
-  --output prioritized.json
-```
-
-### 🔐 `auth` - Gestión de Autenticación
-
-Gestión de sesiones autenticadas para escaneos.
-
-**Subcomandos:**
-```
-add-session      Añadir una nueva sesión
-list-sessions    Listar sesiones existentes
-remove-session   Eliminar una sesión
-```
-
-**Opciones para add-session:**
-```
---name             Nombre de la sesión
---cookie           Cookie(s) de autenticación (puede repetirse)
---auth-type        Tipo: basic, bearer, digest, oauth2 (default: cookie)
---token            Token para bearer auth
---username         Usuario para basic auth
---password         Contraseña para basic auth
---client-id        Client ID para OAuth2
---client-secret    Client secret para OAuth2
-```
-
-**Ejemplo - Sesión con cookies:**
-```bash
-python scripts/audit.py auth add-session \
-  --name admin \
-  --cookie session_id=abc123 \
-  --cookie auth_token=xyz456
-```
-
-**Ejemplo - Sesión con bearer token:**
-```bash
-python scripts/audit.py auth add-session \
-  --name api_user \
-  --auth-type bearer \
-  --token abcdef123456
-```
-
-### 📄 `poc` - Generación de PoCs
-
-Generación automática de Proof of Concept.
-
-**Opciones principales:**
-```
---finding           Archivo JSON con el finding
---language          Lenguaje: python, bash, curl, powershell
---output, -o        Archivo de salida
---simple            Generar PoC simple (sin verificación)
---verbose           Incluir comentarios detallados
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py poc generate \
-  --finding audit.json \
-  --language python \
-  --output ./poc.py
-```
-
-### 📊 `report` - Generación de Reportes
-
-Generación de reportes en múltiples formatos.
-
-**Opciones principales:**
-```
---input, -i         Archivo de entrada (audit.json)
---output, -o        Directorio de salida
---format            Formato: markdown, html, json, sarif (default: json)
---template-path     Ruta a plantilla personalizada
---severity-filter   Filtrar por severidad: critical, high, medium, low, info
---type-filter       Filtrar por tipo: vulnerability, weakness, risk, hardening, info
---include-confirmed Incluir solo hallazgos confirmados
---include-fp        Incluir falsos positivos
---redact-secrets    Redactar secretos en el reporte (default: true)
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py report audit.json \
-  --output ./report \
-  --format html \
-  --severity-filter critical,high \
-  --type-filter vulnerability
-```
-
-### 🔧 `tools` - Herramientas Disponibles
-
-Muestra todas las herramientas y módulos disponibles.
-
-```bash
-python scripts/audit.py tools
-```
-
-### ✅ `validate-skill` - Validación de Skill
-
-Valida la integridad de la skill.
-
-```bash
-python scripts/audit.py validate-skill .
-```
-
-### 📦 `extract-zip` - Extracción Segura de ZIP
-
-Extrae archivos ZIP de forma segura con validaciones.
-
-**Opciones principales:**
-```
---input, -i         Archivo ZIP de entrada
---output, -o        Directorio de salida
---max-file-size     Tamaño máximo por archivo (default: 50MB)
---max-total-size    Tamaño máximo total (default: 50MB)
---max-entries       Número máximo de entradas (default: 1000)
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py extract-zip input.zip --output ./extracted
-```
-
-### 🔍 `idor` - Detección IDOR/BOLA
-
-Detección de vulnerabilidades IDOR (Insecure Direct Object Reference) y BOLA (Broken Object Level Authorization).
-
-**Opciones:**
-```
---target, -t       URL base
---session1        Nombre de la primera sesión (ej: admin)
---session2        Nombre de la segunda sesión (ej: user)
---param           Parámetro a testear
---output, -o      Directorio de salida
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py idor https://example.com/api/users \
-  --session1 admin \
-  --session2 user \
-  --param id \
-  --output ./idor-results
-```
-
-### 🎯 `cvss` - Calculadora CVSS 3.1
-
-Calculadora de puntuación CVSS 3.1.
-
-**Opciones:**
-```
---vuln-type        Tipo de vulnerabilidad (sqli, xss, rce, etc.)
---vector           Vector CVSS completo (ej: CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H)
---json             Salida en formato JSON
---interactive      Modo interactivo
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py cvss --vuln-type sqli --json
-```
-
----
-
-## 🔧 Opciones Globales
-
-Todas las opciones globales aplicables a todos los comandos:
-
-```
---help, -h         Mostrar ayuda
---version, -v      Mostrar versión
---verbose          Modo verboso
---debug            Modo debug (más detalles)
---config           Archivo de configuración personalizado
---storage-path     Ruta de almacenamiento para datos persistentes
---log-level        Nivel de log: DEBUG, INFO, WARNING, ERROR, CRITICAL
---no-color         Deshabilitar colores en la salida
---quiet, -q        Modo silencioso (solo errores)
-```
-
----
-
-## 📝 Ejemplos Prácticos
-
-### 🎯 Escenario 1: Análisis Estático de Repositorio
-
-```bash
-# Clonar repositorio
-git clone https://github.com/usuario/proyecto.git
-cd proyecto
-
-# Análisis rápido
-python ../security-advisor-auditor/scripts/audit.py scan . --output ./informe
-
-# Análisis profundo con límites personalizados
-python ../security-advisor-auditor/scripts/audit.py scan . \
-  --output ./informe-profundos \
-  --mode DEEP \
-  --max-file-bytes 500000 \
-  --max-files 2000
-
-# Generar reporte en HTML
-python ../security-advisor-auditor/scripts/audit.py report ./informe/audit.json \
-  --output ./reporte-final \
-  --format html
-```
-
-### 🌐 Escenario 2: Escaneo Activo de Aplicación Web
-
-```bash
-# Escaneo básico
-python scripts/audit.py scan https://example.com --output ./report --active
-
-# Escaneo con autenticación
-python scripts/audit.py auth add-session --name admin --cookie session_id=abc123
-python scripts/audit.py scan https://example.com --output ./report --active --session admin
-
-# Escaneo completo con Nuclei
-python scripts/audit.py scan https://example.com --output ./report \
-  --active --nuclei --fuzz --scan-js --scan-forms --scan-headers
-```
-
-### 🐞 Escenario 3: Gestión de Bug Bounty
-
-```bash
-# Crear programa
-python scripts/audit.py bugbounty add-program \
-  --name "Mi Empresa" \
-  --scope example.com,api.example.com \
-  --platform hackerone
-
-# Escanear aplicación
-python scripts/audit.py scan https://example.com --output ./scan-results --active
-
-# Añadir findings desde el escaneo
-python scripts/audit.py bugbounty add-finding \
-  --program "Mi Empresa" \
-  --title "XSS en /search" \
-  --severity high \
-  --vuln-type xss \
-  --target https://example.com/search?q=<script>alert(1)</script>
-
-# Priorizar findings
-python scripts/audit.py bugbounty prioritize --program "Mi Empresa" --output prioritized.json
-
-# Generar reporte para el programa
-python scripts/audit.py report ./scan-results/audit.json \
-  --output ./bugbounty-report \
-  --format html \
-  --severity-filter critical,high
-```
-
-### 🔍 Escenario 4: Pruebas de Fuzzing
-
-```bash
-# Fuzzing básico
-python scripts/audit.py fuzz https://example.com/api/users --param id --output ./fuzz-results
-
-# Fuzzing con wordlist personalizada
-python scripts/audit.py fuzz https://example.com/api/users \
-  --param id \
-  --wordlist ~/wordlists/sqli.txt \
-  --output ./sqli-fuzz
-
-# Fuzzing con múltiples parámetros
-python scripts/audit.py fuzz https://example.com/api/search \
-  --param q \
-  --param page \
-  --param sort \
-  --threads 10 \
-  --delay 0.5 \
-  --output ./multi-fuzz
-```
-
-### ⚡ Escenario 5: Explotación Controlada (con permisos)
-
-```bash
-# Crear archivo de permisos
-python scripts/audit.py exploit --create-permission \
-  --target https://example.com \
-  --vuln-type sqli,xss \
-  --expires 2024-12-31 \
-  --scope "*.example.com" \
-  --notes "Pruebas autorizadas por el equipo de seguridad" \
-  --output permissions.json
-
-# Explotar vulnerabilidad
-python scripts/audit.py exploit https://example.com/api?id=1 \
-  --vuln sqli \
-  --permission-file permissions.json \
-  --output ./exploits
-
-# Generar PoC
-python scripts/audit.py poc generate \
-  --finding ./exploits/finding.json \
-  --language python \
-  --output ./poc.py
-```
-
----
-
-## 🎨 Personalización
-
-### 📁 Archivo de Configuración
-
-Puedes crear un archivo de configuración JSON para evitar repetir opciones:
-
-```json
-{
-  "default_output": "./reports",
-  "default_mode": "STANDARD",
-  "rate_limit": 10,
-  "user_agent": "SecurityAdvisorAuditor/2.2",
-  "storage_path": "./.security_advisor",
-  "nuclei_path": "/usr/local/bin/nuclei",
-  "wordlists_path": "./wordlists"
-}
-```
-
-**Usar configuración:**
-```bash
-python scripts/audit.py scan https://example.com --config config.json
-```
-
-### 🎭 Alias de Comandos
-
-Crea alias en tu shell para comandos frecuentes:
-
-```bash
-# Bash
-alias sa-scan='python ~/security-advisor-auditor/scripts/audit.py scan'
-alias sa-fuzz='python ~/security-advisor-auditor/scripts/audit.py fuzz'
-alias sa-report='python ~/security-advisor-auditor/scripts/audit.py report'
-
-# Zsh
-alias sa-scan='python ~/security-advisor-auditor/scripts/audit.py scan'
-alias sa-fuzz='python ~/security-advisor-auditor/scripts/audit.py fuzz'
-alias sa-report='python ~/security-advisor-auditor/scripts/audit.py report'
-```
-
-### 📦 Wordlists Personalizadas
-
-Puedes añadir tus propias wordlists en `scripts/pentesting/wordlists/` o especificar la ruta:
-
-```bash
-python scripts/audit.py fuzz https://example.com/api --param id \
-  --wordlist /ruta/a/mi/wordlist.txt --output ./results
-```
-
----
-
-## 🚨 Advertencias de Seguridad
-
-1. **🔒 Permisos explícitos**: La explotación de vulnerabilidades requiere un archivo de permisos válido
-2. **🎯 Scope definido**: No exceder el scope autorizado
-3. **⚡ Rate limiting**: 10 requests/segundo por defecto para evitar DoS
-4. **📝 Documentación**: Registrar todas las acciones para auditoría
-5. **🚫 Producción**: No realizar pruebas en producción sin autorización explícita
-
----
-
-## 📚 Ver También
-
-- [Uso Avanzado](usage.md) - Guías detalladas de uso
-- [Módulo de Pentesting](../pentesting.md) - Documentación técnica del módulo
-- [Módulo de Bug Bounty](../bugbounty.md) - Documentación técnica del módulo
-- [Arquitectura del Sistema](../architecture.md) - Diseño general
+# Referencia CLI
+
+Opciones extraídas del parser de `scripts/audit.py`. Consulta `python scripts/audit.py COMANDO --help` para la ayuda de tu checkout.
+
+Las opciones globales van **antes del subcomando**. Los ejemplos y límites operativos están en [Uso](usage.md). SCA dispone de [CLI independiente](usage.md#sca); IaC se utiliza mediante la API Python.
+
+## Opciones globales
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--scope-config` | No | Archivo de configuracion de alcance (JSON) |
+| `--engagement-id` | No | ID del engagement para autorizacion |
+| `--engagement-file` | No | Archivo de engagements (JSON) |
+| `--no-scope-validation` | No | Deshabilitar validacion de alcance (NO RECOMENDADO) |
+
+## scan
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `target` | Sí | Ruta del repositorio o URL del objetivo |
+| `--output` | Sí | Directorio de salida |
+| `--mode` | No | Modo de análisis estático (QUICK, STANDARD, DEEP) Valores: QUICK, STANDARD, DEEP. |
+| `--max-file-bytes` | No |  |
+| `--max-files` | No |  |
+| `--max-total-bytes` | No |  |
+| `--max-depth` | No |  |
+| `--max-seconds` | No |  |
+| `--max-memory-bytes` | No | Límite de memoria del subproceso parser y presupuesto estimado AST |
+| `--max-findings` | No |  |
+| `--max-ast-nodes` | No |  |
+| `--max-call-depth` | No |  |
+| `--legacy-report` | No | Exportar únicamente campos del contrato v2.0 |
+| `--active` | No | Habilitar escaneo activo |
+| `--session` | No | Nombre de la sesión autenticada |
+| `--nuclei` | No | Ejecutar Nuclei (requiere instalación) |
+| `--nuclei-templates` | No | Plantillas de Nuclei (ej: sqli,xss) |
+| `--fuzz` | No | Habilitar fuzzing de parámetros |
+| `--fuzz-params` | No | Parámetros a fuzzar (ej: id,user,token) |
+| `--scan-js` | No | Escanear archivos JavaScript |
+| `--scan-forms` | No | Escanear formularios |
+| `--scan-headers` | No | Escanear headers |
+| `--scan-cookies` | No | Escanear cookies |
+
+## fuzz
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `target` | Sí | URL del objetivo |
+| `--output` | Sí | Directorio de salida |
+| `--param` | No | Parámetro a fuzzar (puede repetirse) |
+| `--params` | No | Lista de parámetros separados por comas |
+| `--wordlist` | No | Ruta al wordlist personalizado |
+| `--vuln-types` | No | Tipos de vulnerabilidades a probar (ej: sqli,xss) |
+| `--methods` | No | Métodos HTTP a probar (ej: GET,POST,PUT) |
+| `--session` | No | Nombre de la sesión autenticada |
+| `--threads` | No | Número de hilos |
+| `--timeout` | No | Timeout en segundos |
+| `--delay` | No | Retraso entre requests |
+
+## exploit
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `target` | Sí | URL del objetivo |
+| `--vuln` | Sí | Tipo de vulnerabilidad Valores: sqli, xss, ssrf, rce, lfi, rfi, idor, xxe, csrf, command-injection, path-traversal, open-redirect. |
+| `--param` | No | Parámetro vulnerable |
+| `--payload` | No | Payload personalizado |
+| `--method` | No | Método HTTP Valores: GET, POST, PUT, DELETE, PATCH. |
+| `--session` | No | Nombre de la sesión autenticada |
+| `--permission-file` | Sí | Archivo de permisos (obligatorio para explotación) |
+| `--output` | No | Directorio de salida para resultados |
+| `--generate-poc` | No | Generar PoC automático |
+
+## bugbounty
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+
+## bugbounty add-program
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--name` | Sí | Nombre del programa |
+| `--scope` | Sí | Scope (ej: example.com,api.example.com) |
+| `--rules` | No | Reglas del programa |
+| `--platform` | No | Plataforma de Bug Bounty Valores: hackerone, bugcrowd, intigriti, other. |
+| `--api-token` | No | API token para la plataforma |
+
+## bugbounty add-finding
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--program` | Sí | Nombre del programa |
+| `--file` | Sí | Archivo audit.json con hallazgos |
+| `--finding-id` | No | ID específico del hallazgo |
+| `--severity` | No | Severidad del hallazgo Valores: info, low, medium, high, critical. |
+
+## bugbounty list-programs
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+
+## bugbounty list-findings
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--program` | No | Nombre del programa (opcional) |
+
+## bugbounty generate-report
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--finding-id` | Sí | ID del hallazgo |
+| `--format` | No | Formato del reporte Valores: markdown, html, json. |
+| `--output` | No | Archivo de salida |
+| `--platform` | No | Formato específico de la plataforma Valores: hackerone, bugcrowd, generic. |
+
+## bugbounty submit
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--finding-id` | Sí | ID del hallazgo |
+| `--platform` | Sí | Plataforma de destino Valores: hackerone, bugcrowd. |
+| `--program-handle` | Sí | Handle del programa |
+| `--api-token` | Sí | API token |
+| `--dry-run` | No | Simular envío sin enviar |
+
+## idor
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `target` | Sí | URL base del objetivo |
+| `--session1` | Sí | Nombre de la primera sesión (ej: admin) |
+| `--session2` | Sí | Nombre de la segunda sesión (ej: user) |
+| `--endpoints` | No | Lista de endpoints a probar (separados por comas) |
+| `--methods` | No | Métodos HTTP a probar (ej: GET,POST) |
+| `--output` | Sí | Directorio de salida |
+| `--timeout` | No | Timeout en segundos |
+| `--delay` | No | Retraso entre requests (segundos) |
+| `--max-endpoints` | No | Máximo número de endpoints a probar |
+
+## cvss
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `vector` | No | Vector CVSS (ej: "AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H") |
+| `--av` | No | Attack Vector (N, A, L, P) Valores: N, A, L, P. |
+| `--ac` | No | Attack Complexity (L, H) Valores: L, H. |
+| `--pr` | No | Privileges Required (N, L, H) Valores: N, L, H. |
+| `--ui` | No | User Interaction (N, R) Valores: N, R. |
+| `--s` | No | Scope (U, C) Valores: U, C. |
+| `--c` | No | Confidentiality (N, L, H) Valores: N, L, H. |
+| `--i` | No | Integrity (N, L, H) Valores: N, L, H. |
+| `--a` | No | Availability (N, L, H) Valores: N, L, H. |
+| `--vuln-type` | No | Tipo de vulnerabilidad (sqli, xss, idor, etc.) |
+| `--json` | No | Salida en formato JSON |
+
+## ai-defense
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `text` | No | Texto a analizar para detectar patrones de IA adversaria |
+| `--input-file` | No | Archivo de entrada con texto a analizar |
+| `--monitor` | No | Modo monitor: analizar múltiples requests (para integración con APIs) |
+| `--block-severity` | No | Severidad mínima para bloquear (CRITICAL, HIGH, MEDIUM, LOW, INFO) Valores: CRITICAL, HIGH, MEDIUM, LOW, INFO. |
+| `--list-patterns` | No | Listar todos los patrones de detección |
+| `--pattern-type` | No | Filtrar patrones por tipo de amenaza Valores: PROMPT_INJECTION, JAILBREAK, DATA_EXFILTRATION, CODE_INJECTION, MODEL_MANIPULATION, DENIAL_OF_SERVICE. |
+| `--output` | No | Directorio de salida para reportes |
+| `--json` | No | Salida en formato JSON |
+
+## auth
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+
+## auth add-session
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--name` | Sí | Nombre de la sesión |
+| `--cookies` | No | Cookies (ej: "session=abc; auth=xyz") |
+| `--headers` | No | Headers (JSON) |
+| `--token` | No | Bearer token |
+| `--username` | No | Usuario para Basic Auth |
+| `--password` | No | Contraseña para Basic Auth |
+| `--base-url` | No | URL base del objetivo |
+| `--auth-type` | No | Tipo de autenticación Valores: cookie, bearer, basic, oauth2. |
+
+## auth list-sessions
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+
+## auth remove-session
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--name` | Sí | Nombre de la sesión |
+
+## auth oauth2-token
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `--token-url` | Sí | URL del endpoint de token |
+| `--client-id` | Sí | Client ID |
+| `--client-secret` | Sí | Client secret |
+| `--scope` | No | Scope solicitado |
+| `--grant-type` | No | Tipo de grant |
+
+## report
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `input` | Sí | Archivo audit.json de entrada |
+| `--output` | Sí | Directorio o archivo de salida |
+| `--format` | No | Formato del reporte Valores: markdown, html, pdf, json, sarif. |
+| `--template` | No | Plantilla personalizada |
+| `--include-false-positives` | No | Incluir falsos positivos |
+| `--severity-filter` | No | Filtrar por severidad (ej: high,critical) |
+
+## poc
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `finding-id` | Sí | ID del hallazgo |
+| `--input` | Sí | Archivo audit.json |
+| `--output` | No | Archivo de salida (default: poc_{finding-id}.py) |
+| `--language` | No | Lenguaje del PoC Valores: python, bash, curl. |
+| `--target` | No | URL del objetivo (sobreescribe el del hallazgo) |
+
+## validate-skill
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `skill` | Sí |  |
+
+## extract-zip
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |
+| `archive` | Sí |  |
+| `--output` | Sí |  |
+
+## tools
+
+| Argumento | Requerido | Descripción |
+|---|---|---|
+| `-h, --help` | No | show this help message and exit |

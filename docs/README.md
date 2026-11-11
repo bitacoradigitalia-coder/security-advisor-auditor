@@ -6,20 +6,12 @@ Bienvenido a la documentación oficial de **Security Advisor Auditor v2.2**.
 
 ## 🗂️ Estructura de la Documentación
 
-```
-docs/
-├── README.md                    # 📍 Este archivo (índice)
-├── architecture.md              # 🏗️ Arquitectura general del sistema
-├── coverage.md                  # 📊 Cobertura de análisis estático
-├── evaluation.md                # 📈 Evaluación y métricas
-├── iac.md                       # ☁️ Análisis de IaC (Docker, K8s, Terraform)
-├── pentesting.md                # 🔍 Guía del módulo de pentesting
-├── bugbounty.md                 # 🐞 Guía del módulo de Bug Bounty
-├── corrections-2.0.1.md        # 📝 Correcciones y ajustes
-├── delivery.md                  # 📦 Entregas y verificaciones
-├── implementation-plan.md       # 🎯 Plan de implementación
-└── intelligence-plan.md         # 🧠 Plan de inteligencia
-```
+- `docs/`: guías de uso, CLI, arquitectura y módulos.
+- `docs/history/`: historial y registros de versiones anteriores.
+- `internal/`: planes, entregas y decisiones de implementación.
+- `references/`: metodología, evidencia y criterios de auditoría.
+
+Empieza por [Uso](usage.md), consulta [CLI](cli.md) y revisa el [roadmap](roadmap.md) para distinguir lo disponible de lo pendiente.
 
 ---
 
@@ -41,10 +33,10 @@ docs/
 
 ### 📊 **Contribuidores: Información de Desarrollo**
 
-1. **[Plan de Implementación](implementation-plan.md)** - Diseño y decisiones
-2. **[Plan de Inteligencia](intelligence-plan.md)** - Diagnóstico inicial
+1. **[Plan de Implementación](../internal/implementation-plan.md)** - Diseño y decisiones
+2. **[Plan de Inteligencia](../internal/intelligence-plan.md)** - Diagnóstico inicial
 3. **[Entregas](delivery.md)** - Historial de entregas
-4. **[Correcciones](corrections-2.0.1.md)** - Ajustes y fixes
+4. **[Correcciones](../internal/corrections-2.0.1.md)** - Ajustes y fixes
 
 ---
 
