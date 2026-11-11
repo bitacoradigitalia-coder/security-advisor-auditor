@@ -1,6 +1,5 @@
-"""
-Unit tests del analizador nativo PHP (mejora 5 del plan v2.2)
-"""
+"""Pruebas del analizador PHP con fragmentos que solo se analizan como texto."""
+
 import sys
 import tempfile
 import unittest
@@ -10,26 +9,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 
 from static_analysis import PHPAnalyzer, get_analyzer
 from static_analysis.php_analyzer import PHP_RULES
-
-VULNERABLE_PHP = """
-<?php
-eval($_GET['cmd']);
-system("ping " . $_GET['host']);
-echo $_GET['name'];
-include($_GET['page']);
-mysql_query("SELECT * FROM users WHERE id = " . $_GET['id']);
-unserialize($_POST['data']);
-header('Location: ' . $_GET['url']);
-?>
-"""
-
-CLEAN_PHP = """
-<?php
-$stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');
-$stmt->execute(['id' => $_GET['id']]);
-echo htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8');
-?>
-"""
 
 
 class TestPHPAnalyzer(unittest.TestCase):
@@ -42,32 +21,41 @@ class TestPHPAnalyzer(unittest.TestCase):
         self.assertTrue(self.analyzer.is_available())
 
     def test_rules_defined(self):
-        ids = [r.rule_id for r in PHP_RULES]
+        ids = [rule.rule_id for rule in PHP_RULES]
         self.assertEqual(len(ids), 8)
         self.assertEqual(len(ids), len(set(ids)))
 
     def test_detects_vulnerable_code(self):
-        result = self.analyzer.analyze_code(VULNERABLE_PHP)
-        self.assertTrue(result.success)
-        categories = [f.category for f in result.findings]
-        self.assertIn("rce", categories)
-        self.assertIn("command_injection", categories)
-        self.assertIn("xss", categories)
-        self.assertIn("file_inclusion", categories)
-        self.assertIn("sqli", categories)
-        self.assertIn("deserialization", categories)
-        self.assertIn("open_redirect", categories)
+        cases = {
+            "rce": "eval('1 + 1');",
+            "command_injection": "system('echo sample');",
+            "xss": "echo $_GET['name'];",
+            "file_inclusion": "include($_GET['page']);",
+            "sqli": "mysql_query('SELECT 1');",
+            "hardcoded_secret": "$password = 'test-placeholder';",
+            "deserialization": "unserialize($_POST['data']);",
+            "open_redirect": "header('Location: ' . $_GET['url']);",
+        }
+        for category, snippet in cases.items():
+            with self.subTest(category=category):
+                result = self.analyzer.analyze_code(snippet)
+                self.assertTrue(result.success)
+                self.assertIn(category, [finding.category for finding in result.findings])
 
     def test_clean_code_no_findings(self):
-        result = self.analyzer.analyze_code(CLEAN_PHP)
+        result = self.analyzer.analyze_code(
+            "$stmt = $pdo->prepare('SELECT * FROM users WHERE id = :id');\n"
+            "$stmt->execute(['id' => $_GET['id']]);\n"
+            "echo htmlspecialchars($_GET['name'], ENT_QUOTES, 'UTF-8');\n"
+        )
         self.assertTrue(result.success)
         self.assertEqual(len(result.findings), 0)
 
     def test_analyze_directory_only_php(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "a.php").write_text("<?php eval($_GET['x']); ?>")
-            (root / "b.js").write_text("eval(x);")
+            (root / "a.php").write_text("<?php eval('1 + 1');", encoding="utf-8")
+            (root / "b.js").write_text("eval(x);", encoding="utf-8")
             result = self.analyzer.analyze_directory(root)
             self.assertTrue(result.success)
             self.assertEqual(len(result.findings), 1)
