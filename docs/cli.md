@@ -28,8 +28,6 @@ El CLI principal de **Security Advisor Auditor** es `python scripts/audit.py`.
 | `tools` | Listar herramientas disponibles | `python scripts/audit.py tools` |
 | `validate-skill` | Validar skill | `python scripts/audit.py validate-skill .` |
 | `extract-zip` | Extraer ZIP de forma segura | `python scripts/audit.py extract-zip archivo.zip --output ./salida` |
-| `iac` | Análisis de IaC | `python scripts/audit.py iac scan /ruta/iac/` |
-| `sca` | Análisis SCA | `python scripts/audit.py sca scan --sbom sbom.json` |
 | `idor` | Detección IDOR/BOLA | `python scripts/audit.py idor URL --session1 admin --session2 user` |
 | `cvss` | Calculadora CVSS 3.1 | `python scripts/audit.py cvss --vuln-type sqli --json` |
 
@@ -288,51 +286,6 @@ Extrae archivos ZIP de forma segura con validaciones.
 **Ejemplo:**
 ```bash
 python scripts/audit.py extract-zip input.zip --output ./extracted
-```
-
-### ☁️ `iac` - Análisis de IaC
-
-Análisis de archivos de infraestructura como código.
-
-**Subcomandos:**
-```
-scan    Escanear directorio de archivos IaC
-```
-
-**Opciones:**
-```
---target, -t       Directorio o archivo a analizar
---output, -o      Directorio de salida
---format          Formato de reporte: json, markdown (default: json)
-```
-
-**Ejemplo:**
-```bash
-python scripts/audit.py iac scan /ruta/iac/ --output ./iac-report
-```
-
-### 📦 `sca` - Análisis SCA
-
-Análisis de Software Composition Analysis (SBOM + Advisories).
-
-**Subcomandos:**
-```
-generate-sbom    Generar SBOM (CycloneDX 1.5)
-scan             Escanear vulnerabilidades
-```
-
-**Ejemplo - Generar SBOM:**
-```bash
-python scripts/audit.py sca generate-sbom \
-  --requirements requirements.txt \
-  --output sbom.json
-```
-
-**Ejemplo - Escanear vulnerabilidades:**
-```bash
-python scripts/audit.py sca scan \
-  --sbom sbom.json \
-  --output vulnerabilities.json
 ```
 
 ### 🔍 `idor` - Detección IDOR/BOLA

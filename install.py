@@ -21,8 +21,8 @@ from security_auditor.sources import find_project_root, project_source
 NAME = 'security-advisor-auditor'
 MANIFEST = '.saa-install.json'
 DIRECTORIES = {'scripts', 'references', 'modules', 'agents', 'assets', 'schemas', 'adapters',
-               'docs', 'examples', 'tests'}
-FILES = {'SKILL.md', 'README.md', 'LICENSE', 'CHANGELOG.md', 'install.py'}
+               'docs', 'examples', 'tests', 'internal', 'reports'}
+FILES = {'SKILL.md', 'README.md', 'LICENSE', 'install.py'}
 
 
 def payload(source=None):

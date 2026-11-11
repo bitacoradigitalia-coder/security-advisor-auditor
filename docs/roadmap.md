@@ -348,7 +348,7 @@ Si quieres contribuir al desarrollo de alguna de estas funcionalidades:
 - [Documentación de Arquitectura](architecture.md)
 - [Metodología de Auditoría](../references/audit-methodology.md)
 - [Guía de Contribución](../.github/CONTRIBUTING.md)
-- [Changelog](../CHANGELOG.md)
+- [Changelog](history/changelog.md)
 
 ---
 

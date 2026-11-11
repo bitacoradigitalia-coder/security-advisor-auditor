@@ -85,7 +85,7 @@ Proyecto unificado bajo una única versión **v2.2**. Fases 1 a 5 del plan compl
 
 - Corregida identificación de fuentes descargadas: carpeta de cualquier nombre, sufijos `-main`/versión, padre con raíz única y ZIP mediante `--source`. Metadatos y metodología verifican identidad; instalación con nombre estándar.
 - Fuentes ambiguas/incompletas/enlazadas y ZIP peligrosos se rechazan. El instalador usa sus helpers confiables, no importa ni ejecuta código de la fuente ZIP.
-- Integridad documental independiente de CRLF/LF y BOM UTF-8. El texto completo coincide con Git original `5633241`; hash canónico `904d385…928a`. Se conserva el archivo local íntegro; no se actualiza el hash a partir de una coincidencia de encabezados. Procedencia y comparación en `docs/corrections-2.0.1.md`.
+- Integridad documental independiente de CRLF/LF y BOM UTF-8. El texto completo coincide con Git original `5633241`; hash canónico `904d385…928a`. Se conserva el archivo local íntegro; no se actualiza el hash a partir de una coincidencia de encabezados. Procedencia y comparación en `internal/corrections-2.0.1.md`.
 - Ampliada suite con nombres fuente, padre, ZIP formato GitHub y nombres arbitrarios, ambigüedad, enlaces, cambios de texto y no ejecución del ZIP. Probado además el ZIP real descargado de GitHub con los cinco perfiles en destinos de prueba.
 - Sin cambios de rutas/perfiles, rama `main`, alcance ni 21 fases. Activación real de clientes y pruebas nativas Linux/macOS siguen pendientes.
 

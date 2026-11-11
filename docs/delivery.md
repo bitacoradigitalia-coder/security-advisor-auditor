@@ -20,10 +20,10 @@ Este documento consolida todas las entregas oficiales del proyecto Security Advi
 
 **Creados**:
 - `.gitignore`
-- `CHANGELOG.md`
+- `docs/history/changelog.md`
 - `install.py`
 - `adapters/profiles.json`
-- `docs/implementation-plan.md`
+- `internal/implementation-plan.md`
 - `docs/delivery.md` (este archivo)
 - `examples/README.md`
 - `examples/safe/app.py`
@@ -315,7 +315,7 @@ python install.py --agent hermes --uninstall
 
 ## 🔗 Recursos Relacionados
 
-- [CHANGELOG](../CHANGELOG.md) — Historial completo de cambios
-- [implementation-plan.md](implementation-plan.md) — Plan de implementación original
-- [intelligence-plan.md](intelligence-plan.md) — Diagnóstico inicial
-- [PLAN-v2.3.md](PLAN-v2.3.md) — Roadmap de v2.3
+- [Changelog](history/changelog.md) — Historial completo de cambios
+- [implementation-plan.md](../internal/implementation-plan.md) — Plan de implementación original
+- [intelligence-plan.md](../internal/intelligence-plan.md) — Diagnóstico inicial
+- [plan-v2.3.md](plan-v2.3.md) — Roadmap de v2.3

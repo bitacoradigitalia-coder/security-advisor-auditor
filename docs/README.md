@@ -110,7 +110,7 @@ docs/
 - **[Vulnerable Examples](../examples/vulnerable/)** - Código con vulnerabilidades
 
 ### Desarrollo
-- **[CHANGELOG](../CHANGELOG.md)** - Historial de versiones
+- **[Changelog](history/changelog.md)** - Historial de versiones
 - **[CONTRIBUTING](../.github/CONTRIBUTING.md)** - Guía para contribuidores
 - **[CODE OF CONDUCT](../.github/CODE_OF_CONDUCT.md)** - Código de conducta
 

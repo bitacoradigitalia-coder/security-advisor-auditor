@@ -195,21 +195,25 @@ python scripts/audit.py report audit.json --output ./report --format html \
 ```
 
 ### SCA (Software Composition Analysis)
+**Nota:** El módulo SCA tiene su propio CLI independiente (no integrado en audit.py).
+
 ```bash
 # Generar SBOM (CycloneDX 1.5)
-python scripts/audit.py sca generate-sbom --requirements requirements.txt --output sbom.json
+python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report
 
 # Escanear vulnerabilidades (offline con cache)
-python scripts/audit.py sca scan --sbom sbom.json --output vulnerabilities.json
+python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report
 
 # Escanear con modo online (opt-in)
-python scripts/audit.py sca scan --sbom sbom.json --online --output vulnerabilities.json
+python scripts/sca/cli.py --requirements requirements.txt --output ./sca-report --online
 ```
 
 ### Escaneo IaC
+**Nota:** El módulo IaC tiene su propio analizador (no integrado en audit.py).
+
 ```bash
-# Analizar archivos de infraestructura
-python scripts/audit.py iac scan /ruta/iac/ --output ./iac-report
+# Analizar archivos de infraestructura (usar el analizador directamente)
+python -c "from scripts.static_analysis.iac_analyzer import IaCAnalyzer; IaCAnalyzer().analyze_directory('/ruta/iac/')"
 ```
 
 ---
@@ -262,7 +266,7 @@ La explotación de vulnerabilidades **requiere permiso explícito**:
 - [☁️ IaC](docs/iac.md) - Análisis de infraestructura como código
 
 ### Desarrollo
-- [📜 Historial de Versiones](CHANGELOG.md) - Todas las versiones y cambios
+- [📜 Historial de Versiones](docs/history/changelog.md) - Todas las versiones y cambios
 - [🎯 Roadmap](docs/roadmap.md) - Plan de desarrollo futuro
 - [⚙️ Instalación para Agentes](install.py) - Instalador multi-agente
 
